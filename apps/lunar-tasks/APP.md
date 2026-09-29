@@ -7,10 +7,11 @@
 | Tạo ngày | 2026-09-29 |
 | Chính sách quyền riêng tư | https://nguyentranminhnhat3536-gif.github.io/howtogetapp/lunar-tasks/privacy-policy.html |
 | Bản chạy thử | https://github.com/nguyentranminhnhat3536-gif/howtogetapp/releases/tag/preview-lunar-tasks |
+| Bản xem trên web | https://claude.ai/artifact/15qynzoELFA9653Q3fNiyY (nguồn: `store/web-preview.html`) |
 | Link Google Play | (chưa có) |
 
 ## Trạng thái
-Bước 3 · Đã đổi tên "Lịch Trình Của Bạn", giao diện navy-cam-kem theo logo, thêm lệnh giọng nói trong app. Chờ Ethan thử (DUYỆT-2).
+**Tạm dừng (2026-09-29, theo lời Ethan).** Bản thử APK và bản xem web đã có, CI xanh. Khi làm tiếp: chờ Ethan thử và góp ý (DUYỆT-2), merge PR #1.
 
 ## Việc tiếp theo
 - [x] Điền mục Ý tưởng và Phạm vi MVP
