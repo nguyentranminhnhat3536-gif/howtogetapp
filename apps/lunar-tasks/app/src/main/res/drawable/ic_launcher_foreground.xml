@@ -1,29 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Icon app: trăng khuyết (vàng) có dấu tích, trên nền xanh đêm.
-  Khung 108x108; nội dung nằm trong vùng an toàn 66x66 ở giữa. Hình dựa trên Material icons (Apache 2.0).
+  Icon app "Lịch Trình Của Bạn": tờ lịch để bàn màu cam trên đĩa kem viền cam, nền navy (theo logo).
+  Khung 108x108; nội dung nằm trong vùng an toàn 66x66 ở giữa. Tự vẽ, không dùng tài nguyên bên ngoài.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <group
-        android:scaleX="2.5"
-        android:scaleY="2.5"
-        android:translateX="24"
-        android:translateY="24">
-        <path
-            android:fillColor="#FFC940"
-            android:pathData="M12,3c-4.97,0 -9,4.03 -9,9s4.03,9 9,9s9,-4.03 9,-9c0,-0.46 -0.04,-0.92 -0.1,-1.36c-0.98,1.37 -2.58,2.26 -4.4,2.26c-2.98,0 -5.4,-2.42 -5.4,-5.4c0,-1.81 0.89,-3.42 2.26,-4.4C12.92,3.04 12.46,3 12,3L12,3z" />
-        <group
-            android:scaleX="0.45"
-            android:scaleY="0.45"
-            android:translateX="4.3"
-            android:translateY="7.8">
-            <path
-                android:fillColor="#1E3A8A"
-                android:pathData="M9,16.2L4.8,12l-1.4,1.4L9,19 21,7l-1.4,-1.4L9,16.2z" />
-        </group>
-    </group>
+    <!-- Đĩa kem viền cam -->
+    <path
+        android:fillColor="#FBF3E9"
+        android:strokeColor="#E8553D"
+        android:strokeWidth="2.5"
+        android:pathData="M54,24a30,30 0,1 1,0 60a30,30 0,1 1,0 -60z" />
+    <!-- Mép gập phía sau -->
+    <path
+        android:fillColor="#F07A62"
+        android:pathData="M41,41L44,41L47,72L41,72Z" />
+    <path
+        android:fillColor="#1C3A5E"
+        android:pathData="M44,41L46.5,41L49.5,72L47,72Z" />
+    <!-- Tờ lịch -->
+    <path
+        android:fillColor="#E8553D"
+        android:pathData="M46.5,41L67,41L70,72L49.5,72Z" />
+    <!-- Khoen gáy lịch -->
+    <path
+        android:fillColor="#1C3A5E"
+        android:pathData="M49,37h2.6v6.5h-2.6zM54.2,37h2.6v6.5h-2.6zM59.4,37h2.6v6.5h-2.6zM64.6,37h2.6v6.5h-2.6z" />
 </vector>

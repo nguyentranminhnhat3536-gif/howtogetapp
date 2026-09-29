@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tasks &amp; Lunar Reminders</string>
+    <string name="app_name">Your Schedule</string>
     <!-- new_app.py tự điền 2 dòng dưới cho từng app -->
     <string name="privacy_policy_url" translatable="false">https://nguyentranminhnhat3536-gif.github.io/howtogetapp/lunar-tasks/privacy-policy.html</string>
     <string name="support_email" translatable="false">support@example.com</string>
@@ -127,4 +127,26 @@
     <string name="speak_tasks_today">You have %1$d tasks today: %2$s.</string>
     <string name="speak_task_at">%1$s at %2$s</string>
     <string name="speak_overdue">And %1$d overdue tasks.</string>
+
+    <!-- Lệnh giọng nói -->
+    <string name="voice_prompt">Say a command, e.g. “Add buy milk tomorrow at 8 am”</string>
+    <string name="action_voice">Speak a command</string>
+    <string name="action_voice_help">What can I say?</string>
+    <string name="action_read_today_short">Read today</string>
+    <string name="action_close">Close</string>
+    <string name="voice_help_title">Voice commands</string>
+    <string name="voice_help_body">Tap the microphone, then say for example:\n• “Add task buy milk tomorrow at 8 am”\n• “Remind me to call mom at 7 pm”\n• “Read today”\n• “Turn on high contrast” / “Turn off high contrast”\n• “Turn on read reminders aloud”\n• “Turn off vibration”\n• “Bigger text” / “Smaller text”\n• “Call” (your saved relative)\n• “Add medicine”, “Open settings”\nThe microphone only listens after you tap it inside the app.</string>
+    <string name="voice_added">Added: %1$s %2$s</string>
+    <string name="voice_at_time">at %1$s</string>
+    <string name="voice_contrast_on">High contrast is on.</string>
+    <string name="voice_contrast_off">High contrast is off.</string>
+    <string name="voice_speak_on">Reminders will be read aloud.</string>
+    <string name="voice_speak_off">Reminders will no longer be read aloud.</string>
+    <string name="voice_haptics_on">Vibration is on.</string>
+    <string name="voice_haptics_off">Vibration is off.</string>
+    <string name="voice_text_bigger">Text is bigger.</string>
+    <string name="voice_text_smaller">Text is smaller.</string>
+    <string name="voice_no_contact">No relative saved yet. Add one in Settings.</string>
+    <string name="voice_unknown">Sorry, I did not understand “%1$s”. Tap “What can I say?” for examples.</string>
+    <string name="error_no_voice">This phone has no voice input. Install or turn on Google voice typing.</string>
 </resources>

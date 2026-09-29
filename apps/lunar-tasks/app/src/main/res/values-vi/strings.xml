@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Việc Cần Làm - Nhắc Âm Lịch</string>
+    <string name="app_name">Lịch Trình Của Bạn</string>
     <string name="menu_more">Tùy chọn khác</string>
     <string name="menu_privacy">Chính sách quyền riêng tư</string>
     <string name="menu_rate">Đánh giá ứng dụng</string>
@@ -120,4 +120,26 @@
     <string name="speak_tasks_today">Hôm nay có %1$d việc: %2$s.</string>
     <string name="speak_task_at">%1$s lúc %2$s</string>
     <string name="speak_overdue">Và %1$d việc quá hạn.</string>
+
+    <!-- Lệnh giọng nói -->
+    <string name="voice_prompt">Hãy nói lệnh, ví dụ “Thêm việc đi chợ 8 giờ sáng mai”</string>
+    <string name="action_voice">Nói lệnh</string>
+    <string name="action_voice_help">Nói được gì?</string>
+    <string name="action_read_today_short">Đọc hôm nay</string>
+    <string name="action_close">Đóng</string>
+    <string name="voice_help_title">Lệnh bằng giọng nói</string>
+    <string name="voice_help_body">Bấm nút micro rồi nói, ví dụ:\n• “Thêm việc đi chợ 8 giờ sáng mai”\n• “Nhắc tôi gọi mẹ lúc 7 giờ tối”\n• “Đọc việc hôm nay”\n• “Bật tương phản” / “Tắt tương phản”\n• “Bật đọc to lời nhắc”\n• “Tắt rung”\n• “Chữ to hơn” / “Chữ nhỏ hơn”\n• “Gọi người thân”\n• “Thêm thuốc”, “Mở cài đặt”\nMicro chỉ nghe khi bạn bấm nút trong app.</string>
+    <string name="voice_added">Đã thêm: %1$s %2$s</string>
+    <string name="voice_at_time">lúc %1$s</string>
+    <string name="voice_contrast_on">Đã bật tương phản cao.</string>
+    <string name="voice_contrast_off">Đã tắt tương phản cao.</string>
+    <string name="voice_speak_on">Đã bật đọc to lời nhắc.</string>
+    <string name="voice_speak_off">Đã tắt đọc to lời nhắc.</string>
+    <string name="voice_haptics_on">Đã bật rung.</string>
+    <string name="voice_haptics_off">Đã tắt rung.</string>
+    <string name="voice_text_bigger">Đã tăng cỡ chữ.</string>
+    <string name="voice_text_smaller">Đã giảm cỡ chữ.</string>
+    <string name="voice_no_contact">Chưa lưu người thân. Hãy thêm trong Cài đặt.</string>
+    <string name="voice_unknown">Xin lỗi, tôi chưa hiểu “%1$s”. Bấm “Nói được gì?” để xem ví dụ.</string>
+    <string name="error_no_voice">Máy chưa có nhập bằng giọng nói. Hãy cài hoặc bật Google nhập bằng giọng nói.</string>
 </resources>

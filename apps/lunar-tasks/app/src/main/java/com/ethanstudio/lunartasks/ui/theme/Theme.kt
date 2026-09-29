@@ -14,24 +14,64 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 
 private val LightColors = lightColorScheme(
-    primary = BrandPrimary,
-    onPrimary = BrandOnPrimary,
-    primaryContainer = BrandPrimaryContainer,
-    onPrimaryContainer = BrandOnPrimaryContainer,
-    secondary = BrandSecondary,
+    primary = LightPrimary,
+    onPrimary = LightOnPrimary,
+    primaryContainer = LightPrimaryContainer,
+    onPrimaryContainer = LightOnPrimaryContainer,
+    secondary = LightSecondary,
+    onSecondary = Color.White,
+    secondaryContainer = LightSecondaryContainer,
+    onSecondaryContainer = LightOnSecondaryContainer,
+    tertiary = LightTertiary,
+    onTertiary = Color.White,
+    background = LightBackground,
+    onBackground = Ink,
+    surface = LightBackground,
+    onSurface = Ink,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    surfaceContainerLowest = Color.White,
+    surfaceContainerLow = LightSurfaceLow,
+    surfaceContainer = LightSurface,
+    surfaceContainerHigh = LightSurfaceHigh,
+    surfaceContainerHighest = LightSurfaceHighest,
+    outline = Color(0xFF7A8292),
 )
 
 private val DarkColors = darkColorScheme(
-    primary = BrandPrimaryDark,
-    onPrimary = BrandOnPrimaryDark,
-    primaryContainer = BrandPrimaryContainerDark,
-    onPrimaryContainer = BrandOnPrimaryContainerDark,
-    secondary = BrandSecondaryDark,
+    primary = DarkPrimary,
+    onPrimary = DarkOnPrimary,
+    primaryContainer = DarkPrimaryContainer,
+    onPrimaryContainer = DarkOnPrimaryContainer,
+    secondary = DarkSecondary,
+    onSecondary = DarkOnSecondary,
+    secondaryContainer = DarkSecondaryContainer,
+    onSecondaryContainer = DarkOnSecondaryContainer,
+    tertiary = DarkTertiary,
+    onTertiary = DarkOnTertiary,
+    background = DarkBackground,
+    onBackground = DarkOnSurface,
+    surface = DarkBackground,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    surfaceContainerLowest = DarkBackground,
+    surfaceContainerLow = DarkSurfaceLow,
+    surfaceContainer = DarkSurface,
+    surfaceContainerHigh = DarkSurfaceHigh,
+    surfaceContainerHighest = DarkSurfaceHighest,
 )
 
-private val AppTypography = Typography()
+// Tiêu đề đậm như chữ trên logo.
+private val AppTypography = Typography().run {
+    copy(
+        titleLarge = titleLarge.copy(fontWeight = FontWeight.Bold),
+        titleMedium = titleMedium.copy(fontWeight = FontWeight.SemiBold),
+        titleSmall = titleSmall.copy(fontWeight = FontWeight.Bold),
+        labelLarge = labelLarge.copy(fontWeight = FontWeight.SemiBold),
+    )
+}
 
 @Composable
 fun AppTheme(
@@ -76,6 +116,8 @@ private val HighContrastColors = darkColorScheme(
     onPrimaryContainer = HighContrastYellow,
     secondary = HighContrastYellow,
     onSecondary = Color.Black,
+    tertiary = HighContrastYellow,
+    onTertiary = Color.Black,
     secondaryContainer = HighContrastYellow,
     onSecondaryContainer = Color.Black,
     background = Color.Black,

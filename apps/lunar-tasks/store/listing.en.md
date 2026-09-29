@@ -1,4 +1,4 @@
-# Store listing — Tasks & Lunar Reminders (English, en-US)
+# Store listing — Your Schedule — Lịch Trình Của Bạn (English, en-US)
 
 <!-- Kiểm tra: python3 scripts/check_listing.py lunar-tasks. Các dòng chú thích như dòng này sẽ được bỏ qua. -->
 
@@ -6,7 +6,7 @@
 <!-- Từ khóa chính, từ khóa phụ, lấy từ đâu (không tính vào store) -->
 
 ## Title
-Tasks & Lunar Reminders
+Your Schedule — Lịch Trình Của Bạn
 
 ## Short description
 <!-- Tối đa 80 ký tự: lợi ích chính và từ khóa chính -->

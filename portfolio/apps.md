@@ -6,4 +6,4 @@ AI cập nhật bảng này cuối mỗi phiên. `scripts/new_app.py` tự thêm
 
 | App | Slug | Package | Giai đoạn | Version | Kiếm tiền | Link Play | Ghi chú |
 |---|---|---|---|---|---|---|---|
-| Tasks & Lunar Reminders | `lunar-tasks` | `com.ethanstudio.lunartasks` | 2 · Đang code | 1.0.0 (1) | — | — | Tạo 2026-09-29 |
+| Lịch Trình Của Bạn (Your Schedule) | `lunar-tasks` | `com.ethanstudio.lunartasks` | 3 · Chờ Ethan thử | 1.0.0 (1) | — | — | Tạo 2026-09-29 |

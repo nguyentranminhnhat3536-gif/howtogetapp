@@ -1,4 +1,4 @@
-# Tasks & Lunar Reminders
+# Your Schedule — Lịch Trình Của Bạn
 
 | | |
 |---|---|
@@ -10,13 +10,16 @@
 | Link Google Play | (chưa có) |
 
 ## Trạng thái
-Bước 3 · Đã code MVP, đang build trên CI để gửi Ethan thử (DUYỆT-2).
+Bước 3 · Đã đổi tên "Lịch Trình Của Bạn", giao diện navy-cam-kem theo logo, thêm lệnh giọng nói trong app. Chờ Ethan thử (DUYỆT-2).
 
 ## Việc tiếp theo
 - [x] Điền mục Ý tưởng và Phạm vi MVP
 - [x] Icon riêng và màu thương hiệu
 - [x] Code MVP
-- [ ] CI xanh, gửi link APK cho Ethan thử (DUYỆT-2)
+- [x] CI xanh, gửi link APK cho Ethan thử (DUYỆT-2)
+- [x] Đổi tên, giao diện theo logo, lệnh giọng nói
+- [ ] Ethan thử bản mới và góp ý
+- [ ] Làm icon 512×512 và ảnh nền store từ logo (bước play-listing)
 - [ ] Điền studio.md (tên nhà phát triển, email hỗ trợ), chốt package trước lần upload đầu
 
 ## Ý tưởng
@@ -69,10 +72,12 @@ Không dùng SCHEDULE_EXACT_ALARM (Play hạn chế quyền này); nhắc bằng
 | Tài nguyên (hình, font, âm thanh, dữ liệu…) | Nguồn | Giấy phép |
 |---|---|---|
 | Icon trong app và icon launcher (vẽ lại từ Material icons) | https://fonts.google.com/icons | Apache 2.0 |
+| Logo "Lịch Trình Của Bạn" (`store/brand/`) và icon launcher vẽ lại theo logo | Ethan cung cấp ngày 2026-09-29 | Ethan xác nhận có quyền dùng trước khi phát hành |
+| Nhận giọng nói | Dịch vụ có sẵn của máy (RecognizerIntent), không nhúng SDK | — |
 | Thuật toán âm lịch (viết lại bằng Kotlin) | Hồ Ngọc Đức, https://www.informatik.uni-leipzig.de/~duc/amlich/ | Cần kiểm tra điều kiện dùng lại trước khi phát hành |
 
 ## Soạn sẵn cho Play Console
-- **Data safety:** Không thu thập, không chia sẻ dữ liệu (mọi thứ nằm trên máy, kể cả tên thuốc và số người thân).
+- **Data safety:** Không thu thập, không chia sẻ dữ liệu (mọi thứ nằm trên máy, kể cả tên thuốc và số người thân). Lệnh giọng nói do dịch vụ của máy nghe; app chỉ nhận chữ, không xin quyền micro, không lưu âm thanh.
 - **Health apps declaration:** app chỉ nhắc giờ uống thuốc, không phải thiết bị y tế; có câu miễn trừ trong màn hình thuốc. Cần khai đúng ở mục Health apps nếu Play Console hỏi.
 - **Content rating (IARC):**
 - **Target audience:** 18+
@@ -98,3 +103,6 @@ Không dùng SCHEDULE_EXACT_ALARM (Play hạn chế quyền này); nhắc bằng
 - 2026-09-29: Ethan muốn phục vụ người khuyết tật và người lớn tuổi. Làm trước chữ to và tương phản cao trong app này. Không dùng AccessibilityService và SMS vì Play kiểm tra gắt.
 - 2026-09-29: Ethan chọn gộp tính năng người lớn tuổi vào app này. Thêm nhắc uống thuốc và gọi nhanh người thân.
 - 2026-09-29: Ethan gửi bản thiết kế UniBridge (web/PWA cho sinh viên khuyết tật). Lấy các phần chạy offline (đọc to, tương phản đen-vàng, A−/A+, rung). Chưa làm: bạn đồng hành/SOS gửi trường (cần máy chủ, thành mạng xã hội theo NĐ 147), phụ đề trực tiếp (cần micro, Google Live Transcribe đã làm tốt), tóm tắt AI (tốn phí).
+- 2026-09-29: Ethan gửi logo "Lịch Trình Của Bạn" và đổi tên app. Tên tiếng Anh mặc định "Your Schedule". Giữ slug `lunar-tasks` để link bản thử không đổi. Màu: navy #1C3A5E, cam #E8553D, nền kem #FBF3E9.
+- 2026-09-29: Ethan muốn bật tắt chức năng bằng giọng nói, chỉ khi đang ở trong app. Chọn cách mở ô nghe giọng nói của máy khi bấm nút micro (RecognizerIntent): không cần quyền RECORD_AUDIO, không nghe ngầm, Data safety vẫn "không thu thập". Không làm nghe liên tục vì phải xin quyền micro và tốn pin. Lệnh được hiểu ngay trên máy (VoiceCommandParser, có unit test).
+- 2026-09-29: Ethan gọi "/mcp-builder". Skill này dùng để làm máy chủ MCP cho AI, không dùng được cho app Android, nên không dùng.

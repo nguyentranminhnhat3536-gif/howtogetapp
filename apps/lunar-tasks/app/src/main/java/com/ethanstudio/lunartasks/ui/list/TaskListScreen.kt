@@ -1,5 +1,10 @@
 package com.ethanstudio.lunartasks.ui.list
 
+import android.Manifest
+import android.content.Context
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,20 +43,24 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -67,8 +78,14 @@ import com.ethanstudio.lunartasks.ui.common.lunarShort
 import com.ethanstudio.lunartasks.ui.common.relativeDate
 import com.ethanstudio.lunartasks.ui.common.rememberHapticTap
 import com.ethanstudio.lunartasks.util.dialNumber
+import com.ethanstudio.lunartasks.voice.VoiceCommand
+import com.ethanstudio.lunartasks.voice.VoiceCommandParser
+import com.ethanstudio.lunartasks.voice.rememberVoiceInput
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,11 +124,103 @@ fun TaskListScreen(
     val noTtsMessage = stringResource(R.string.error_no_tts)
     val app = context.applicationContext as LunarTasksApp
     val hapticTap = rememberHapticTap()
+    val summary = todaySummary(state)
+    val helpText = stringResource(R.string.voice_help_body)
+    var showVoiceHelp by rememberSaveable { mutableStateOf(false) }
+
+    val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    fun requestNotificationsIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !NotificationManagerCompat.from(context).areNotificationsEnabled()
+        ) {
+            notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+    /** Trả lời lệnh nói bằng cả giọng đọc lẫn dòng chữ ở cuối màn hình. */
+    fun respond(message: String) {
+        scope.launch {
+            app.speaker.speak(message)
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
+    fun setting(on: Boolean, onRes: Int, offRes: Int, apply: (Boolean) -> Unit) {
+        apply(on)
+        respond(context.getString(if (on) onRes else offRes))
+    }
+
+    fun handleVoice(spoken: String) {
+        hapticTap()
+        when (val command = VoiceCommandParser.parse(spoken, LocalDateTime.now())) {
+            is VoiceCommand.AddTask -> {
+                viewModel.addQuickTask(command.title, command.date, command.minute)
+                if (command.minute != null) requestNotificationsIfNeeded()
+                respond(context.getString(R.string.voice_added, command.title, whenText(context, command.date, command.minute, state.today)))
+            }
+            VoiceCommand.OpenAddTask -> onAddTask()
+            VoiceCommand.ReadToday -> scope.launch { if (!app.speaker.speak(summary)) snackbarHostState.showSnackbar(noTtsMessage) }
+            is VoiceCommand.SetHighContrast ->
+                setting(command.on ?: !state.display.highContrast, R.string.voice_contrast_on, R.string.voice_contrast_off, viewModel::setHighContrast)
+            is VoiceCommand.SetSpeakReminders ->
+                setting(command.on ?: !state.display.speakReminders, R.string.voice_speak_on, R.string.voice_speak_off, viewModel::setSpeakReminders)
+            is VoiceCommand.SetHaptics ->
+                setting(command.on ?: !state.display.haptics, R.string.voice_haptics_on, R.string.voice_haptics_off, viewModel::setHaptics)
+            is VoiceCommand.ChangeTextSize -> {
+                viewModel.changeTextSize(command.step)
+                respond(context.getString(if (command.step > 0) R.string.voice_text_bigger else R.string.voice_text_smaller))
+            }
+            VoiceCommand.CallContact ->
+                if (state.contactPhone.isBlank()) respond(context.getString(R.string.voice_no_contact))
+                else if (!context.dialNumber(state.contactPhone)) scope.launch { snackbarHostState.showSnackbar(noAppMessage) }
+            VoiceCommand.AddMedicine -> onAddMedicine()
+            VoiceCommand.OpenSettings -> onOpenDisplaySettings()
+            VoiceCommand.Help -> {
+                showVoiceHelp = true
+                scope.launch { app.speaker.speak(helpText) }
+            }
+            VoiceCommand.Unknown -> respond(context.getString(R.string.voice_unknown, spoken))
+        }
+    }
+
+    val voiceUnavailable = stringResource(R.string.error_no_voice)
+    val listen = rememberVoiceInput(
+        onResult = ::handleVoice,
+        onUnavailable = { scope.launch { snackbarHostState.showSnackbar(voiceUnavailable) } },
+    )
+    val startListening = {
+        app.speaker.stop()
+        listen()
+    }
+
+    if (showVoiceHelp) {
+        AlertDialog(
+            onDismissRequest = { showVoiceHelp = false },
+            title = { Text(stringResource(R.string.voice_help_title)) },
+            text = { Text(helpText, style = MaterialTheme.typography.bodyLarge) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showVoiceHelp = false
+                    startListening()
+                }) { Text(stringResource(R.string.action_voice)) }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showVoiceHelp = false
+                    app.speaker.stop()
+                }) { Text(stringResource(R.string.action_close)) }
+            },
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
+                title = { Text(stringResource(R.string.app_name), fontWeight = FontWeight.Bold) },
                 actions = {
+                    IconButton(onClick = startListening) {
+                        Icon(painterResource(R.drawable.ic_mic), contentDescription = stringResource(R.string.action_voice))
+                    }
                     TextButton(onClick = onOpenDisplaySettings) {
                         Text(
                             text = stringResource(R.string.action_text_size),
@@ -134,7 +243,9 @@ fun TaskListScreen(
                 ExtendedFloatingActionButton(
                     onClick = onAddTask,
                     icon = { Icon(painterResource(R.drawable.ic_add), contentDescription = null) },
-                    text = { Text(stringResource(R.string.action_add_task)) },
+                    text = { Text(stringResource(R.string.action_add_task), fontWeight = FontWeight.Bold) },
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary,
                 )
             }
         },
@@ -148,7 +259,9 @@ fun TaskListScreen(
             item(key = "header") {
                 TodayCard(
                     state = state,
-                    onReadAloud = { text -> scope.launch { if (!app.speaker.speak(text)) snackbarHostState.showSnackbar(noTtsMessage) } },
+                    onReadAloud = { scope.launch { if (!app.speaker.speak(summary)) snackbarHostState.showSnackbar(noTtsMessage) } },
+                    onVoice = startListening,
+                    onVoiceHelp = { showVoiceHelp = true },
                 )
             }
             if (state.contactPhone.isNotBlank()) {
@@ -223,8 +336,12 @@ fun TaskListScreen(
 }
 
 @Composable
-private fun TodayCard(state: TaskListUiState, onReadAloud: (String) -> Unit) {
-    val summary = todaySummary(state)
+private fun TodayCard(
+    state: TaskListUiState,
+    onReadAloud: () -> Unit,
+    onVoice: () -> Unit,
+    onVoiceHelp: () -> Unit,
+) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
@@ -232,7 +349,8 @@ private fun TodayCard(state: TaskListUiState, onReadAloud: (String) -> Unit) {
         Column(Modifier.padding(16.dp)) {
             Text(
                 text = fullDate(state.today),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
@@ -260,13 +378,39 @@ private fun TodayCard(state: TaskListUiState, onReadAloud: (String) -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
-            OutlinedButton(
-                onClick = { onReadAloud(summary) },
-                modifier = Modifier.padding(top = 8.dp).heightIn(min = 48.dp),
+            // Nút nói lệnh to, nổi bật: micro chỉ bật khi người dùng bấm, ngay trong app.
+            Button(
+                onClick = onVoice,
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp).heightIn(min = 56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary,
+                ),
             ) {
-                Icon(painterResource(R.drawable.ic_volume), contentDescription = null)
+                Icon(painterResource(R.drawable.ic_mic), contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.action_read_today))
+                Text(stringResource(R.string.action_voice), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                OutlinedButton(
+                    onClick = onReadAloud,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                ) {
+                    Icon(painterResource(R.drawable.ic_volume), contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(R.string.action_read_today_short))
+                }
+                OutlinedButton(
+                    onClick = onVoiceHelp,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                ) {
+                    Text(stringResource(R.string.action_voice_help))
+                }
             }
         }
     }
@@ -349,7 +493,7 @@ private fun TaskRow(
                     contentDescription = stringResource(
                         if (task.important) R.string.cd_unmark_important else R.string.cd_mark_important,
                     ),
-                    tint = if (task.important) Color(0xFFF59E0B) else MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = if (task.important) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -398,6 +542,18 @@ private fun TaskMeta(task: Task, today: LocalDate) {
             )
         }
     }
+}
+
+/** "hôm nay lúc 08:00", "ngày mai", "05/10"... dùng trong câu xác nhận lệnh nói. */
+private fun whenText(context: Context, date: LocalDate?, minute: Int?, today: LocalDate): String {
+    val day = when {
+        date == null -> ""
+        date == today -> context.getString(R.string.date_today)
+        date == today.plusDays(1) -> context.getString(R.string.date_tomorrow)
+        else -> date.format(DateTimeFormatter.ofPattern("dd/MM", Locale.getDefault()))
+    }
+    val time = minute?.let { context.getString(R.string.voice_at_time, formatTime(it)) }.orEmpty()
+    return listOf(day, time).filter { it.isNotEmpty() }.joinToString(" ")
 }
 
 /** Câu đọc to cho thẻ Hôm nay: ngày, ngày âm, việc hôm nay và số việc quá hạn. */
