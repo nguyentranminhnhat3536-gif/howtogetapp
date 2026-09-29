@@ -79,7 +79,7 @@
     <string name="notification_tomorrow">Ngày mai: %1$s</string>
     <string name="notification_due_tomorrow">Việc này đến hạn vào ngày mai.</string>
     <string name="notification_action_done">Xong</string>
-    <string name="title_display">Cỡ chữ và độ tương phản</string>
+    <string name="title_display">Cài đặt</string>
     <string name="setting_large_text">Chữ to</string>
     <string name="setting_large_text_body">Phóng to toàn bộ chữ và nút trong app thêm khoảng một phần ba.</string>
     <string name="setting_high_contrast">Tương phản cao</string>
@@ -88,4 +88,23 @@
     <string name="preview_body">Ngày mai · 07:00 · ÂL 15/8</string>
     <string name="setting_talkback_note">App cũng dùng được với TalkBack, trình đọc màn hình có sẵn trong Android (Cài đặt, Hỗ trợ tiếp cận).</string>
     <string name="cd_mark_done">Đánh dấu xong: %1$s</string>
+    <string name="title_add_medicine">Nhắc uống thuốc</string>
+    <string name="action_add_medicine">Uống thuốc</string>
+    <string name="field_medicine_name">Tên thuốc</string>
+    <string name="field_medicine_note">Cách uống (ví dụ: 1 viên sau ăn)</string>
+    <string name="medicine_times">Giờ uống mỗi ngày</string>
+    <string name="action_add_time">Thêm giờ khác</string>
+    <string name="medicine_disclaimer">App chỉ nhắc giờ uống thuốc, không đưa lời khuyên y tế. Luôn làm theo chỉ dẫn của bác sĩ.</string>
+    <string name="action_save_medicine">Lưu (%1$d cữ mỗi ngày)</string>
+    <string name="cd_medicine">Thuốc</string>
+    <string name="notification_medicine">Đến giờ uống thuốc: %1$s</string>
+    <string name="action_call_contact">Gọi %1$s</string>
+    <string name="contact_section_title">Gọi nhanh người thân</string>
+    <string name="contact_none">Chưa chọn. Sau khi chọn, màn hình chính sẽ có nút Gọi thật to.</string>
+    <string name="contact_current">%1$s · %2$s</string>
+    <string name="contact_pick">Chọn từ danh bạ</string>
+    <string name="contact_manual">Nhập số</string>
+    <string name="contact_remove">Bỏ chọn</string>
+    <string name="contact_name">Tên</string>
+    <string name="contact_phone">Số điện thoại</string>
 </resources>

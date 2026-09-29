@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ethanstudio.lunartasks.data.DisplaySettings
+import com.ethanstudio.lunartasks.data.AppSettings
 import com.ethanstudio.lunartasks.ui.AppRoot
 import com.ethanstudio.lunartasks.ui.theme.AppTheme
 
@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val settings = (application as LunarTasksApp).settings
         setContent {
-            val display by settings.display.collectAsStateWithLifecycle(initialValue = DisplaySettings())
+            val display by settings.settings.collectAsStateWithLifecycle(initialValue = AppSettings())
             AppTheme(largeText = display.largeText, highContrast = display.highContrast) {
                 AppRoot()
             }

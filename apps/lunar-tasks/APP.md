@@ -33,7 +33,9 @@ Bước 3 · Đã code MVP, đang build trên CI để gửi Ethan thử (DUYỆ
 4. Nhắc việc bằng thông báo (mặc định 7:00 nếu việc không có giờ)
 5. Thẻ đầu trang: hôm nay, ngày âm, mùng 1 và rằm sắp tới
 6. Nút "Xong" trên thông báo; tùy chọn nhắc trước 1 ngày lúc 19:00
-7. Dễ dùng cho người lớn tuổi: nút "Aa" mở Cỡ chữ và độ tương phản (chữ to ×1.3, tương phản cao), nhãn TalkBack cho ô tick
+7. Dễ dùng cho người lớn tuổi: nút "Aa" mở Cài đặt (chữ to ×1.3, tương phản cao), nhãn TalkBack cho ô tick
+8. Nhắc uống thuốc: tên thuốc, cách uống, nhiều cữ mỗi ngày (mỗi cữ là một việc lặp hằng ngày có nhắc)
+9. Gọi nhanh người thân: chọn từ danh bạ (không cần quyền READ_CONTACTS) hoặc nhập số; nút Gọi to ở màn hình chính mở trình quay số (không cần quyền CALL_PHONE)
 
 **Để sau:**
 - Widget màn hình chính
@@ -47,8 +49,8 @@ Bước 3 · Đã code MVP, đang build trên CI để gửi Ethan thử (DUYỆ
 | Thêm / sửa việc | Tên, ghi chú, ngày (kèm ngày âm), giờ, chọn theo ngày âm, lặp lại, nhắc, quan trọng, xóa |
 
 ## Dữ liệu
-- DataStore `settings`: chữ to, tương phản cao.
-- Room (`tasks.db`, bảng `tasks`, schema v2 có migration 1→2), chỉ nằm trên máy. Không có mạng, không có tài khoản.
+- DataStore `settings`: chữ to, tương phản cao, tên và số người thân (chỉ lưu trên máy).
+- Room (`tasks.db`, bảng `tasks`, schema v3, có migration 1→2→3), chỉ nằm trên máy. Không có mạng, không có tài khoản.
 
 ## Kiếm tiền
 - Mô hình:
@@ -70,7 +72,8 @@ Không dùng SCHEDULE_EXACT_ALARM (Play hạn chế quyền này); nhắc bằng
 | Thuật toán âm lịch (viết lại bằng Kotlin) | Hồ Ngọc Đức, https://www.informatik.uni-leipzig.de/~duc/amlich/ | Cần kiểm tra điều kiện dùng lại trước khi phát hành |
 
 ## Soạn sẵn cho Play Console
-- **Data safety:** Không thu thập, không chia sẻ dữ liệu (mọi thứ nằm trên máy).
+- **Data safety:** Không thu thập, không chia sẻ dữ liệu (mọi thứ nằm trên máy, kể cả tên thuốc và số người thân).
+- **Health apps declaration:** app chỉ nhắc giờ uống thuốc, không phải thiết bị y tế; có câu miễn trừ trong màn hình thuốc. Cần khai đúng ở mục Health apps nếu Play Console hỏi.
 - **Content rating (IARC):**
 - **Target audience:** 18+
 - **App access:** Toàn bộ tính năng dùng được mà không cần đăng nhập.
@@ -93,3 +96,4 @@ Không dùng SCHEDULE_EXACT_ALARM (Play hạn chế quyền này); nhắc bằng
 - 2026-09-29: Dùng navigation-compose (route dạng chuỗi) và Room + KSP có sẵn trong catalog của template, không thêm thư viện ngoài.
 - 2026-09-29: Thêm nút "Xong" trên thông báo và nhắc trước 1 ngày (19:00 hôm trước). DB lên v2 bằng migration, không xóa dữ liệu người dùng.
 - 2026-09-29: Ethan muốn phục vụ người khuyết tật và người lớn tuổi. Làm trước chữ to và tương phản cao trong app này. Không dùng AccessibilityService và SMS vì Play kiểm tra gắt.
+- 2026-09-29: Ethan chọn gộp tính năng người lớn tuổi vào app này. Thêm nhắc uống thuốc và gọi nhanh người thân.

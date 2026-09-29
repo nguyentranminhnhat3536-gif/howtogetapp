@@ -2,7 +2,9 @@ package com.ethanstudio.lunartasks.ui.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ethanstudio.lunartasks.data.AppSettings
 import com.ethanstudio.lunartasks.data.CompletionResult
+import com.ethanstudio.lunartasks.data.SettingsRepository
 import com.ethanstudio.lunartasks.data.GroupedTasks
 import com.ethanstudio.lunartasks.data.Task
 import com.ethanstudio.lunartasks.data.TaskGrouping
@@ -27,11 +29,16 @@ data class TaskListUiState(
     val showDone: Boolean = false,
     val nextFirstDay: LocalDate = today,
     val nextFullMoon: LocalDate = today,
+    val contactName: String = "",
+    val contactPhone: String = "",
 ) {
     val isEmpty: Boolean get() = groups.open.isEmpty() && groups.done.isEmpty()
 }
 
-class TaskListViewModel(private val repository: TaskRepository) : ViewModel() {
+class TaskListViewModel(
+    private val repository: TaskRepository,
+    settings: SettingsRepository,
+) : ViewModel() {
     private val today = MutableStateFlow(LocalDate.now())
     private val showDone = MutableStateFlow(false)
     private val events = Channel<CompletionResult>(Channel.BUFFERED)
@@ -40,7 +47,7 @@ class TaskListViewModel(private val repository: TaskRepository) : ViewModel() {
     val completions: Flow<CompletionResult> = events.receiveAsFlow()
 
     val uiState: StateFlow<TaskListUiState> =
-        combine(repository.tasks, today, showDone) { tasks, day, show ->
+        combine(repository.tasks, today, showDone, settings.settings) { tasks, day, show, prefs: AppSettings ->
             TaskListUiState(
                 loading = false,
                 today = day,
@@ -48,6 +55,8 @@ class TaskListViewModel(private val repository: TaskRepository) : ViewModel() {
                 showDone = show,
                 nextFirstDay = LunarCalendar.nextLunarMonthly(day.minusDays(1), 1),
                 nextFullMoon = LunarCalendar.nextLunarMonthly(day.minusDays(1), 15),
+                contactName = prefs.contactName,
+                contactPhone = prefs.contactPhone,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TaskListUiState())
 

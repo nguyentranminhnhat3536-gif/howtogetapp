@@ -29,6 +29,8 @@ data class Task(
     /** Nhắc thêm lúc 19:00 hôm trước (ngày giỗ, lễ tết cần chuẩn bị). */
     @ColumnInfo(defaultValue = "0") val remindDayBefore: Boolean = false,
     val important: Boolean = false,
+    /** Việc nhắc uống thuốc (mỗi cữ là một việc lặp hằng ngày). */
+    @ColumnInfo(defaultValue = "0") val isMedicine: Boolean = false,
     val done: Boolean = false,
     val completedAt: Long? = null,
     val createdAt: Long = System.currentTimeMillis(),

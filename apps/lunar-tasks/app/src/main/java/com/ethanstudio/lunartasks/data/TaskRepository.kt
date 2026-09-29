@@ -21,6 +21,10 @@ class TaskRepository(
         return id
     }
 
+    suspend fun saveAll(tasks: List<Task>) {
+        tasks.forEach { save(it) }
+    }
+
     suspend fun delete(task: Task) {
         scheduler.cancel(task.id)
         dao.delete(task)

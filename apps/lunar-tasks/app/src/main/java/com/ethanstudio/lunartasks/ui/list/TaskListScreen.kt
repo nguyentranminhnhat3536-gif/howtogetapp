@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -61,6 +63,7 @@ import com.ethanstudio.lunartasks.ui.common.fullDate
 import com.ethanstudio.lunartasks.ui.common.lunarLong
 import com.ethanstudio.lunartasks.ui.common.lunarShort
 import com.ethanstudio.lunartasks.ui.common.relativeDate
+import com.ethanstudio.lunartasks.util.dialNumber
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -70,6 +73,7 @@ fun TaskListScreen(
     onAddTask: () -> Unit,
     onOpenTask: (Long) -> Unit,
     onOpenDisplaySettings: () -> Unit,
+    onAddMedicine: () -> Unit,
     viewModel: TaskListViewModel = viewModel(factory = AppViewModels.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -114,20 +118,43 @@ fun TaskListScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onAddTask,
-                icon = { Icon(painterResource(R.drawable.ic_add), contentDescription = null) },
-                text = { Text(stringResource(R.string.action_add_task)) },
-            )
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                ExtendedFloatingActionButton(
+                    onClick = onAddMedicine,
+                    icon = { Icon(painterResource(R.drawable.ic_medication), contentDescription = null) },
+                    text = { Text(stringResource(R.string.action_add_medicine)) },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                )
+                ExtendedFloatingActionButton(
+                    onClick = onAddTask,
+                    icon = { Icon(painterResource(R.drawable.ic_add), contentDescription = null) },
+                    text = { Text(stringResource(R.string.action_add_task)) },
+                )
+            }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 180.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             item(key = "header") { TodayCard(state) }
+            if (state.contactPhone.isNotBlank()) {
+                item(key = "call") {
+                    Button(
+                        onClick = { if (!context.dialNumber(state.contactPhone)) scope.launch { snackbarHostState.showSnackbar(noAppMessage) } },
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).heightIn(min = 56.dp),
+                    ) {
+                        Icon(painterResource(R.drawable.ic_call), contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.action_call_contact, state.contactName.ifBlank { state.contactPhone }),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                }
+            }
             if (!state.loading && state.groups.open.isEmpty()) {
                 item(key = "empty") { EmptyState() }
             }
@@ -321,7 +348,15 @@ private fun TaskMeta(task: Task, today: LocalDate) {
             style = MaterialTheme.typography.bodySmall,
             color = if (overdue) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        if (task.repeat != Repeat.NONE) {
+        if (task.isMedicine) {
+            Spacer(Modifier.width(6.dp))
+            Icon(
+                painterResource(R.drawable.ic_medication),
+                contentDescription = stringResource(R.string.cd_medicine),
+                modifier = Modifier.size(14.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        } else if (task.repeat != Repeat.NONE) {
             Spacer(Modifier.width(6.dp))
             Icon(
                 painterResource(if (task.repeat.isLunar) R.drawable.ic_moon else R.drawable.ic_repeat),

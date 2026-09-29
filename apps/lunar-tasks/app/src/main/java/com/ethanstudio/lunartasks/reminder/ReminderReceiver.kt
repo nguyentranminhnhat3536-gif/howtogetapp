@@ -66,7 +66,11 @@ class ReminderReceiver : BroadcastReceiver() {
             Intent(context, ReminderReceiver::class.java).setAction(ACTION_DONE).putExtra(EXTRA_TASK_ID, task.id),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        val title = if (early) context.getString(R.string.notification_tomorrow, task.title) else task.title
+        val title = when {
+            early -> context.getString(R.string.notification_tomorrow, task.title)
+            task.isMedicine -> context.getString(R.string.notification_medicine, task.title)
+            else -> task.title
+        }
         val body = task.note.ifBlank {
             context.getString(if (early) R.string.notification_due_tomorrow else R.string.notification_due_now)
         }

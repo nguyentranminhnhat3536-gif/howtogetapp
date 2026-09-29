@@ -3,6 +3,7 @@ package com.ethanstudio.lunartasks.util
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.core.net.toUri
 
 /** Mở một link. Trả về false nếu máy không có app nào mở được. */
@@ -30,3 +31,7 @@ private fun Context.startSafely(intent: Intent): Boolean =
     } catch (e: ActivityNotFoundException) {
         false
     }
+
+/** Mở màn hình gọi điện với số điền sẵn (người dùng tự bấm gọi, không cần quyền CALL_PHONE). */
+fun Context.dialNumber(phone: String): Boolean =
+    startSafely(Intent(Intent.ACTION_DIAL, "tel:${Uri.encode(phone)}".toUri()))

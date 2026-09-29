@@ -84,7 +84,7 @@
     <string name="notification_due_tomorrow">This task is due tomorrow.</string>
     <string name="notification_action_done">Done</string>
     <string name="action_text_size" translatable="false">Aa</string>
-    <string name="title_display">Text size and contrast</string>
+    <string name="title_display">Settings</string>
     <string name="setting_large_text">Large text</string>
     <string name="setting_large_text_body">Makes all text and buttons in the app about a third bigger.</string>
     <string name="setting_high_contrast">High contrast</string>
@@ -93,4 +93,23 @@
     <string name="preview_body">Tomorrow · 07:00 · Lunar 15/8</string>
     <string name="setting_talkback_note">The app also works with TalkBack, the screen reader built into Android (Settings, Accessibility).</string>
     <string name="cd_mark_done">Mark as done: %1$s</string>
+    <string name="title_add_medicine">Medicine reminder</string>
+    <string name="action_add_medicine">Medicine</string>
+    <string name="field_medicine_name">Medicine name</string>
+    <string name="field_medicine_note">How to take it (e.g. 1 tablet after meals)</string>
+    <string name="medicine_times">Times each day</string>
+    <string name="action_add_time">Add another time</string>
+    <string name="medicine_disclaimer">This app only reminds you when to take your medicine. It does not give medical advice. Always follow your doctor\'s instructions.</string>
+    <string name="action_save_medicine">Save (%1$d times a day)</string>
+    <string name="cd_medicine">Medicine</string>
+    <string name="notification_medicine">Time to take: %1$s</string>
+    <string name="action_call_contact">Call %1$s</string>
+    <string name="contact_section_title">Quick call a family member</string>
+    <string name="contact_none">Not set. A big Call button will appear on the home screen once you choose someone.</string>
+    <string name="contact_current">%1$s · %2$s</string>
+    <string name="contact_pick">Choose from contacts</string>
+    <string name="contact_manual">Type a number</string>
+    <string name="contact_remove">Remove</string>
+    <string name="contact_name">Name</string>
+    <string name="contact_phone">Phone number</string>
 </resources>
