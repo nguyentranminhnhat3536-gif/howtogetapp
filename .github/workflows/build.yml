@@ -140,6 +140,7 @@ jobs:
         if: failure()
         shell: bash
         run: |
+          set +e +o pipefail  # grep không khớp thì bỏ qua, bước này chỉ gom lỗi
           log="$RUNNER_TEMP/build.log"
           [ -f "$log" ] || exit 0
           # Lỗi Kotlin: "e: file:///path/File.kt:12:5 message"
@@ -164,6 +165,11 @@ jobs:
           grep -E 'AAPT|error: resource|ERROR: ' "$log" | head -10 | while IFS= read -r line; do
             echo "::error title=Resource::$line"
           done
+          # Lỗi tải thư viện (mạng tới Maven chập chờn)
+          grep -m 3 -E "Could not (GET|get resource) '" "$log" | while IFS= read -r line; do
+            echo "::error title=Download::$line"
+          done
+          exit 0
 
       - name: Quyền app xin
         if: success() && env.RELEASE != 'true'
