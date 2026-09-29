@@ -1,0 +1,24 @@
+package com.ethanstudio.lunartasks.ui.common
+
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.ethanstudio.lunartasks.LunarTasksApp
+import com.ethanstudio.lunartasks.ui.edit.EditTaskViewModel
+import com.ethanstudio.lunartasks.ui.list.TaskListViewModel
+
+/** Tạo ViewModel kèm repository lấy từ Application. */
+object AppViewModels {
+    val Factory: ViewModelProvider.Factory = viewModelFactory {
+        initializer {
+            TaskListViewModel(app().repository)
+        }
+        initializer {
+            EditTaskViewModel(app().repository, createSavedStateHandle())
+        }
+    }
+
+    private fun androidx.lifecycle.viewmodel.CreationExtras.app(): LunarTasksApp =
+        this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as LunarTasksApp
+}

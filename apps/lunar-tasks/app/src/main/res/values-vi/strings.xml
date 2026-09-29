@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">Việc Cần Làm - Nhắc Âm Lịch</string>
+    <string name="menu_more">Tùy chọn khác</string>
+    <string name="menu_privacy">Chính sách quyền riêng tư</string>
+    <string name="menu_rate">Đánh giá ứng dụng</string>
+    <string name="menu_feedback">Gửi góp ý</string>
+    <string name="feedback_subject">Góp ý: %1$s</string>
+    <string name="error_no_app">Không tìm thấy ứng dụng để mở.</string>
+
+    <string name="date_today">Hôm nay</string>
+    <string name="date_tomorrow">Ngày mai</string>
+    <string name="date_yesterday">Hôm qua</string>
+    <string name="lunar_short">ÂL %1$d/%2$s</string>
+    <string name="lunar_long">%1$d/%2$s năm %3$s</string>
+    <string name="lunar_leap_month">%1$d nhuận</string>
+    <string name="lunar_prefix">Âm lịch: %1$s</string>
+    <string name="today_lunar">Âm lịch: %1$s</string>
+    <string name="next_first_day">Mùng 1 tới: %1$s</string>
+    <string name="next_full_moon">Rằm tới: %1$s</string>
+
+    <string name="repeat_none">Không lặp lại</string>
+    <string name="repeat_daily">Hằng ngày</string>
+    <string name="repeat_weekly">Hằng tuần</string>
+    <string name="repeat_monthly">Hằng tháng</string>
+    <string name="repeat_yearly">Hằng năm</string>
+    <string name="repeat_lunar_monthly">Hằng tháng âm lịch</string>
+    <string name="repeat_lunar_yearly">Hằng năm âm lịch</string>
+
+    <string name="section_overdue">Quá hạn</string>
+    <string name="section_today">Hôm nay</string>
+    <string name="section_tomorrow">Ngày mai</string>
+    <string name="section_upcoming">Sắp tới</string>
+    <string name="section_no_date">Không có ngày</string>
+    <string name="section_done">Đã xong (%1$d)</string>
+
+    <string name="empty_title">Chưa có việc nào</string>
+    <string name="empty_body">Bấm Thêm việc để bắt đầu. Việc có thể lặp theo âm lịch, ví dụ mùng 1 và rằm hằng tháng, hay ngày giỗ hằng năm.</string>
+
+    <string name="action_add_task">Thêm việc</string>
+    <string name="action_undo">Hoàn tác</string>
+    <string name="action_save">Lưu</string>
+    <string name="action_delete">Xóa</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Hủy</string>
+    <string name="action_pick_lunar_date">Chọn theo ngày âm lịch</string>
+    <string name="snackbar_done">Đã xong việc</string>
+    <string name="snackbar_next_due">Đã xong. Lần tới: %1$02d/%2$02d</string>
+
+    <string name="title_new_task">Việc mới</string>
+    <string name="title_edit_task">Sửa việc</string>
+    <string name="field_title">Bạn cần làm gì?</string>
+    <string name="field_note">Ghi chú</string>
+    <string name="field_no_date">Không có ngày</string>
+    <string name="field_no_time">Không có giờ</string>
+    <string name="field_repeat">Lặp lại</string>
+    <string name="field_remind">Nhắc tôi</string>
+    <string name="field_important">Quan trọng</string>
+    <string name="remind_at">Thông báo lúc %1$s ngày đến hạn</string>
+    <string name="remind_blocked">Thông báo của app đang bị tắt. Hãy bật trong Cài đặt để nhận nhắc việc.</string>
+    <string name="chip_first_day">Mùng 1</string>
+    <string name="chip_full_moon">Rằm (15)</string>
+    <string name="lunar_dialog_title">Ngày âm lịch</string>
+    <string name="lunar_dialog_body">Nhập ngày và tháng âm lịch. Việc sẽ được đặt vào lần gần nhất tới ngày đó.</string>
+    <string name="lunar_day">Ngày (1–30)</string>
+    <string name="lunar_month">Tháng (1–12)</string>
+    <string name="delete_confirm_title">Xóa việc này?</string>
+
+    <string name="cd_back">Quay lại</string>
+    <string name="cd_clear">Xóa</string>
+    <string name="cd_repeats">Có lặp lại</string>
+    <string name="cd_has_reminder">Có nhắc</string>
+    <string name="cd_mark_important">Đánh dấu quan trọng</string>
+    <string name="cd_unmark_important">Bỏ đánh dấu quan trọng</string>
+
+    <string name="notification_channel_name">Nhắc việc</string>
+    <string name="notification_due_now">Đã đến lúc làm việc này.</string>
+</resources>

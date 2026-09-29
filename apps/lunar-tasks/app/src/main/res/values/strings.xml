@@ -1,0 +1,81 @@
+<resources>
+    <string name="app_name">Tasks &amp; Lunar Reminders</string>
+    <!-- new_app.py tự điền 2 dòng dưới cho từng app -->
+    <string name="privacy_policy_url" translatable="false">https://nguyentranminhnhat3536-gif.github.io/howtogetapp/lunar-tasks/privacy-policy.html</string>
+    <string name="support_email" translatable="false">support@example.com</string>
+
+    <string name="menu_more">More options</string>
+    <string name="menu_privacy">Privacy policy</string>
+    <string name="menu_rate">Rate this app</string>
+    <string name="menu_feedback">Send feedback</string>
+    <string name="feedback_subject">Feedback: %1$s</string>
+    <string name="error_no_app">No app found to open this.</string>
+
+    <string name="date_today">Today</string>
+    <string name="date_tomorrow">Tomorrow</string>
+    <string name="date_yesterday">Yesterday</string>
+    <string name="lunar_short">Lunar %1$d/%2$s</string>
+    <string name="lunar_long">%1$d/%2$s, year of %3$s</string>
+    <string name="lunar_leap_month">%1$dL</string>
+    <string name="lunar_prefix">Lunar date: %1$s</string>
+    <string name="today_lunar">Lunar: %1$s</string>
+    <string name="next_first_day">Next new moon (1st): %1$s</string>
+    <string name="next_full_moon">Next full moon (15th): %1$s</string>
+
+    <string name="repeat_none">Does not repeat</string>
+    <string name="repeat_daily">Every day</string>
+    <string name="repeat_weekly">Every week</string>
+    <string name="repeat_monthly">Every month</string>
+    <string name="repeat_yearly">Every year</string>
+    <string name="repeat_lunar_monthly">Every lunar month</string>
+    <string name="repeat_lunar_yearly">Every lunar year</string>
+
+    <string name="section_overdue">Overdue</string>
+    <string name="section_today">Today</string>
+    <string name="section_tomorrow">Tomorrow</string>
+    <string name="section_upcoming">Upcoming</string>
+    <string name="section_no_date">No date</string>
+    <string name="section_done">Completed (%1$d)</string>
+
+    <string name="empty_title">Nothing to do yet</string>
+    <string name="empty_body">Tap Add task to start. Tasks can repeat on the lunar calendar, for example on the 1st and 15th of every lunar month or on a yearly memorial day.</string>
+
+    <string name="action_add_task">Add task</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_pick_lunar_date">Pick a lunar date</string>
+    <string name="snackbar_done">Task completed</string>
+    <string name="snackbar_next_due">Done. Next time: %1$02d/%2$02d</string>
+
+    <string name="title_new_task">New task</string>
+    <string name="title_edit_task">Edit task</string>
+    <string name="field_title">What do you need to do?</string>
+    <string name="field_note">Notes</string>
+    <string name="field_no_date">No date</string>
+    <string name="field_no_time">No time</string>
+    <string name="field_repeat">Repeat</string>
+    <string name="field_remind">Remind me</string>
+    <string name="field_important">Important</string>
+    <string name="remind_at">Notification at %1$s on the due date</string>
+    <string name="remind_blocked">Notifications are turned off for this app. Turn them on in Settings to get reminders.</string>
+    <string name="chip_first_day">1st (new moon)</string>
+    <string name="chip_full_moon">15th (full moon)</string>
+    <string name="lunar_dialog_title">Lunar date</string>
+    <string name="lunar_dialog_body">Enter a lunar day and month. The task will be set to the next time that date comes around.</string>
+    <string name="lunar_day">Day (1–30)</string>
+    <string name="lunar_month">Month (1–12)</string>
+    <string name="delete_confirm_title">Delete this task?</string>
+
+    <string name="cd_back">Back</string>
+    <string name="cd_clear">Clear</string>
+    <string name="cd_repeats">Repeats</string>
+    <string name="cd_has_reminder">Has reminder</string>
+    <string name="cd_mark_important">Mark as important</string>
+    <string name="cd_unmark_important">Remove from important</string>
+
+    <string name="notification_channel_name">Task reminders</string>
+    <string name="notification_due_now">This task is due now.</string>
+</resources>
