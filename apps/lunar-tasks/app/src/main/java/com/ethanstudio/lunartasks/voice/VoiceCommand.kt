@@ -88,10 +88,10 @@ object VoiceCommandParser {
 
     /** Đổi kết quả của TIME_PATTERNS ra số phút trong ngày. */
     private fun toMinute(match: MatchResult): Int? {
-        var hour = match.groups["h"]?.value?.toIntOrNull() ?: return null
-        var minute = match.groups["m"]?.value?.toIntOrNull() ?: 0
-        if (match.groups["half"] != null) minute = 30
-        when (match.groups["part"]?.value?.replace(".", "")) {
+        var hour = match.group("h")?.value?.toIntOrNull() ?: return null
+        var minute = match.group("m")?.value?.toIntOrNull() ?: 0
+        if (match.group("half") != null) minute = 30
+        when (match.group("part")?.value?.replace(".", "")) {
             "chieu", "toi", "pm" -> if (hour in 1..11) hour += 12
             "dem" -> if (hour in 6..11) hour += 12
             "trua" -> if (hour in 1..4) hour += 12
@@ -100,6 +100,14 @@ object VoiceCommandParser {
         if (hour !in 0..23 || minute !in 0..59) return null
         return hour * 60 + minute
     }
+
+    /** Nhóm có tên; mẫu nào không có nhóm đó thì trả về null (groups[name] sẽ báo lỗi). */
+    private fun MatchResult.group(name: String): MatchGroup? =
+        try {
+            groups[name]
+        } catch (e: IllegalArgumentException) {
+            null
+        }
 
     private fun cleanTitle(raw: String): String {
         var words = raw.replace(Regex("\\s+"), " ").trim(' ', ',', '.', '!', '?').split(' ').filter { it.isNotEmpty() }
