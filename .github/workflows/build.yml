@@ -37,41 +37,47 @@ jobs:
         with:
           fetch-depth: 0
       - id: pick
-        shell: bash
+        shell: python
         env:
           EVENT: ${{ github.event_name }}
           INPUT_APP: ${{ github.event.inputs.app }}
           BEFORE: ${{ github.event.before }}
         run: |
-          set -euo pipefail
-          all_projects() {
-            echo template
-            for d in apps/*/; do [ -f "$d/settings.gradle.kts" ] && basename "$d"; done
-          }
-          if [ "$EVENT" = "workflow_dispatch" ]; then
-            if ! echo "$INPUT_APP" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)*$'; then
-              echo "::error::Slug không hợp lệ: $INPUT_APP"; exit 1
-            fi
-            list="$INPUT_APP"
-          elif [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] \
-               || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
-            list="$(all_projects)"
-          else
-            changed="$(git diff --name-only "$BEFORE" "$GITHUB_SHA")"
-            if echo "$changed" | grep -q '^\.github/workflows/build.yml$'; then
-              list="$(all_projects)"
-            else
-              list="$( (echo "$changed" | grep -q '^template/' && echo template) || true
-                       echo "$changed" | sed -n 's#^apps/\([^/]*\)/.*#\1#p' | sort -u)"
-            fi
-          fi
-          list="$(echo "$list" | sed '/^$/d' | while read -r p; do
-                    if [ "$p" = template ] || [ -f "apps/$p/settings.gradle.kts" ]; then echo "$p"; fi
-                  done | sort -u)"
-          json="$(echo "$list" | sed '/^$/d' | jq -R . | jq -cs .)"
-          echo "Sẽ build: $json"
-          echo "matrix=$json" >> "$GITHUB_OUTPUT"
-          if [ "$json" = "[]" ]; then echo "any=false" >> "$GITHUB_OUTPUT"; else echo "any=true" >> "$GITHUB_OUTPUT"; fi
+          import json, os, re, subprocess
+          from pathlib import Path
+
+          def is_project(p):
+              return p == "template" or Path("apps", p, "settings.gradle.kts").is_file()
+
+          def all_projects():
+              apps = sorted(d.name for d in Path("apps").glob("*") if d.is_dir()) if Path("apps").is_dir() else []
+              return ["template"] + apps
+
+          event, before, sha = os.environ["EVENT"], os.environ.get("BEFORE", ""), os.environ["GITHUB_SHA"]
+          if event == "workflow_dispatch":
+              app = os.environ.get("INPUT_APP", "")
+              if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", app):
+                  print(f"::error::Slug không hợp lệ: {app}")
+                  raise SystemExit(1)
+              projects = [app]
+          else:
+              ok = before and set(before) != {"0"} and subprocess.run(
+                  ["git", "cat-file", "-e", f"{before}^{{commit}}"], capture_output=True).returncode == 0
+              if not ok:
+                  projects = all_projects()
+              else:
+                  changed = subprocess.run(["git", "diff", "--name-only", before, sha],
+                                           capture_output=True, text=True, check=True).stdout.split()
+                  if ".github/workflows/build.yml" in changed:
+                      projects = all_projects()
+                  else:
+                      projects = (["template"] if any(f.startswith("template/") for f in changed) else []) + sorted(
+                          {f.split("/")[1] for f in changed if f.startswith("apps/") and f.count("/") >= 2})
+          projects = sorted({p for p in projects if is_project(p)})
+          print("Sẽ build:", projects)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              out.write(f"matrix={json.dumps(projects)}\n")
+              out.write(f"any={'true' if projects else 'false'}\n")
 
   build:
     name: Build ${{ matrix.project }}
