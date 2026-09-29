@@ -311,7 +311,7 @@ private fun TaskMeta(task: Task, today: LocalDate) {
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        if (task.remind) {
+        if (task.remind || task.remindDayBefore) {
             Spacer(Modifier.width(4.dp))
             Icon(
                 painterResource(R.drawable.ic_notification),

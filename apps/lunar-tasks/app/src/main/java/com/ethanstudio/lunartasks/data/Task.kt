@@ -1,5 +1,6 @@
 package com.ethanstudio.lunartasks.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.LocalDate
@@ -25,6 +26,8 @@ data class Task(
     val lunarDay: Int? = null,
     val lunarMonth: Int? = null,
     val remind: Boolean = false,
+    /** Nhắc thêm lúc 19:00 hôm trước (ngày giỗ, lễ tết cần chuẩn bị). */
+    @ColumnInfo(defaultValue = "0") val remindDayBefore: Boolean = false,
     val important: Boolean = false,
     val done: Boolean = false,
     val completedAt: Long? = null,

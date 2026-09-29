@@ -74,4 +74,9 @@
 
     <string name="notification_channel_name">Nhắc việc</string>
     <string name="notification_due_now">Đã đến lúc làm việc này.</string>
+    <string name="field_remind_day_before">Nhắc trước 1 ngày</string>
+    <string name="remind_day_before_hint">Lúc 19:00 tối hôm trước, để kịp chuẩn bị</string>
+    <string name="notification_tomorrow">Ngày mai: %1$s</string>
+    <string name="notification_due_tomorrow">Việc này đến hạn vào ngày mai.</string>
+    <string name="notification_action_done">Xong</string>
 </resources>

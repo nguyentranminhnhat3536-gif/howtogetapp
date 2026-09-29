@@ -24,6 +24,7 @@ data class EditTaskUiState(
     val minute: Int? = null,
     val repeat: Repeat = Repeat.NONE,
     val remind: Boolean = false,
+    val remindDayBefore: Boolean = false,
     val important: Boolean = false,
     /** Ngày âm người dùng chọn trực tiếp (giữ ngày 30 kể cả khi tháng thiếu). */
     val pickedLunarDay: Int? = null,
@@ -59,6 +60,7 @@ class EditTaskViewModel(
                     minute = task.dueMinute,
                     repeat = task.repeat,
                     remind = task.remind,
+                    remindDayBefore = task.remindDayBefore,
                     important = task.important,
                     pickedLunarDay = task.lunarDay,
                     pickedLunarMonth = task.lunarMonth,
@@ -74,7 +76,15 @@ class EditTaskViewModel(
     fun setDate(date: LocalDate) = _uiState.update { it.copy(date = date, pickedLunarDay = null, pickedLunarMonth = null) }
 
     fun clearDate() = _uiState.update {
-        it.copy(date = null, minute = null, repeat = Repeat.NONE, remind = false, pickedLunarDay = null, pickedLunarMonth = null)
+        it.copy(
+            date = null,
+            minute = null,
+            repeat = Repeat.NONE,
+            remind = false,
+            remindDayBefore = false,
+            pickedLunarDay = null,
+            pickedLunarMonth = null,
+        )
     }
 
     fun setTime(minute: Int) = _uiState.update { it.copy(minute = minute, date = it.date ?: LocalDate.now()) }
@@ -88,6 +98,10 @@ class EditTaskViewModel(
             date = it.date ?: LocalDate.now(),
             minute = it.minute ?: if (remind) ReminderScheduler.DEFAULT_REMINDER_MINUTE else null,
         )
+    }
+
+    fun setRemindDayBefore(value: Boolean) = _uiState.update {
+        it.copy(remindDayBefore = value, date = it.date ?: LocalDate.now().plusDays(1))
     }
 
     /** Chọn "mùng 1" hoặc "rằm": đặt ngày đến hạn là lần gần nhất (kể cả hôm nay). */
@@ -105,7 +119,8 @@ class EditTaskViewModel(
     fun save() {
         val state = _uiState.value
         if (!state.canSave) return
-        val date = state.date ?: if (state.repeat != Repeat.NONE || state.remind) LocalDate.now() else null
+        val needsDate = state.repeat != Repeat.NONE || state.remind || state.remindDayBefore
+        val date = state.date ?: if (needsDate) LocalDate.now() else null
         val lunar = date?.let(LunarCalendar::fromSolar)
         val base = original ?: Task(title = "")
         val task = base.copy(
@@ -117,6 +132,7 @@ class EditTaskViewModel(
             lunarDay = if (state.repeat.isLunar) state.pickedLunarDay ?: lunar?.day else null,
             lunarMonth = if (state.repeat == Repeat.LUNAR_YEARLY) state.pickedLunarMonth ?: lunar?.month else null,
             remind = state.remind && date != null,
+            remindDayBefore = state.remindDayBefore && date != null,
             important = state.important,
         )
         viewModelScope.launch {

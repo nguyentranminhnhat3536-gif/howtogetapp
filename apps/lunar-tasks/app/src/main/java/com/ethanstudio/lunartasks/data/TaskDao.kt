@@ -15,7 +15,7 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE id = :id")
     suspend fun get(id: Long): Task?
 
-    @Query("SELECT * FROM tasks WHERE done = 0 AND remind = 1")
+    @Query("SELECT * FROM tasks WHERE done = 0 AND (remind = 1 OR remindDayBefore = 1)")
     suspend fun pendingReminders(): List<Task>
 
     @Insert

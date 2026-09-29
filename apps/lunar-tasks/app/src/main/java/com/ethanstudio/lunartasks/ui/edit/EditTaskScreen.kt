@@ -90,13 +90,22 @@ fun EditTaskScreen(
         notificationsBlocked = !granted
     }
 
-    fun onRemindChange(remind: Boolean) {
-        viewModel.setRemind(remind)
-        if (remind && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+    fun requestNotificationPermissionIfNeeded(enabled: Boolean) {
+        if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             !NotificationManagerCompat.from(context).areNotificationsEnabled()
         ) {
             permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
+    }
+
+    fun onRemindChange(remind: Boolean) {
+        viewModel.setRemind(remind)
+        requestNotificationPermissionIfNeeded(remind)
+    }
+
+    fun onRemindDayBeforeChange(enabled: Boolean) {
+        viewModel.setRemindDayBefore(enabled)
+        requestNotificationPermissionIfNeeded(enabled)
     }
 
     Scaffold(
@@ -192,6 +201,16 @@ fun EditTaskScreen(
                 },
                 checked = state.remind,
                 onCheckedChange = ::onRemindChange,
+            )
+            SwitchRow(
+                icon = R.drawable.ic_notification,
+                headline = stringResource(R.string.field_remind_day_before),
+                supporting = when {
+                    state.remindDayBefore && notificationsBlocked -> stringResource(R.string.remind_blocked)
+                    else -> stringResource(R.string.remind_day_before_hint)
+                },
+                checked = state.remindDayBefore,
+                onCheckedChange = ::onRemindDayBeforeChange,
             )
             SwitchRow(
                 icon = R.drawable.ic_star_border,

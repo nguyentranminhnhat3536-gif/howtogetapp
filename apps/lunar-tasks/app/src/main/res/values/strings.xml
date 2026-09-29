@@ -78,4 +78,9 @@
 
     <string name="notification_channel_name">Task reminders</string>
     <string name="notification_due_now">This task is due now.</string>
+    <string name="field_remind_day_before">Remind me the day before</string>
+    <string name="remind_day_before_hint">At 19:00 the evening before, to get ready</string>
+    <string name="notification_tomorrow">Tomorrow: %1$s</string>
+    <string name="notification_due_tomorrow">This task is due tomorrow.</string>
+    <string name="notification_action_done">Done</string>
 </resources>

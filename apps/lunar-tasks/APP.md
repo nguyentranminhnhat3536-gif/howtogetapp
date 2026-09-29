@@ -32,13 +32,12 @@ Bước 3 · Đã code MVP, đang build trên CI để gửi Ethan thử (DUYỆ
 3. Lặp lại: ngày, tuần, tháng, năm, tháng âm lịch, năm âm lịch
 4. Nhắc việc bằng thông báo (mặc định 7:00 nếu việc không có giờ)
 5. Thẻ đầu trang: hôm nay, ngày âm, mùng 1 và rằm sắp tới
+6. Nút "Xong" trên thông báo; tùy chọn nhắc trước 1 ngày lúc 19:00
 
 **Để sau:**
 - Widget màn hình chính
-- Nút "Xong" ngay trên thông báo
 - Danh mục / nhãn, tìm kiếm
 - Sao lưu và xuất dữ liệu (gói Pro)
-- Nhắc trước 1 ngày cho ngày giỗ
 
 ## Màn hình
 | Màn hình | Làm gì |
@@ -47,7 +46,7 @@ Bước 3 · Đã code MVP, đang build trên CI để gửi Ethan thử (DUYỆ
 | Thêm / sửa việc | Tên, ghi chú, ngày (kèm ngày âm), giờ, chọn theo ngày âm, lặp lại, nhắc, quan trọng, xóa |
 
 ## Dữ liệu
-- Room (`tasks.db`, bảng `tasks`), chỉ nằm trên máy. Không có mạng, không có tài khoản.
+- Room (`tasks.db`, bảng `tasks`, schema v2 có migration 1→2), chỉ nằm trên máy. Không có mạng, không có tài khoản.
 
 ## Kiếm tiền
 - Mô hình:
@@ -90,3 +89,4 @@ Không dùng SCHEDULE_EXACT_ALARM (Play hạn chế quyền này); nhắc bằng
 - 2026-09-29: Ethan chọn "app quản lý công việc". Chọn điểm khác biệt là lặp và nhắc theo âm lịch để không bị na ná Keep/Todoist.
 - 2026-09-29: Package tạm `com.ethanstudio.lunartasks` (studio.md chưa có tiền tố). Phải chốt trước lần upload đầu vì package không đổi được.
 - 2026-09-29: Dùng navigation-compose (route dạng chuỗi) và Room + KSP có sẵn trong catalog của template, không thêm thư viện ngoài.
+- 2026-09-29: Thêm nút "Xong" trên thông báo và nhắc trước 1 ngày (19:00 hôm trước). DB lên v2 bằng migration, không xóa dữ liệu người dùng.
