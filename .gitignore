@@ -1,0 +1,13 @@
+# Gradle / Android build output
+build/
+.gradle/
+.kotlin/
+local.properties
+*.iml
+.idea/
+captures/
+
+# Secrets never go in git
+*.jks
+*.keystore
+keystore.properties
