@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -52,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ethanstudio.lunartasks.LunarTasksApp
 import com.ethanstudio.lunartasks.R
 import com.ethanstudio.lunartasks.data.Repeat
 import com.ethanstudio.lunartasks.data.Section
@@ -63,6 +65,7 @@ import com.ethanstudio.lunartasks.ui.common.fullDate
 import com.ethanstudio.lunartasks.ui.common.lunarLong
 import com.ethanstudio.lunartasks.ui.common.lunarShort
 import com.ethanstudio.lunartasks.ui.common.relativeDate
+import com.ethanstudio.lunartasks.ui.common.rememberHapticTap
 import com.ethanstudio.lunartasks.util.dialNumber
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -101,6 +104,9 @@ fun TaskListScreen(
 
     val noAppMessage = stringResource(R.string.error_no_app)
     val displaySettingsLabel = stringResource(R.string.title_display)
+    val noTtsMessage = stringResource(R.string.error_no_tts)
+    val app = context.applicationContext as LunarTasksApp
+    val hapticTap = rememberHapticTap()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -139,7 +145,12 @@ fun TaskListScreen(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 180.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            item(key = "header") { TodayCard(state) }
+            item(key = "header") {
+                TodayCard(
+                    state = state,
+                    onReadAloud = { text -> scope.launch { if (!app.speaker.speak(text)) snackbarHostState.showSnackbar(noTtsMessage) } },
+                )
+            }
             if (state.contactPhone.isNotBlank()) {
                 item(key = "call") {
                     Button(
@@ -164,7 +175,10 @@ fun TaskListScreen(
                     TaskRow(
                         task = task,
                         today = state.today,
-                        onToggleDone = { viewModel.toggleDone(task) },
+                        onToggleDone = {
+                            hapticTap()
+                            viewModel.toggleDone(task)
+                        },
                         onToggleImportant = { viewModel.toggleImportant(task) },
                         onClick = { onOpenTask(task.id) },
                     )
@@ -209,7 +223,8 @@ fun TaskListScreen(
 }
 
 @Composable
-private fun TodayCard(state: TaskListUiState) {
+private fun TodayCard(state: TaskListUiState, onReadAloud: (String) -> Unit) {
+    val summary = todaySummary(state)
     Card(
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
@@ -245,6 +260,14 @@ private fun TodayCard(state: TaskListUiState) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
+            OutlinedButton(
+                onClick = { onReadAloud(summary) },
+                modifier = Modifier.padding(top = 8.dp).heightIn(min = 48.dp),
+            ) {
+                Icon(painterResource(R.drawable.ic_volume), contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.action_read_today))
+            }
         }
     }
 }
@@ -375,4 +398,23 @@ private fun TaskMeta(task: Task, today: LocalDate) {
             )
         }
     }
+}
+
+/** Câu đọc to cho thẻ Hôm nay: ngày, ngày âm, việc hôm nay và số việc quá hạn. */
+@Composable
+private fun todaySummary(state: TaskListUiState): String {
+    val sections = state.groups.open.toMap()
+    val today = sections[Section.TODAY].orEmpty()
+    val overdue = sections[Section.OVERDUE].orEmpty()
+    val parts = mutableListOf(stringResource(R.string.speak_today, fullDate(state.today), lunarLong(state.today)))
+    if (today.isEmpty()) {
+        parts += stringResource(R.string.speak_no_tasks_today)
+    } else {
+        val items = today.map { task ->
+            task.dueMinute?.let { stringResource(R.string.speak_task_at, task.title, formatTime(it)) } ?: task.title
+        }
+        parts += stringResource(R.string.speak_tasks_today, today.size, items.joinToString(", "))
+    }
+    if (overdue.isNotEmpty()) parts += stringResource(R.string.speak_overdue, overdue.size)
+    return parts.joinToString(" ")
 }

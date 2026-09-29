@@ -2,7 +2,6 @@ package com.ethanstudio.lunartasks.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
@@ -34,19 +33,18 @@ private val DarkColors = darkColorScheme(
 
 private val AppTypography = Typography()
 
-/** Hệ số phóng chữ khi bật "Chữ to" (cộng dồn với cỡ chữ đã đặt trong Cài đặt của máy). */
-const val LARGE_TEXT_SCALE = 1.3f
-
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    largeText: Boolean = false,
+    /** Nhân thêm với cỡ chữ đã đặt trong Cài đặt của máy. */
+    textScale: Float = 1f,
     highContrast: Boolean = false,
     // Tắt để giữ màu thương hiệu (ảnh store nhất quán). Bật nếu muốn theo màu hình nền (Android 12+).
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val baseScheme = when {
+    val colorScheme = when {
+        highContrast -> HighContrastColors
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -54,9 +52,8 @@ fun AppTheme(
         darkTheme -> DarkColors
         else -> LightColors
     }
-    val colorScheme = if (highContrast) baseScheme.highContrast(darkTheme) else baseScheme
     val density = LocalDensity.current
-    val scaledDensity = if (largeText) Density(density.density, density.fontScale * LARGE_TEXT_SCALE) else density
+    val scaledDensity = if (textScale != 1f) Density(density.density, density.fontScale * textScale) else density
 
     CompositionLocalProvider(LocalDensity provides scaledDensity) {
         MaterialTheme(
@@ -67,21 +64,30 @@ fun AppTheme(
     }
 }
 
-/** Tương phản cao: chữ phụ cũng đậm như chữ chính, nền thuần trắng / thuần đen. */
-private fun ColorScheme.highContrast(dark: Boolean): ColorScheme {
-    val background = if (dark) Color.Black else Color.White
-    val foreground = if (dark) Color.White else Color.Black
-    return copy(
-        background = background,
-        onBackground = foreground,
-        surface = background,
-        onSurface = foreground,
-        onSurfaceVariant = foreground,
-        surfaceContainerLow = if (dark) Color(0xFF1A1A1A) else Color(0xFFF0F0F0),
-        outline = foreground,
-        primary = if (dark) Color(0xFFFFD54F) else Color(0xFF002080),
-        onPrimary = if (dark) Color.Black else Color.White,
-        primaryContainer = if (dark) Color(0xFF002080) else Color(0xFFFFE082),
-        onPrimaryContainer = if (dark) Color.White else Color.Black,
-    )
-}
+/**
+ * Tương phản cao: chữ vàng trên nền đen (dễ đọc nhất với người thị lực kém),
+ * dùng cho cả chế độ sáng lẫn tối.
+ */
+private val HighContrastYellow = Color(0xFFFFE14D)
+private val HighContrastColors = darkColorScheme(
+    primary = HighContrastYellow,
+    onPrimary = Color.Black,
+    primaryContainer = Color(0xFF1C1C00),
+    onPrimaryContainer = HighContrastYellow,
+    secondary = HighContrastYellow,
+    onSecondary = Color.Black,
+    secondaryContainer = HighContrastYellow,
+    onSecondaryContainer = Color.Black,
+    background = Color.Black,
+    onBackground = HighContrastYellow,
+    surface = Color.Black,
+    onSurface = HighContrastYellow,
+    onSurfaceVariant = HighContrastYellow,
+    surfaceContainerLow = Color(0xFF141414),
+    surfaceContainer = Color(0xFF141414),
+    surfaceContainerHigh = Color(0xFF1E1E1E),
+    surfaceContainerHighest = Color(0xFF262626),
+    outline = HighContrastYellow,
+    error = Color(0xFFFF8A80),
+    onError = Color.Black,
+)

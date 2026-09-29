@@ -13,8 +13,18 @@ class DisplaySettingsViewModel(private val settings: SettingsRepository) : ViewM
     val uiState: StateFlow<AppSettings> =
         settings.settings.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppSettings())
 
-    fun setLargeText(value: Boolean) {
-        viewModelScope.launch { settings.setLargeText(value) }
+    /** step = +1 (A+) hoặc -1 (A−). */
+    fun changeTextSize(step: Int) {
+        val next = AppSettings.nextScale(uiState.value.textScale, step)
+        viewModelScope.launch { settings.setTextScale(next) }
+    }
+
+    fun setSpeakReminders(value: Boolean) {
+        viewModelScope.launch { settings.setSpeakReminders(value) }
+    }
+
+    fun setHaptics(value: Boolean) {
+        viewModelScope.launch { settings.setHaptics(value) }
     }
 
     fun setHighContrast(value: Boolean) {

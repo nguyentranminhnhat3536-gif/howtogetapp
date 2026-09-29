@@ -6,6 +6,7 @@ import com.ethanstudio.lunartasks.data.SettingsRepository
 import com.ethanstudio.lunartasks.data.TaskRepository
 import com.ethanstudio.lunartasks.reminder.ReminderReceiver
 import com.ethanstudio.lunartasks.reminder.ReminderScheduler
+import com.ethanstudio.lunartasks.speech.Speaker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -18,6 +19,9 @@ class LunarTasksApp : Application() {
     }
 
     val settings: SettingsRepository by lazy { SettingsRepository(this) }
+
+    /** Bộ đọc to dùng chung cho giao diện (khởi động khi cần lần đầu). */
+    val speaker: Speaker by lazy { Speaker(this) }
 
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 

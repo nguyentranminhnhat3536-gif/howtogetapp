@@ -85,8 +85,6 @@
     <string name="notification_action_done">Done</string>
     <string name="action_text_size" translatable="false">Aa</string>
     <string name="title_display">Settings</string>
-    <string name="setting_large_text">Large text</string>
-    <string name="setting_large_text_body">Makes all text and buttons in the app about a third bigger.</string>
     <string name="setting_high_contrast">High contrast</string>
     <string name="setting_high_contrast_body">Black and white colors, bolder secondary text. Easier to read in sunlight or with weak eyesight.</string>
     <string name="preview_title">Preview: Light incense</string>
@@ -112,4 +110,21 @@
     <string name="contact_remove">Remove</string>
     <string name="contact_name">Name</string>
     <string name="contact_phone">Phone number</string>
+    <string name="text_size_smaller_symbol" translatable="false">A−</string>
+    <string name="text_size_bigger_symbol" translatable="false">A+</string>
+    <string name="cd_text_smaller">Smaller text</string>
+    <string name="cd_text_bigger">Bigger text</string>
+    <string name="setting_text_size">Text size</string>
+    <string name="setting_speak_reminders">Read reminders aloud</string>
+    <string name="setting_speak_reminders_body">When a reminder arrives, the phone also reads it out loud.</string>
+    <string name="setting_haptics">Vibrate on tap</string>
+    <string name="setting_haptics_body">A short vibration when you tick a task, so you know it worked.</string>
+    <string name="action_read_today">Read today aloud</string>
+    <string name="action_read_aloud">Read aloud</string>
+    <string name="error_no_tts">This phone has no text-to-speech voice. Install one in Settings, Accessibility.</string>
+    <string name="speak_today">Today is %1$s, lunar date %2$s.</string>
+    <string name="speak_no_tasks_today">You have nothing to do today.</string>
+    <string name="speak_tasks_today">You have %1$d tasks today: %2$s.</string>
+    <string name="speak_task_at">%1$s at %2$s</string>
+    <string name="speak_overdue">And %1$d overdue tasks.</string>
 </resources>

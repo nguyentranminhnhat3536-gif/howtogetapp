@@ -6,6 +6,13 @@
     <!-- Hẹn lại giờ nhắc sau khi khởi động lại máy -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <!-- Android 11+: cần khai báo để tìm được bộ đọc văn bản (TextToSpeech) của máy -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <application
         android:name=".LunarTasksApp"
         android:allowBackup="true"

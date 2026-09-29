@@ -33,7 +33,7 @@ Bước 3 · Đã code MVP, đang build trên CI để gửi Ethan thử (DUYỆ
 4. Nhắc việc bằng thông báo (mặc định 7:00 nếu việc không có giờ)
 5. Thẻ đầu trang: hôm nay, ngày âm, mùng 1 và rằm sắp tới
 6. Nút "Xong" trên thông báo; tùy chọn nhắc trước 1 ngày lúc 19:00
-7. Dễ dùng cho người lớn tuổi: nút "Aa" mở Cài đặt (chữ to ×1.3, tương phản cao), nhãn TalkBack cho ô tick
+7. Dễ dùng cho người lớn tuổi và người khuyết tật (lấy từ bản thiết kế UniBridge của Ethan): nút "Aa" mở Cài đặt; cỡ chữ A−/A+ 6 mức (100–200%); tương phản cao chữ vàng nền đen; đọc to việc hôm nay, đọc to từng việc, đọc to lời nhắc (TextToSpeech của máy); rung khi tick; nhãn TalkBack
 8. Nhắc uống thuốc: tên thuốc, cách uống, nhiều cữ mỗi ngày (mỗi cữ là một việc lặp hằng ngày có nhắc)
 9. Gọi nhanh người thân: chọn từ danh bạ (không cần quyền READ_CONTACTS) hoặc nhập số; nút Gọi to ở màn hình chính mở trình quay số (không cần quyền CALL_PHONE)
 
@@ -49,7 +49,7 @@ Bước 3 · Đã code MVP, đang build trên CI để gửi Ethan thử (DUYỆ
 | Thêm / sửa việc | Tên, ghi chú, ngày (kèm ngày âm), giờ, chọn theo ngày âm, lặp lại, nhắc, quan trọng, xóa |
 
 ## Dữ liệu
-- DataStore `settings`: chữ to, tương phản cao, tên và số người thân (chỉ lưu trên máy).
+- DataStore `settings`: cỡ chữ, tương phản cao, đọc to lời nhắc, rung, tên và số người thân (chỉ lưu trên máy).
 - Room (`tasks.db`, bảng `tasks`, schema v3, có migration 1→2→3), chỉ nằm trên máy. Không có mạng, không có tài khoản.
 
 ## Kiếm tiền
@@ -97,3 +97,4 @@ Không dùng SCHEDULE_EXACT_ALARM (Play hạn chế quyền này); nhắc bằng
 - 2026-09-29: Thêm nút "Xong" trên thông báo và nhắc trước 1 ngày (19:00 hôm trước). DB lên v2 bằng migration, không xóa dữ liệu người dùng.
 - 2026-09-29: Ethan muốn phục vụ người khuyết tật và người lớn tuổi. Làm trước chữ to và tương phản cao trong app này. Không dùng AccessibilityService và SMS vì Play kiểm tra gắt.
 - 2026-09-29: Ethan chọn gộp tính năng người lớn tuổi vào app này. Thêm nhắc uống thuốc và gọi nhanh người thân.
+- 2026-09-29: Ethan gửi bản thiết kế UniBridge (web/PWA cho sinh viên khuyết tật). Lấy các phần chạy offline (đọc to, tương phản đen-vàng, A−/A+, rung). Chưa làm: bạn đồng hành/SOS gửi trường (cần máy chủ, thành mạng xã hội theo NĐ 147), phụ đề trực tiếp (cần micro, Google Live Transcribe đã làm tốt), tóm tắt AI (tốn phí).

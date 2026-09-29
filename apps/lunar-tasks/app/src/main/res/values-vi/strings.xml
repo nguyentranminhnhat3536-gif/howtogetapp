@@ -80,8 +80,6 @@
     <string name="notification_due_tomorrow">Việc này đến hạn vào ngày mai.</string>
     <string name="notification_action_done">Xong</string>
     <string name="title_display">Cài đặt</string>
-    <string name="setting_large_text">Chữ to</string>
-    <string name="setting_large_text_body">Phóng to toàn bộ chữ và nút trong app thêm khoảng một phần ba.</string>
     <string name="setting_high_contrast">Tương phản cao</string>
     <string name="setting_high_contrast_body">Màu đen trắng rõ nét, chữ phụ đậm hơn. Dễ đọc ngoài nắng hoặc khi mắt kém.</string>
     <string name="preview_title">Xem thử: Thắp hương</string>
@@ -107,4 +105,19 @@
     <string name="contact_remove">Bỏ chọn</string>
     <string name="contact_name">Tên</string>
     <string name="contact_phone">Số điện thoại</string>
+    <string name="cd_text_smaller">Chữ nhỏ hơn</string>
+    <string name="cd_text_bigger">Chữ to hơn</string>
+    <string name="setting_text_size">Cỡ chữ</string>
+    <string name="setting_speak_reminders">Đọc to lời nhắc</string>
+    <string name="setting_speak_reminders_body">Khi đến giờ nhắc, máy đọc to nội dung nhắc.</string>
+    <string name="setting_haptics">Rung khi bấm</string>
+    <string name="setting_haptics_body">Rung nhẹ khi tick xong việc, để biết là đã bấm được.</string>
+    <string name="action_read_today">Đọc to việc hôm nay</string>
+    <string name="action_read_aloud">Đọc to</string>
+    <string name="error_no_tts">Máy chưa có giọng đọc. Hãy cài trong Cài đặt, Hỗ trợ tiếp cận.</string>
+    <string name="speak_today">Hôm nay là %1$s, âm lịch ngày %2$s.</string>
+    <string name="speak_no_tasks_today">Hôm nay không có việc nào.</string>
+    <string name="speak_tasks_today">Hôm nay có %1$d việc: %2$s.</string>
+    <string name="speak_task_at">%1$s lúc %2$s</string>
+    <string name="speak_overdue">Và %1$d việc quá hạn.</string>
 </resources>

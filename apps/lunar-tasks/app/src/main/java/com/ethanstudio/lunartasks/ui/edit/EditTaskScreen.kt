@@ -45,6 +45,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -58,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ethanstudio.lunartasks.LunarTasksApp
 import com.ethanstudio.lunartasks.R
 import com.ethanstudio.lunartasks.data.Repeat
 import com.ethanstudio.lunartasks.ui.common.AppViewModels
@@ -65,6 +67,7 @@ import com.ethanstudio.lunartasks.ui.common.formatTime
 import com.ethanstudio.lunartasks.ui.common.fullDate
 import com.ethanstudio.lunartasks.ui.common.lunarLong
 import com.ethanstudio.lunartasks.ui.common.repeatLabel
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -77,6 +80,8 @@ fun EditTaskScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val app = context.applicationContext as LunarTasksApp
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(state.finished) { if (state.finished) onClose() }
 
@@ -118,6 +123,13 @@ fun EditTaskScreen(
                     }
                 },
                 actions = {
+                    if (state.title.isNotBlank()) {
+                        IconButton(onClick = {
+                            scope.launch { app.speaker.speak(listOf(state.title, state.note).filter(String::isNotBlank).joinToString(". ")) }
+                        }) {
+                            Icon(painterResource(R.drawable.ic_volume), contentDescription = stringResource(R.string.action_read_aloud))
+                        }
+                    }
                     if (!state.isNew) {
                         IconButton(onClick = { showDeleteConfirm = true }) {
                             Icon(painterResource(R.drawable.ic_delete), contentDescription = stringResource(R.string.action_delete))

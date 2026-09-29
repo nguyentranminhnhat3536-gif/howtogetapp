@@ -17,6 +17,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.ethanstudio.lunartasks.util.PickPhoneNumber
 import com.ethanstudio.lunartasks.util.readPickedPhone
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import com.ethanstudio.lunartasks.data.AppSettings
+import kotlin.math.roundToInt
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -74,17 +83,24 @@ fun DisplaySettingsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            ToggleRow(
-                title = stringResource(R.string.setting_large_text),
-                body = stringResource(R.string.setting_large_text_body),
-                checked = state.largeText,
-                onCheckedChange = viewModel::setLargeText,
-            )
+            TextSizeRow(scale = state.textScale, onChange = viewModel::changeTextSize)
             ToggleRow(
                 title = stringResource(R.string.setting_high_contrast),
                 body = stringResource(R.string.setting_high_contrast_body),
                 checked = state.highContrast,
                 onCheckedChange = viewModel::setHighContrast,
+            )
+            ToggleRow(
+                title = stringResource(R.string.setting_speak_reminders),
+                body = stringResource(R.string.setting_speak_reminders_body),
+                checked = state.speakReminders,
+                onCheckedChange = viewModel::setSpeakReminders,
+            )
+            ToggleRow(
+                title = stringResource(R.string.setting_haptics),
+                body = stringResource(R.string.setting_haptics_body),
+                checked = state.haptics,
+                onCheckedChange = viewModel::setHaptics,
             )
             Card(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -182,5 +198,37 @@ private fun ContactSection(name: String, phone: String, onSave: (String, String)
                 TextButton(onClick = { showManual = false }) { Text(stringResource(R.string.action_cancel)) }
             },
         )
+    }
+}
+
+/** Hai nút A− / A+ to, ở giữa là mức hiện tại (phần trăm). */
+@Composable
+private fun TextSizeRow(scale: Float, onChange: (Int) -> Unit) {
+    val percent = (scale * 100).roundToInt()
+    val smallerLabel = stringResource(R.string.cd_text_smaller)
+    val biggerLabel = stringResource(R.string.cd_text_bigger)
+    Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(stringResource(R.string.setting_text_size), style = MaterialTheme.typography.titleMedium)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            OutlinedButton(
+                onClick = { onChange(-1) },
+                enabled = scale > AppSettings.TEXT_SCALES.first(),
+                modifier = Modifier.sizeIn(minWidth = 64.dp, minHeight = 56.dp).semantics { contentDescription = smallerLabel },
+            ) {
+                Text(stringResource(R.string.text_size_smaller_symbol), style = MaterialTheme.typography.titleLarge, modifier = Modifier.clearAndSetSemantics { })
+            }
+            Text(
+                text = "$percent%",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+            )
+            OutlinedButton(
+                onClick = { onChange(+1) },
+                enabled = scale < AppSettings.TEXT_SCALES.last(),
+                modifier = Modifier.sizeIn(minWidth = 64.dp, minHeight = 56.dp).semantics { contentDescription = biggerLabel },
+            ) {
+                Text(stringResource(R.string.text_size_bigger_symbol), style = MaterialTheme.typography.titleLarge, modifier = Modifier.clearAndSetSemantics { })
+            }
+        }
     }
 }

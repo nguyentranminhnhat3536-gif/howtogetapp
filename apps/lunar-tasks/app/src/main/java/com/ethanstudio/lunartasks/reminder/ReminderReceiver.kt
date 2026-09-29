@@ -16,6 +16,8 @@ import com.ethanstudio.lunartasks.LunarTasksApp
 import com.ethanstudio.lunartasks.MainActivity
 import com.ethanstudio.lunartasks.R
 import com.ethanstudio.lunartasks.data.Task
+import com.ethanstudio.lunartasks.speech.Speaker
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,8 +38,8 @@ class ReminderReceiver : BroadcastReceiver() {
                         NotificationManagerCompat.from(context).cancel(taskId.toInt())
                         if (!task.done) repository.toggleDone(task, LocalDate.now())
                     }
-                    ACTION_REMIND_EARLY -> if (task.remindDayBefore && !task.done) showNotification(context, task, early = true)
-                    else -> if (task.remind && !task.done) showNotification(context, task, early = false)
+                    ACTION_REMIND_EARLY -> if (task.remindDayBefore && !task.done) remind(context, task, early = true)
+                    else -> if (task.remind && !task.done) remind(context, task, early = false)
                 }
             } finally {
                 pending.finish()
@@ -45,12 +47,26 @@ class ReminderReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun showNotification(context: Context, task: Task, early: Boolean) {
+    /** Hiện thông báo, và đọc to nếu người dùng bật "Đọc to lời nhắc". */
+    private suspend fun remind(context: Context, task: Task, early: Boolean) {
+        val (title, body) = showNotification(context, task, early) ?: return
+        val app = context.applicationContext as LunarTasksApp
+        if (!app.settings.settings.first().speakReminders) return
+        val speaker = Speaker(context)
+        try {
+            speaker.speakAndWait("$title. $body", timeoutMs = SPEAK_TIMEOUT_MS)
+        } finally {
+            speaker.shutdown()
+        }
+    }
+
+    /** Trả về (tiêu đề, nội dung) đã hiện, hoặc null nếu không được phép hiện thông báo. */
+    private fun showNotification(context: Context, task: Task, early: Boolean): Pair<String, String>? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
             PackageManager.PERMISSION_GRANTED
         ) {
-            return
+            return null
         }
         ensureChannel(context)
         val requestCode = task.id.toInt()
@@ -85,10 +101,12 @@ class ReminderReceiver : BroadcastReceiver() {
             .setAutoCancel(true)
             .addAction(R.drawable.ic_check, context.getString(R.string.notification_action_done), markDone)
             .build()
-        try {
+        return try {
             NotificationManagerCompat.from(context).notify(requestCode, notification)
+            title to body
         } catch (e: SecurityException) {
             // Người dùng vừa tắt quyền thông báo, bỏ qua.
+            null
         }
     }
 
@@ -98,6 +116,9 @@ class ReminderReceiver : BroadcastReceiver() {
         const val ACTION_REMIND_EARLY = "com.ethanstudio.lunartasks.action.REMIND_EARLY"
         const val ACTION_DONE = "com.ethanstudio.lunartasks.action.DONE"
         private const val CHANNEL_ID = "reminders"
+
+        /** goAsync() chỉ cho khoảng 10 giây, nên đọc tối đa 7 giây. */
+        private const val SPEAK_TIMEOUT_MS = 7_000L
 
         fun ensureChannel(context: Context) {
             val channel = NotificationChannel(
