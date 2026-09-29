@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.ethanstudio.lunartasks.LunarTasksApp
 import com.ethanstudio.lunartasks.ui.edit.EditTaskViewModel
 import com.ethanstudio.lunartasks.ui.list.TaskListViewModel
+import com.ethanstudio.lunartasks.ui.settings.DisplaySettingsViewModel
 
 /** Tạo ViewModel kèm repository lấy từ Application. */
 object AppViewModels {
@@ -16,6 +17,9 @@ object AppViewModels {
         }
         initializer {
             EditTaskViewModel(app().repository, createSavedStateHandle())
+        }
+        initializer {
+            DisplaySettingsViewModel(app().settings)
         }
     }
 

@@ -83,4 +83,14 @@
     <string name="notification_tomorrow">Tomorrow: %1$s</string>
     <string name="notification_due_tomorrow">This task is due tomorrow.</string>
     <string name="notification_action_done">Done</string>
+    <string name="action_text_size" translatable="false">Aa</string>
+    <string name="title_display">Text size and contrast</string>
+    <string name="setting_large_text">Large text</string>
+    <string name="setting_large_text_body">Makes all text and buttons in the app about a third bigger.</string>
+    <string name="setting_high_contrast">High contrast</string>
+    <string name="setting_high_contrast_body">Black and white colors, bolder secondary text. Easier to read in sunlight or with weak eyesight.</string>
+    <string name="preview_title">Preview: Light incense</string>
+    <string name="preview_body">Tomorrow · 07:00 · Lunar 15/8</string>
+    <string name="setting_talkback_note">The app also works with TalkBack, the screen reader built into Android (Settings, Accessibility).</string>
+    <string name="cd_mark_done">Mark as done: %1$s</string>
 </resources>

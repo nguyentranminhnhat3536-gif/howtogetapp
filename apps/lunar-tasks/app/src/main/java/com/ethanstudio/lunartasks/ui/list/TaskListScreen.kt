@@ -28,6 +28,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +41,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,6 +69,7 @@ import java.time.LocalDate
 fun TaskListScreen(
     onAddTask: () -> Unit,
     onOpenTask: (Long) -> Unit,
+    onOpenDisplaySettings: () -> Unit,
     viewModel: TaskListViewModel = viewModel(factory = AppViewModels.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -92,11 +96,21 @@ fun TaskListScreen(
     }
 
     val noAppMessage = stringResource(R.string.error_no_app)
+    val displaySettingsLabel = stringResource(R.string.title_display)
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name)) },
-                actions = { OverflowMenu(onNoApp = { scope.launch { snackbarHostState.showSnackbar(noAppMessage) } }) },
+                actions = {
+                    TextButton(onClick = onOpenDisplaySettings) {
+                        Text(
+                            text = stringResource(R.string.action_text_size),
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.semantics { contentDescription = displaySettingsLabel },
+                        )
+                    }
+                    OverflowMenu(onNoApp = { scope.launch { snackbarHostState.showSnackbar(noAppMessage) } })
+                },
             )
         },
         floatingActionButton = {
@@ -262,7 +276,12 @@ private fun TaskRow(
             modifier = Modifier.padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Checkbox(checked = task.done, onCheckedChange = { onToggleDone() })
+            val doneLabel = stringResource(R.string.cd_mark_done, task.title)
+            Checkbox(
+                checked = task.done,
+                onCheckedChange = { onToggleDone() },
+                modifier = Modifier.semantics { contentDescription = doneLabel },
+            )
             Column(Modifier.weight(1f).padding(vertical = 8.dp)) {
                 Text(
                     text = task.title,

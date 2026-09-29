@@ -9,13 +9,15 @@ import androidx.navigation.navArgument
 import com.ethanstudio.lunartasks.ui.edit.EditTaskScreen
 import com.ethanstudio.lunartasks.ui.edit.EditTaskViewModel
 import com.ethanstudio.lunartasks.ui.list.TaskListScreen
+import com.ethanstudio.lunartasks.ui.settings.DisplaySettingsScreen
 
 private const val ROUTE_LIST = "list"
+private const val ROUTE_DISPLAY = "display"
 private const val ROUTE_EDIT = "edit/{${EditTaskViewModel.ARG_TASK_ID}}"
 
 private fun editRoute(taskId: Long) = "edit/$taskId"
 
-/** Hai màn hình: danh sách việc và thêm/sửa việc (id = 0 là việc mới). */
+/** Màn hình: danh sách việc, thêm/sửa việc (id = 0 là việc mới), cài đặt hiển thị. */
 @Composable
 fun AppRoot() {
     val navController = rememberNavController()
@@ -24,7 +26,11 @@ fun AppRoot() {
             TaskListScreen(
                 onAddTask = { navController.navigate(editRoute(0)) },
                 onOpenTask = { id -> navController.navigate(editRoute(id)) },
+                onOpenDisplaySettings = { navController.navigate(ROUTE_DISPLAY) },
             )
+        }
+        composable(ROUTE_DISPLAY) {
+            DisplaySettingsScreen(onClose = { navController.popBackStack(ROUTE_LIST, inclusive = false) })
         }
         composable(
             ROUTE_EDIT,

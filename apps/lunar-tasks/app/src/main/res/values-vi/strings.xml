@@ -79,4 +79,13 @@
     <string name="notification_tomorrow">Ngày mai: %1$s</string>
     <string name="notification_due_tomorrow">Việc này đến hạn vào ngày mai.</string>
     <string name="notification_action_done">Xong</string>
+    <string name="title_display">Cỡ chữ và độ tương phản</string>
+    <string name="setting_large_text">Chữ to</string>
+    <string name="setting_large_text_body">Phóng to toàn bộ chữ và nút trong app thêm khoảng một phần ba.</string>
+    <string name="setting_high_contrast">Tương phản cao</string>
+    <string name="setting_high_contrast_body">Màu đen trắng rõ nét, chữ phụ đậm hơn. Dễ đọc ngoài nắng hoặc khi mắt kém.</string>
+    <string name="preview_title">Xem thử: Thắp hương</string>
+    <string name="preview_body">Ngày mai · 07:00 · ÂL 15/8</string>
+    <string name="setting_talkback_note">App cũng dùng được với TalkBack, trình đọc màn hình có sẵn trong Android (Cài đặt, Hỗ trợ tiếp cận).</string>
+    <string name="cd_mark_done">Đánh dấu xong: %1$s</string>
 </resources>
