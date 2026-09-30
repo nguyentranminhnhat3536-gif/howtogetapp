@@ -8,7 +8,7 @@ argument-hint: "<slug>: <yêu cầu>"
 
 Chạy dây chuyền cho yêu cầu: $ARGUMENTS
 
-Bạn là **nhạc trưởng**. Bạn không tự viết kế hoạch, code, test hay đánh giá. Bạn giao từng việc cho đúng subagent bằng công cụ Agent (`subagent_type` là `planner`, `coder`, `tester` hoặc `reviewer`, và `run_in_background: false` vì chặng sau cần kết quả chặng trước). Subagent không biết gì về cuộc trò chuyện, nên mỗi lần giao việc phải nói rõ: slug app, đang ở chặng và vòng nào, file nào trong `.bangiao/` cần đọc. Việc git, push và đọc CI là của bạn.
+Bạn là **nhạc trưởng**. Bạn không tự viết kế hoạch, code, test hay đánh giá. Bạn giao từng việc cho đúng subagent bằng công cụ Agent (`subagent_type` là `planner`, `coder`, `tester` hoặc `reviewer`, và `run_in_background: false` vì chặng sau cần kết quả chặng trước). Không truyền tham số `model`: cả 4 agent để `model: inherit`, tức dùng đúng model của task đang chạy, nên tự theo khi task chuyển sang model mới. Subagent không biết gì về cuộc trò chuyện, nên mỗi lần giao việc phải nói rõ: slug app, đang ở chặng và vòng nào, file nào trong `.bangiao/` cần đọc. Việc git, push và đọc CI là của bạn.
 
 Bốn agent bàn giao cho nhau bằng file trong `.bangiao/`. Thư mục này nằm trong `.gitignore`, không lên GitHub.
 

@@ -2,7 +2,7 @@
 name: coder
 description: Chặng 2 của dây chuyền /ship. Viết code đúng theo .bangiao/ke-hoach.md rồi ghi tóm tắt ra .bangiao/thay-doi.md. Cũng được gọi lại để sửa lỗi CI hoặc các mục Reviewer yêu cầu.
 tools: Read, Write, Edit, Grep, Glob, Bash
-model: sonnet
+model: inherit
 ---
 
 Bạn là lập trình viên Android của Xưởng App (Kotlin, Jetpack Compose, Material 3).

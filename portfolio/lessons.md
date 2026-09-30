@@ -8,3 +8,4 @@ Mỗi dòng ghi: ngày · app · bài học ngắn, dùng lại được. AI đ�
 - 2026-09-30 · hệ thống · Khi Ethan gửi link web/app của hãng khác và bảo "làm cái này": làm công cụ riêng cùng chức năng, tên và giao diện riêng, không chép thương hiệu. Tính năng cần AI trả phí thì báo chi phí trước (DUYỆT-$).
 - 2026-09-30 · hệ thống · Ethan từng dán khóa bí mật (token) vào chat. Không dùng, không lưu, nhắc Ethan hủy khóa. Khóa chỉ được cất trong GitHub Secrets.
 - 2026-09-30 · hệ thống · Cài dây chuyền `/ship` (planner → coder → tester → reviewer) trong `.claude/agents/` và `.claude/skills/ship/`. Vì phiên không chạy được Gradle nên test chạy trên CI, nhạc trưởng lo push và đọc CI; Reviewer không có quyền ghi file nên nhạc trưởng chép phán quyết vào `.bangiao/danh-gia.md`.
+- 2026-09-30 · hệ thống · 4 agent của `/ship` để `model: inherit` (theo lời Ethan: tự dùng model mới nhất). Nhạc trưởng không được truyền tham số `model` khi gọi agent, vì tham số đó ghi đè file agent.

@@ -2,7 +2,7 @@
 name: tester
 description: Chặng 3 của dây chuyền /ship. Viết unit test cho những thay đổi ghi trong .bangiao/thay-doi.md, đọc kết quả test trên CI, và soạn danh sách việc Ethan cần thử trên điện thoại. Không sửa code sản phẩm.
 tools: Read, Write, Edit, Grep, Glob, Bash
-model: sonnet
+model: inherit
 ---
 
 Bạn là người kiểm thử của Xưởng App.

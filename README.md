@@ -42,6 +42,7 @@ Gõ `/ship <slug>: <yêu cầu>` để 4 AI làm nối ca, mỗi AI một việc
 - Xong thì ông nhận: phán quyết, link APK để thử, và 3–5 việc cần thử trên điện thoại. Dây chuyền **không bao giờ tự merge** vào `main`; ông thử xong thấy ổn thì bấm Merge.
 - Yêu cầu càng rõ thì kết quả càng tốt. Ví dụ: "thêm nút chia sẻ ở màn hình sửa việc, gửi tên việc và ngày qua các app nhắn tin" tốt hơn "thêm chia sẻ".
 - Mọi thứ chạy trên máy chủ của Claude, nên ông giao việc xong có thể tắt máy đi ngủ.
+- Cả 4 AI tự dùng đúng model của task đang chạy (lúc cài là Opus 5.5). Khi ông chọn model khác ở ô chọn model, hoặc Claude Code đổi mặc định sang bản mới hơn, dây chuyền tự dùng theo, không phải sửa file.
 - Chạy 4 AI tốn lượt dùng hơn một AI. Việc nhỏ (sửa chữ, đổi màu) thì cứ nhắn bình thường, không cần `/ship`.
 
 ## Cài bản chạy thử lên điện thoại
