@@ -8,6 +8,7 @@
 | Chính sách quyền riêng tư | https://nguyentranminhnhat3536-gif.github.io/howtogetapp/lunar-tasks/privacy-policy.html |
 | Bản chạy thử | https://github.com/nguyentranminhnhat3536-gif/howtogetapp/releases/tag/preview-lunar-tasks |
 | Bản xem trên web | https://claude.ai/artifact/15qynzoELFA9653Q3fNiyY (nguồn: `store/web-preview.html`) |
+| Hệ thiết kế | https://claude.ai/artifact/9JrS5p4Uf7g3nAuham6MvY (màu 3 chế độ, chữ, component web, logo, icon) |
 | Link Google Play | (chưa có) |
 
 ## Trạng thái
@@ -107,3 +108,4 @@ Không dùng SCHEDULE_EXACT_ALARM (Play hạn chế quyền này); nhắc bằng
 - 2026-09-29: Ethan gửi logo "Lịch Trình Của Bạn" và đổi tên app. Tên tiếng Anh mặc định "Your Schedule". Giữ slug `lunar-tasks` để link bản thử không đổi. Màu: navy #1C3A5E, cam #E8553D, nền kem #FBF3E9.
 - 2026-09-29: Ethan muốn bật tắt chức năng bằng giọng nói, chỉ khi đang ở trong app. Chọn cách mở ô nghe giọng nói của máy khi bấm nút micro (RecognizerIntent): không cần quyền RECORD_AUDIO, không nghe ngầm, Data safety vẫn "không thu thập". Không làm nghe liên tục vì phải xin quyền micro và tốn pin. Lệnh được hiểu ngay trên máy (VoiceCommandParser, có unit test).
 - 2026-09-29: Ethan gọi "/mcp-builder". Skill này dùng để làm máy chủ MCP cho AI, không dùng được cho app Android, nên không dùng.
+- 2026-09-30: Trích hệ thiết kế từ code (Theme.kt, Color.kt, web-preview.html) thành artifact Design System. Phát hiện: Theme.kt chưa đặt `inverseSurface`, `inversePrimary`, `outlineVariant` nên snackbar và đường kẻ còn màu tím mặc định của Material; bản xem web dùng chữ trắng trên nút cam ở chế độ Tối (2.3:1, không đạt).
