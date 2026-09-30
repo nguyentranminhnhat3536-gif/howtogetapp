@@ -35,6 +35,7 @@ Ngoài các mốc trên thì cứ làm tiếp. Nếu gặp chỗ không chắc, 
 CLAUDE.md                 ← file này (luật chung)
 README.md                 ← hướng dẫn cho Ethan
 .claude/skills/<bước>/    ← quy trình chi tiết từng bước (xem mục 4)
+.claude/agents/           ← 4 agent của dây chuyền /ship: planner, coder, tester, reviewer
 .github/workflows/build.yml  ← CI: build APK/AAB trên GitHub Actions
 template/                 ← app mẫu Kotlin + Compose. Không code app trong này; chỉ sửa khi muốn nâng cấp cho mọi app mới
 apps/<slug>/              ← mỗi app là một dự án Gradle độc lập
@@ -63,6 +64,8 @@ scripts/                  ← công cụ: tạo app, tăng version, xem CI
 | 8 | Sau phát hành: đọc đánh giá, sửa lỗi, cập nhật, ghi bài học | `release` (mục "Sau phát hành") |
 
 Nếu môi trường không tự nạp skill thì mở file SKILL.md tương ứng và đọc trước khi làm.
+
+Làm tính năng hoặc sửa lỗi cho app đã có (bước 3 và 8): khi Ethan gõ `/ship <slug>: <yêu cầu>`, chạy dây chuyền 4 agent theo `.claude/skills/ship/SKILL.md`. Dây chuyền tự dừng ở các mốc DUYỆT và không bao giờ tự merge vào `main`.
 
 ## 5. Build và kiểm tra — đọc kỹ
 

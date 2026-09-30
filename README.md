@@ -19,11 +19,30 @@ Trong project **Howtogetapp**, mở một task mới rồi nói với AI bằng 
 | Tìm ý tưởng | `Tìm 10 ý tưởng app mới, chấm điểm và đề xuất 3 cái tốt nhất` |
 | Làm app | `Làm app <tên ý tưởng> tới bản chạy thử` |
 | Sửa app | `App <slug>: nút X bị lỗi Y, sửa giúp` (gửi kèm ảnh chụp màn hình nếu có) |
+| Làm tính năng bằng dây chuyền 4 AI | `/ship lunar-tasks: thêm nút chia sẻ việc cho người thân` |
 | Kiếm tiền | `Gắn quảng cáo và gói gỡ quảng cáo cho app <slug>` |
 | Chuẩn bị lên store | `Chuẩn bị phát hành app <slug>` |
 | Xem tình hình | `Tình hình các app thế nào?` |
 
 AI tự làm hết và chỉ dừng lại hỏi ông ở 4 mốc: **chốt ý tưởng**, **thử bản chạy thử**, **trước khi phát hành**, và **việc liên quan tới tiền hoặc bảo mật**.
+
+## Dây chuyền 4 AI (`/ship`)
+
+Gõ `/ship <slug>: <yêu cầu>` để 4 AI làm nối ca, mỗi AI một việc:
+
+| AI | Việc | Được sửa code? |
+|---|---|---|
+| Planner | Đọc app, viết bản kế hoạch chi tiết | Không |
+| Coder | Viết code đúng theo kế hoạch | Có |
+| Tester | Viết test; test chạy trên GitHub khi build; soạn danh sách việc ông cần thử | Chỉ file test |
+| Reviewer | Đọc hết rồi ra phán quyết **CHOT** / **CAN SUA** / **CHAN** | Không, chỉ đọc |
+
+- Build đỏ hoặc Reviewer bảo CAN SUA thì dây chuyền tự đưa lại cho Coder sửa (tối đa 3 lần build đỏ, 2 lần CAN SUA).
+- Dây chuyền **dừng lại hỏi ông** khi: Planner có câu hỏi chỉ ông quyết được, Reviewer phán CHAN, hoặc sửa mãi không xong.
+- Xong thì ông nhận: phán quyết, link APK để thử, và 3–5 việc cần thử trên điện thoại. Dây chuyền **không bao giờ tự merge** vào `main`; ông thử xong thấy ổn thì bấm Merge.
+- Yêu cầu càng rõ thì kết quả càng tốt. Ví dụ: "thêm nút chia sẻ ở màn hình sửa việc, gửi tên việc và ngày qua các app nhắn tin" tốt hơn "thêm chia sẻ".
+- Mọi thứ chạy trên máy chủ của Claude, nên ông giao việc xong có thể tắt máy đi ngủ.
+- Chạy 4 AI tốn lượt dùng hơn một AI. Việc nhỏ (sửa chữ, đổi màu) thì cứ nhắn bình thường, không cần `/ship`.
 
 ## Cài bản chạy thử lên điện thoại
 
