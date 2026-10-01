@@ -10,7 +10,7 @@
 | Link Google Play | (chưa có) |
 
 ## Trạng thái
-Bước 3 · Giao diện mới + chọn ngôn ngữ (CI #32) và màn Extract text chỉ cho Pro + giá Vĩnh viễn 100 USD có ưu đãi giảm 10% lấy từ Play (CI #35 xanh, /ship CHOT 2026-10-01). Chờ Ethan thử bản APK (DUYỆT-2). Thanh toán, giảm giá và OCR Pro chỉ thử được sau khi tạo sản phẩm trong Play Console.
+Bước 3 · Nhóm A đợt 1 xong (chọn nhiều, gộp PDF cho Pro, sắp/xóa trang, thêm trang, in, thư mục, nén PDF): CI #39 xanh (build + 95 unit test + lint), /ship CHOT 2026-10-01. Dữ liệu lên schema v2 bằng migration, tài liệu cũ giữ nguyên. Chờ Ethan thử bản APK (DUYỆT-2), nhớ cài đè lên bản cũ để thử nâng cấp dữ liệu. Thanh toán, giảm giá và OCR Pro chỉ thử được sau khi tạo sản phẩm trong Play Console.
 
 ## Việc tiếp theo
 - [ ] Ethan duyệt kế hoạch bản iOS: `PLAN-ios.md` (DUYỆT-$)
@@ -21,6 +21,9 @@ Bước 3 · Giao diện mới + chọn ngôn ngữ (CI #32) và màn Extract te
 - [x] CI xanh
 - [x] Làm lại giao diện theo thiết kế đã duyệt, thêm Account › Language (CI #32 xanh, /ship CHOT 2026-10-01)
 - [ ] Ethan thử APK trên điện thoại và góp ý (DUYỆT-2)
+- [x] Nhóm A đợt 1: chọn nhiều, gộp PDF (Pro), sắp/xóa trang, thêm trang, in, thư mục, nén (CI #39 xanh, /ship CHOT 2026-10-01)
+- [ ] Nhóm A đợt 2 (kế hoạch ở `PLAN-features-A.md`): ký tên (Pro), đóng dấu chữ mờ (Pro), nhập file PDF có sẵn, quét mã QR/mã vạch
+- [ ] Gia cố sau đợt 1 (góp ý không bắt buộc của reviewer): PagesViewModel chỉ trả `saving = false` khi lỗi (chặn bấm Lưu 2 lần); luồng in trong Print.kt bắt mọi `Exception`; FilesScreen tắt các hộp thoại khi thoát chế độ chọn; báo rõ khi thêm trang bị cắt vì giới hạn; chữ `limit_pages_free` không ghi cứng "5 trang"; `rename` dùng `UPDATE docs SET name`; dấu tích cho "No folder"; dọn tài liệu gộp dở khi app bị tắt giữa chừng; dùng chung `Mutex` cho `recoverPendingEdits` và `rewritePages`
 - [x] Xóa tài liệu lỗi thì báo bằng snackbar, không crash (DocViewModel.delete, /ship 2026-10-01)
 - [ ] Vòng gia cố: rà hết bộ nhớ khi lưu scan và khi OCR (OutOfMemoryError trong TextOcr); OcrViewModel.retry() kiểm lại isPro; ocr-locked chỉ mở bảng chọn khi đang đứng ở ROUTE_OCR_LOCKED
 - [ ] Ethan tạo offer giảm 10% cho `snapsheet_lifetime` trong Play Console (DUYỆT-$)

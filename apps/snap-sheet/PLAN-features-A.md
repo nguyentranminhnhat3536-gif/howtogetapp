@@ -1,6 +1,6 @@
-# Kế hoạch nhóm A (đang làm dở, lưu lại để làm tiếp)
+# Kế hoạch nhóm A (đợt 1 xong, đợt 2 chưa làm)
 
-Trạng thái 2026-10-01: Ethan bảo dừng giữa chặng 2 (coder). Đã có một phần A1 (Room v2, JpegPdfWriter, PageOps, Compress, EditRecovery, Folder) và chuỗi; chưa xong A2/B. Làm tiếp: chép file này về .bangiao/ke-hoach.md, yêu cầu về .bangiao/yeu-cau.md, rồi chạy lại coder.
+Trạng thái 2026-10-01: **Đợt 1 xong** (chọn nhiều, gộp PDF, sắp/xóa trang, thêm trang, in, thư mục, nén): commit 087c61a + 61a50bd + ae28492, CI #39 xanh, /ship CHOT. **Đợt 2 chưa làm** (5 ký tên, 6 đóng dấu chữ mờ, 7 nhập PDF, 9 quét QR/mã vạch): chạy /ship mới, planner viết kế hoạch riêng cho đợt 2 dựa trên bảng và ràng buộc dưới đây.
 
 ---
 # Yêu cầu

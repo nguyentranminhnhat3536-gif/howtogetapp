@@ -7,4 +7,4 @@ AI cập nhật bảng này cuối mỗi phiên. `scripts/new_app.py` tự thêm
 | App | Slug | Package | Giai đoạn | Version | Kiếm tiền | Link Play | Ghi chú |
 |---|---|---|---|---|---|---|---|
 | Lịch Trình Của Bạn (Your Schedule) | `lunar-tasks` | `com.ethanstudio.lunartasks` | 3 · Tạm dừng | 1.0.0 (1) | — | — | Tạo 2026-09-29 |
-| SnapSheet: Document Scanner | `snap-sheet` | `com.ethanstudio.snapsheet` | 3 · Giao diện mới, chờ Ethan thử (CI xanh) | 1.0.0 (1) | Freemium: tháng 0,99 · năm 9,99 · vĩnh viễn 100 USD (ưu đãi −10% còn 90), OCR chỉ Pro (chưa tạo trong Play Console) | — | Quét tài liệu, OCR trên máy. Giao diện trắng + gradient xanh (canvas SnapSheet Redesign), 12 ngôn ngữ, chọn ngôn ngữ trong app |
+| SnapSheet: Document Scanner | `snap-sheet` | `com.ethanstudio.snapsheet` | 3 · Nhóm A đợt 1 xong, chờ Ethan thử (CI #39 xanh) | 1.0.0 (1) | Freemium: tháng 0,99 · năm 9,99 · vĩnh viễn 100 USD (ưu đãi −10% còn 90), OCR chỉ Pro (chưa tạo trong Play Console) | — | Quét tài liệu, OCR trên máy. Giao diện trắng + gradient xanh (canvas SnapSheet Redesign), 12 ngôn ngữ, chọn ngôn ngữ trong app. Có thư mục, chọn nhiều, gộp PDF (Pro), sửa/thêm trang, in, nén |
