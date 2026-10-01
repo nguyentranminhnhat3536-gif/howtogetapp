@@ -75,7 +75,7 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 ## Dữ liệu
 - Room `snapsheet.db`, **schema v2**: bảng `docs` (tên, ngày, số trang, `folderId` cho phép null) và bảng `folders` (tên, ngày tạo). Nâng từ v1 bằng `MIGRATION_1_2` (chỉ `CREATE TABLE` + `ADD COLUMN`, không xóa gì): tài liệu cũ còn nguyên, `folderId = NULL` (nằm ở "All"). Không dùng `fallbackToDestructiveMigration`.
 - File ảnh và PDF trong `filesDir/docs/<id>/`, chỉ app đọc được; chia sẻ qua FileProvider. Bản nén để chia sẻ ghi đè vào `docs/<id>/compressed.pdf`. Sửa/thêm trang dựng bản mới trong `docs/<id>.new` rồi mới thay bản cũ; mở app thì tự dọn hoặc hoàn tất lần ghi bị ngắt.
-- Chữ ký: một file PNG nền trong suốt ở `filesDir/signature/signature.png` (chỉ app đọc được, sao lưu Android đang tắt). Xóa được trong màn Ký tên. Ký tên và chèn chữ mờ tạo tài liệu mới (bản sao), không sửa bản gốc.
+- Chữ ký: một file PNG nền trong suốt ở `filesDir/signature/signature.png` (chỉ app đọc được, sao lưu Android đang tắt). Khi có Pro thì xóa được trong màn Ký tên (Đổi chữ ký › Xóa chữ ký đã lưu); file luôn bị xóa khi xóa dữ liệu app hoặc gỡ app (người đã hết Pro chỉ xóa được bằng cách này). Ký tên và chèn chữ mờ tạo tài liệu mới (bản sao), không sửa bản gốc.
 - Nhập PDF: file được chép tạm vào `cacheDir/import` rồi xóa ngay sau khi dựng xong (và mỗi lần mở app).
 - DataStore `pro`: đã mua Pro chưa (lưu để dùng khi mất mạng; mỗi lần mở app hỏi lại Google Play) và số lượt xuất trong ngày.
 - Không có mạng của riêng app, không có tài khoản.

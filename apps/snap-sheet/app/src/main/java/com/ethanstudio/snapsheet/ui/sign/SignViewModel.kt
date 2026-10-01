@@ -186,6 +186,8 @@ class SignViewModel(
         val state = _uiState.value
         if (!state.canUseStrokes || state.saving) return
         val strokes = state.strokes
+        // Bật cờ ngay để lần bấm thứ hai không chạy song song (hai lần ghi cùng một file tạm có thể làm mất chữ ký).
+        _uiState.update { it.copy(saving = true) }
         viewModelScope.launch {
             try {
                 signatures.save(strokes)
@@ -212,31 +214,40 @@ class SignViewModel(
                 throw e
             } catch (e: Exception) {
                 _events.send(SignEvent.Message(R.string.error_signature_save))
+            } finally {
+                _uiState.update { it.copy(saving = false) }
             }
         }
     }
 
-    /** Xóa chữ ký đã lưu: bỏ luôn các vị trí đã đặt và mở khung ký. */
+    /** Xóa chữ ký đã lưu: bỏ luôn các vị trí đã đặt và mở khung ký. Đang lưu thì bỏ qua. */
     fun deleteSignature() {
+        if (_uiState.value.saving) return
+        // Bật cờ để "Dùng chữ ký này" không chạy cùng lúc với việc xóa (và ngược lại).
+        _uiState.update { it.copy(saving = true) }
         viewModelScope.launch {
             try {
-                signatures.delete()
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                // Bỏ qua: lần lưu chữ ký sau sẽ ghi đè file cũ.
+                try {
+                    signatures.delete()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    // Bỏ qua: lần lưu chữ ký sau sẽ ghi đè file cũ.
+                }
+                _uiState.update {
+                    it.copy(
+                        hasSignature = false,
+                        placements = emptyMap(),
+                        padOpen = true,
+                        strokes = emptyList(),
+                        signatureVersion = signatures.version.value,
+                    )
+                }
+                handle[KEY_PAD] = true
+                savePlacements()
+            } finally {
+                _uiState.update { it.copy(saving = false) }
             }
-            _uiState.update {
-                it.copy(
-                    hasSignature = false,
-                    placements = emptyMap(),
-                    padOpen = true,
-                    strokes = emptyList(),
-                    signatureVersion = signatures.version.value,
-                )
-            }
-            handle[KEY_PAD] = true
-            savePlacements()
         }
     }
 

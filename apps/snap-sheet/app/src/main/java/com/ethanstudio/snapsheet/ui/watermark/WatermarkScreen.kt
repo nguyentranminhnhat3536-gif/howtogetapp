@@ -3,6 +3,7 @@ package com.ethanstudio.snapsheet.ui.watermark
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,10 +15,12 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -118,6 +121,9 @@ fun WatermarkScreen(viewModel: WatermarkViewModel, onBack: () -> Unit, onDone: (
         if (state.loaded && state.doc == null) onBack()
     }
 
+    // Đang lưu thì nút Back của hệ thống không làm gì, để việc lưu không bị hủy giữa chừng.
+    BackHandler(enabled = state.saving) {}
+
     Box(Modifier.fillMaxSize()) {
         Scaffold(
             containerColor = colors.background,
@@ -141,7 +147,13 @@ fun WatermarkScreen(viewModel: WatermarkViewModel, onBack: () -> Unit, onDone: (
                 Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
             } else {
                 Column(
-                    Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 12.dp),
+                    Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .consumeWindowInsets(padding)
+                        .imePadding()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(14.dp),
                 ) {
                     WatermarkPreview(viewModel.firstPage(doc), state.spec)

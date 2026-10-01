@@ -134,6 +134,9 @@ fun SignScreen(viewModel: SignViewModel, onBack: () -> Unit, onDone: (Long) -> U
 
     BackHandler(enabled = state.padOpen) { viewModel.cancelPad() }
     BackHandler(enabled = !state.padOpen && state.placements.isNotEmpty() && !state.saving) { discarding = true }
+    // Đang lưu thì nút Back của hệ thống không làm gì, để việc lưu không bị hủy giữa chừng.
+    // Đặt sau cùng để được ưu tiên hơn hai BackHandler ở trên.
+    BackHandler(enabled = state.saving) {}
 
     // Nút quay lại trên thanh trên làm giống hệt nút Back của hệ thống.
     fun goBack() {
@@ -249,6 +252,7 @@ private fun SignPad(state: SignUiState, viewModel: SignViewModel, modifier: Modi
             onClick = viewModel::useStrokes,
             modifier = Modifier.fillMaxWidth(),
             enabled = state.canUseStrokes,
+            busy = state.saving,
         )
         TextButton(onClick = viewModel::cancelPad, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
             Text(stringResource(R.string.cancel), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.onSurfaceVariant)
