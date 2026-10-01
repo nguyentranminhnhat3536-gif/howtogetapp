@@ -10,7 +10,7 @@
 | Link Google Play | (chưa có) |
 
 ## Trạng thái
-Bước 3 · Giao diện mới theo canvas "SnapSheet Redesign" (đã duyệt, bản tiếng Anh) + chọn ngôn ngữ trong app + sắp xếp/nhóm Files + xem từng trang. Dây chuyền /ship CHOT, CI #32 xanh ngày 2026-10-01. Chờ Ethan thử bản APK (DUYỆT-2, 28 bước). Thanh toán chỉ thử được sau khi tạo sản phẩm trong Play Console.
+Bước 3 · Giao diện mới + chọn ngôn ngữ (CI #32) và màn Extract text chỉ cho Pro + giá Vĩnh viễn 100 USD có ưu đãi giảm 10% lấy từ Play (CI #35 xanh, /ship CHOT 2026-10-01). Chờ Ethan thử bản APK (DUYỆT-2). Thanh toán, giảm giá và OCR Pro chỉ thử được sau khi tạo sản phẩm trong Play Console.
 
 ## Việc tiếp theo
 - [ ] Ethan duyệt kế hoạch bản iOS: `PLAN-ios.md` (DUYỆT-$)
@@ -22,7 +22,7 @@ Bước 3 · Giao diện mới theo canvas "SnapSheet Redesign" (đã duyệt, b
 - [x] Làm lại giao diện theo thiết kế đã duyệt, thêm Account › Language (CI #32 xanh, /ship CHOT 2026-10-01)
 - [ ] Ethan thử APK trên điện thoại và góp ý (DUYỆT-2)
 - [x] Xóa tài liệu lỗi thì báo bằng snackbar, không crash (DocViewModel.delete, /ship 2026-10-01)
-- [ ] Rà hết bộ nhớ khi lưu scan
+- [ ] Vòng gia cố: rà hết bộ nhớ khi lưu scan và khi OCR (OutOfMemoryError trong TextOcr); OcrViewModel.retry() kiểm lại isPro; ocr-locked chỉ mở bảng chọn khi đang đứng ở ROUTE_OCR_LOCKED
 - [ ] Ethan tạo offer giảm 10% cho `snapsheet_lifetime` trong Play Console (DUYỆT-$)
 - [ ] Gửi Ethan danh sách đề xuất tính năng mới để chọn
 - [ ] Ethan tạo sản phẩm trong Play Console (xem mục Kiếm tiền) và chốt giá (DUYỆT-$)
