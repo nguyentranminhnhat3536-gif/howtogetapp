@@ -20,6 +20,8 @@ import kotlinx.coroutines.launch
 data class AuthUiState(
     val busy: Boolean = false,
     val error: AuthError? = null,
+    /** Mã lỗi kỹ thuật, chỉ hiện khi lỗi không rõ (để gửi hỗ trợ). */
+    val errorCode: String? = null,
     /** Email vừa đăng ký, hiện trên màn "Check your inbox". */
     val pendingEmail: String = "",
 )
@@ -48,7 +50,7 @@ class AuthViewModel(
     private val _events = Channel<AuthEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
-    fun clearError() = _state.update { it.copy(error = null) }
+    fun clearError() = _state.update { it.copy(error = null, errorCode = null) }
 
     fun signIn(email: String, password: String) {
         val invalid = AuthValidation.checkSignIn(email, password)
@@ -117,17 +119,17 @@ class AuthViewModel(
         _events.send(AuthEvent.Deleted)
     }
 
-    private fun fail(error: AuthError) = _state.update { it.copy(error = error) }
+    private fun fail(error: AuthError, code: String? = null) = _state.update { it.copy(error = error, errorCode = code) }
 
     /** Chạy một thao tác mạng: bật trạng thái bận, đổi lỗi thành câu cho người dùng. */
     private fun launch(block: suspend () -> Unit) {
         if (_state.value.busy) return
         viewModelScope.launch {
-            _state.update { it.copy(busy = true, error = null) }
+            _state.update { it.copy(busy = true, error = null, errorCode = null) }
             try {
                 block()
             } catch (e: AuthException) {
-                if (e.error != AuthError.CANCELED) fail(e.error)
+                if (e.error != AuthError.CANCELED) fail(e.error, e.code)
             } finally {
                 _state.update { it.copy(busy = false) }
             }

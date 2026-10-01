@@ -43,6 +43,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -94,6 +95,7 @@ fun AuthError.messageRes(): Int = when (this) {
     AuthError.NETWORK -> R.string.err_network
     AuthError.RECENT_LOGIN_REQUIRED -> R.string.err_recent
     AuthError.NOT_CONFIGURED -> R.string.err_not_configured
+    AuthError.PROVIDER_DISABLED -> R.string.err_provider_disabled
     AuthError.GOOGLE_FAILED -> R.string.err_google
     AuthError.CANCELED, AuthError.UNKNOWN -> R.string.err_unknown
 }
@@ -102,8 +104,8 @@ fun AuthError.messageRes(): Int = when (this) {
 @Composable
 private fun AuthBackground(content: @Composable ColumnScope.() -> Unit) {
     Box(Modifier.fillMaxSize().background(AuthColors.Ground)) {
-        Box(Modifier.offset(x = (-70).dp, y = 80.dp).size(250.dp).blur(48.dp).background(AuthColors.Blob1, CircleShape))
-        Box(Modifier.align(Alignment.BottomEnd).offset(x = 60.dp, y = (-90).dp).size(230.dp).blur(48.dp).background(AuthColors.Blob2, RoundedCornerShape(40.dp)))
+        Box(Modifier.offset(x = (-70).dp, y = 80.dp).size(250.dp).blur(48.dp, BlurredEdgeTreatment.Unbounded).background(AuthColors.Blob1, CircleShape))
+        Box(Modifier.align(Alignment.BottomEnd).offset(x = 60.dp, y = (-90).dp).size(230.dp).blur(48.dp, BlurredEdgeTreatment.Unbounded).background(AuthColors.Blob2, RoundedCornerShape(40.dp)))
         Column(
             Modifier.fillMaxSize().systemBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -139,9 +141,11 @@ private fun Body(text: String, center: Boolean = false) =
     Text(text, fontSize = 16.sp, lineHeight = 22.sp, color = AuthColors.InkSoft, textAlign = if (center) TextAlign.Center else TextAlign.Start, modifier = Modifier.fillMaxWidth())
 
 @Composable
-private fun ErrorText(error: AuthError?) {
+private fun ErrorText(error: AuthError?, code: String? = null) {
     if (error != null && error != AuthError.CANCELED) {
-        Text(stringResource(error.messageRes()), fontSize = 14.sp, lineHeight = 20.sp, color = AuthColors.Error)
+        val base = stringResource(error.messageRes())
+        val text = if (error == AuthError.UNKNOWN && code != null) stringResource(R.string.err_with_code, base, code) else base
+        Text(text, fontSize = 14.sp, lineHeight = 20.sp, color = AuthColors.Error)
     }
 }
 
@@ -273,7 +277,7 @@ fun SignInScreen(vm: AuthViewModel, onForgot: () -> Unit, onSignUp: () -> Unit) 
         Title(stringResource(R.string.auth_welcome_back))
         EmailField(email, { email = it })
         PasswordField(password, { password = it }, stringResource(R.string.auth_password), visible, { visible = !visible })
-        ErrorText(state.error)
+        ErrorText(state.error, state.errorCode)
         PrimaryButton(stringResource(R.string.auth_sign_in), state.busy) { vm.signIn(email, password) }
         LinkButton(stringResource(R.string.auth_forgot), onForgot, Modifier.fillMaxWidth())
         OrDivider()
@@ -310,7 +314,7 @@ fun SignUpScreen(vm: AuthViewModel, onSignIn: () -> Unit, onPrivacy: () -> Unit)
             Text(stringResource(R.string.auth_agree), fontSize = 14.sp, lineHeight = 20.sp, color = AuthColors.Ink)
         }
         LinkButton(stringResource(R.string.auth_read_policy), onPrivacy)
-        ErrorText(state.error)
+        ErrorText(state.error, state.errorCode)
         PrimaryButton(stringResource(R.string.auth_create), state.busy) { vm.signUp(email, password, confirm, agreed) }
         OrDivider()
         GoogleButton(vm, state.busy)
@@ -332,7 +336,7 @@ fun CheckEmailScreen(vm: AuthViewModel, onOpenEmail: () -> Unit, onContinue: () 
         }
         Title(stringResource(R.string.auth_check_title))
         Body(stringResource(R.string.auth_check_body, state.pendingEmail))
-        ErrorText(state.error)
+        ErrorText(state.error, state.errorCode)
         PrimaryButton(stringResource(R.string.auth_open_email), busy = false, onClick = onOpenEmail)
         OutlineButton(stringResource(R.string.auth_continue), onClick = onContinue)
         LinkButton(stringResource(R.string.auth_resend), { vm.resendVerification() }, Modifier.fillMaxWidth())
@@ -348,7 +352,7 @@ fun ForgotPasswordScreen(vm: AuthViewModel, onBack: () -> Unit) {
         Title(stringResource(R.string.auth_forgot_title))
         Body(stringResource(R.string.auth_forgot_body))
         EmailField(email, { email = it }, ImeAction.Done)
-        ErrorText(state.error)
+        ErrorText(state.error, state.errorCode)
         PrimaryButton(stringResource(R.string.auth_send_link), state.busy) { vm.sendPasswordReset(email) }
         LinkButton(stringResource(R.string.auth_back), onBack, Modifier.fillMaxWidth())
     }

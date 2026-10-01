@@ -156,6 +156,8 @@
     <string name="err_not_configured">Bản này chưa bật đăng nhập.</string>
     <string name="err_google">Đăng nhập Google chưa xong. Hãy thử lại.</string>
     <string name="err_unknown">Có lỗi xảy ra. Hãy thử lại.</string>
+    <string name="err_provider_disabled">Đăng nhập bằng email đang tắt. Nhà phát triển cần bật Email/Password trong Firebase.</string>
+    <string name="err_with_code">%1$s (Mã: %2$s)</string>
     <plurals name="pages">
         <item quantity="other">%1$d trang</item>
     </plurals>

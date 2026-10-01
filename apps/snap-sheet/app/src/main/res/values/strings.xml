@@ -160,6 +160,8 @@
     <string name="err_not_configured">Sign-in is not available in this version yet.</string>
     <string name="err_google">Google sign-in did not finish. Please try again.</string>
     <string name="err_unknown">Something went wrong. Please try again.</string>
+    <string name="err_provider_disabled">Email sign-in is turned off for this app. The developer needs to enable Email/Password in Firebase.</string>
+    <string name="err_with_code">%1$s (Code: %2$s)</string>
     <plurals name="pages">
         <item quantity="one">%1$d page</item>
         <item quantity="other">%1$d pages</item>

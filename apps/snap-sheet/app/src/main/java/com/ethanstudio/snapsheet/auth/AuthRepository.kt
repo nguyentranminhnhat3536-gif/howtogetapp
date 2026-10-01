@@ -16,6 +16,7 @@ import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
@@ -34,7 +35,7 @@ import kotlin.coroutines.resumeWithException
 data class AuthUser(val email: String?, val verified: Boolean, val usesPassword: Boolean)
 
 /** Lỗi đã đổi sang loại của app để giao diện hiện câu dễ hiểu. */
-class AuthException(val error: AuthError) : Exception(error.name)
+class AuthException(val error: AuthError, val code: String? = null) : Exception(code ?: error.name)
 
 /**
  * Đăng ký, đăng nhập và xóa tài khoản qua Firebase Authentication.
@@ -139,7 +140,8 @@ class AuthRepository(private val context: Context) {
         } catch (e: AuthException) {
             throw e
         } catch (e: Exception) {
-            throw AuthException(e.toAuthError())
+            android.util.Log.w("SnapSheetAuth", "Auth failed", e)
+            throw AuthException(e.toAuthError(), e.errorCode())
         }
 }
 
@@ -161,7 +163,18 @@ internal fun Throwable.toAuthError(): AuthError = when (this) {
     is FirebaseAuthInvalidCredentialsException -> AuthError.WRONG_CREDENTIALS
     is FirebaseTooManyRequestsException -> AuthError.TOO_MANY_REQUESTS
     is FirebaseNetworkException -> AuthError.NETWORK
-    else -> AuthError.UNKNOWN
+    is FirebaseAuthException -> when {
+        errorCode == "ERROR_OPERATION_NOT_ALLOWED" -> AuthError.PROVIDER_DISABLED
+        message.orEmpty().contains("CONFIGURATION_NOT_FOUND") -> AuthError.PROVIDER_DISABLED
+        else -> AuthError.UNKNOWN
+    }
+    else -> if (message.orEmpty().contains("CONFIGURATION_NOT_FOUND")) AuthError.PROVIDER_DISABLED else AuthError.UNKNOWN
+}
+
+/** Mã lỗi ngắn để hiện cho người dùng chụp màn hình gửi hỗ trợ (không chứa email hay mật khẩu). */
+internal fun Throwable.errorCode(): String = when (this) {
+    is FirebaseAuthException -> errorCode
+    else -> javaClass.simpleName
 }
 
 /** Chờ một Task của Google Play services xong trong coroutine. */
