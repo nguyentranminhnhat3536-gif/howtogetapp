@@ -13,6 +13,7 @@
 Bước 3 · Code MVP xong, CI xanh (build + unit test) ngày 2026-10-01. Chờ Ethan thử bản APK (DUYỆT-2). Chưa ai chạy trên máy thật; thanh toán chỉ thử được sau khi tạo sản phẩm trong Play Console.
 
 ## Việc tiếp theo
+- [ ] Ethan duyệt kế hoạch đăng ký tài khoản: `PLAN-account.md` (DUYỆT-$)
 - [x] CI xanh
 - [ ] Ethan thử APK trên điện thoại và góp ý (DUYỆT-2)
 - [ ] Ethan tạo sản phẩm trong Play Console (xem mục Kiếm tiền) và chốt giá (DUYỆT-$)
@@ -103,3 +104,4 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 - 2026-10-01: Không quảng cáo ở bản đầu: đơn giản hơn, không cần UMP, hợp với điểm bán "riêng tư".
 - 2026-10-01: Tạm bỏ ký tên và đóng dấu (có trong ảnh tham chiếu) vì cần trình sửa PDF riêng; đưa vào "Để sau".
 - 2026-10-01: Chưa có phiên bản ML Kit đã tra chính thức (trang Google bị chặn trong phiên). Dùng document-scanner 16.0.0 và text-recognition 16.0.1; nếu CI báo không tìm thấy thì tra lại.
+- 2026-10-01: Ethan muốn thêm đăng ký tài khoản. Đã thiết kế 4 màn (https://claude.ai/artifact/Nug9pRAZzY5ejELXK2TNZz) và viết kế hoạch kỹ thuật + chi phí trong `PLAN-account.md`. Chưa code, chờ duyệt. Tài khoản là tùy chọn, vẫn dùng được không cần đăng nhập.
