@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -213,7 +213,7 @@ private fun SnapBottomBar(selected: Int, onSelect: (Int) -> Unit, onScan: () -> 
         Surface(Modifier.padding(top = 26.dp).fillMaxWidth(), color = colors.surface) {
             Column {
                 HorizontalDivider(color = colors.outlineVariant)
-                Row(Modifier.fillMaxWidth().height(64.dp)) {
+                Row(Modifier.fillMaxWidth().heightIn(min = 64.dp), verticalAlignment = Alignment.CenterVertically) {
                     NavItem(R.drawable.ic_home, R.string.nav_home, selected == 0) { onSelect(0) }
                     NavItem(R.drawable.ic_folder, R.string.nav_files, selected == 1) { onSelect(1) }
                     Spacer(Modifier.weight(1f))
@@ -241,7 +241,7 @@ private fun SnapBottomBar(selected: Int, onSelect: (Int) -> Unit, onScan: () -> 
 private fun RowScope.NavItem(icon: Int, label: Int, selected: Boolean, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Column(
-        Modifier.weight(1f).fillMaxHeight().clickable(role = Role.Tab, onClick = onClick),
+        Modifier.weight(1f).heightIn(min = 64.dp).clickable(role = Role.Tab, onClick = onClick).padding(vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -275,7 +275,7 @@ private fun ScanSheet(onCamera: () -> Unit, onPhotos: () -> Unit, onDismiss: () 
             )
             SheetRow(R.drawable.ic_scan, R.string.sheet_camera, onCamera)
             SheetRow(R.drawable.ic_photo, R.string.sheet_photos, onPhotos)
-            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().height(60.dp)) {
+            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp)) {
                 Text(stringResource(R.string.cancel), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = colors.onSurface)
             }
         }
@@ -286,7 +286,7 @@ private fun ScanSheet(onCamera: () -> Unit, onPhotos: () -> Unit, onDismiss: () 
 private fun ColumnScope.SheetRow(icon: Int, label: Int, onClick: () -> Unit) {
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     Row(
-        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).clickable(onClick = onClick).height(54.dp).padding(horizontal = 24.dp),
+        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).clickable(onClick = onClick).heightIn(min = 54.dp).padding(horizontal = 24.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(20.dp),
     ) {

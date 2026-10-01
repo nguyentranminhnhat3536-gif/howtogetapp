@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.ethanstudio.snapsheet.R
 import com.ethanstudio.snapsheet.data.Doc
 import com.ethanstudio.snapsheet.data.DocRepository
+import com.ethanstudio.snapsheet.data.FreeLimits
 import com.ethanstudio.snapsheet.data.ProState
 import com.ethanstudio.snapsheet.data.ProStore
 import com.ethanstudio.snapsheet.data.cleanDocName
@@ -31,7 +32,10 @@ data class DocUiState(
     val pro: ProState = ProState(),
     val ocrText: String? = null,
     val ocrBusy: Boolean = false,
-)
+) {
+    val exportsLeft: Int
+        get() = FreeLimits.remaining(pro.isPro, pro.usage, LocalDate.now().toEpochDay())
+}
 
 sealed interface DocEvent {
     data class Export(val kind: ExportKind) : DocEvent

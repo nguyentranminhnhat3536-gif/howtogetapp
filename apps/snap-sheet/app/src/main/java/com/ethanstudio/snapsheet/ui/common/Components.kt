@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ethanstudio.snapsheet.R
 import com.ethanstudio.snapsheet.data.Doc
-import com.ethanstudio.snapsheet.util.decodeSampled
+import com.ethanstudio.snapsheet.util.decodeSampledCached
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -56,7 +56,7 @@ import java.util.Date
 fun ProBadge(modifier: Modifier = Modifier) {
     Surface(modifier = modifier, shape = MaterialTheme.shapes.extraSmall, color = MaterialTheme.colorScheme.secondary) {
         Row(
-            modifier = Modifier.height(23.dp).padding(horizontal = 8.dp),
+            modifier = Modifier.heightIn(min = 23.dp).padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
@@ -75,11 +75,11 @@ fun ProBadge(modifier: Modifier = Modifier) {
 @Composable
 fun TabHeader(title: String, isPro: Boolean) {
     Surface(color = MaterialTheme.colorScheme.surface) {
-        Box(Modifier.fillMaxWidth().statusBarsPadding().height(56.dp).padding(horizontal = 16.dp)) {
+        Box(Modifier.fillMaxWidth().statusBarsPadding().heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 8.dp)) {
             if (isPro) ProBadge(Modifier.align(Alignment.CenterStart))
             Text(
                 title,
-                modifier = Modifier.align(Alignment.Center),
+                modifier = Modifier.align(Alignment.Center).padding(horizontal = 72.dp),
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -158,7 +158,7 @@ fun ToolCard(@DrawableRes icon: Int, title: String, subtitle: String, onClick: (
 @Composable
 fun PageThumbnail(file: File, modifier: Modifier = Modifier, target: Int = 256, contentScale: ContentScale = ContentScale.Crop) {
     val bitmap by produceState<ImageBitmap?>(null, file) {
-        value = withContext(Dispatchers.IO) { decodeSampled(file, target)?.asImageBitmap() }
+        value = withContext(Dispatchers.IO) { decodeSampledCached(file, target)?.asImageBitmap() }
     }
     Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant)) {
         bitmap?.let { Image(it, null, Modifier.fillMaxSize(), contentScale = contentScale) }

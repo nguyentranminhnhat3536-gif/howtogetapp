@@ -132,6 +132,13 @@ fun DocScreen(
                             FilledTonalButton({ viewModel.export(ExportKind.SHARE_IMAGES) }, Modifier.weight(1f)) { Text(stringResource(R.string.doc_share_images)) }
                             FilledTonalButton({ viewModel.recognizeText() }, Modifier.weight(1f)) { Text(stringResource(R.string.doc_text)) }
                         }
+                        if (!state.pro.isPro) {
+                            Text(
+                                stringResource(R.string.exports_left, state.exportsLeft),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 }
                 itemsIndexed(pages) { index, file ->

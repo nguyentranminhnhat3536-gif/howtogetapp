@@ -12,6 +12,7 @@ fun Context.shareUri(file: File): Uri = FileProvider.getUriForFile(this, "$packa
 
 /** Mở file PDF bằng app xem PDF của máy. Trả về false nếu máy không có app nào mở được. */
 fun Context.viewPdf(file: File): Boolean {
+    if (!file.isFile) return false
     val intent = Intent(Intent.ACTION_VIEW).apply {
         setDataAndType(shareUri(file), "application/pdf")
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -21,7 +22,7 @@ fun Context.viewPdf(file: File): Boolean {
 
 /** Chia sẻ một hoặc nhiều file (PDF hoặc ảnh JPEG). */
 fun Context.shareFiles(files: List<File>, mime: String, chooserTitle: String): Boolean {
-    if (files.isEmpty()) return false
+    if (files.isEmpty() || files.any { !it.isFile }) return false
     val uris = ArrayList(files.map { shareUri(it) })
     val intent = if (uris.size == 1) {
         Intent(Intent.ACTION_SEND).putExtra(Intent.EXTRA_STREAM, uris[0])

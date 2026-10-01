@@ -84,6 +84,11 @@ class BillingManager(
         })
     }
 
+    /** Hỏi lại Google Play các lần mua (gọi khi app quay lại màn hình). Bỏ qua nếu chưa kết nối. */
+    fun refresh() {
+        if (client.isReady) scope.launch { refreshPurchases() }
+    }
+
     /** Mở màn thanh toán của Google Play cho [plan]. */
     fun launch(activity: Activity, plan: Plan) {
         val offer = _state.value.offers[plan]

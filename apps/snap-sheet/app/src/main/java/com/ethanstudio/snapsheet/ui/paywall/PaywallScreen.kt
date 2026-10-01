@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -104,7 +105,7 @@ fun PaywallScreen(
             Button(
                 onClick = { onBuy(selected) },
                 enabled = offers[selected] != null,
-                modifier = Modifier.fillMaxWidth().height(62.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 62.dp),
                 shape = MaterialTheme.shapes.large,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -142,7 +143,7 @@ private fun PlanCard(plan: Plan, name: String, offer: PlanOffer?, saving: Int?, 
         border = BorderStroke(if (isSelected) 1.5.dp else 1.dp, if (isSelected) color.primary else color.outlineVariant),
     ) {
         Row(
-            Modifier.padding(horizontal = 16.dp, vertical = 12.dp).height(40.dp),
+            Modifier.heightIn(min = 60.dp).padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
