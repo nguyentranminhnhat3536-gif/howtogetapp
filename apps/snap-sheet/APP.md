@@ -14,7 +14,9 @@ Bước 3 · Code MVP xong, CI xanh (build + unit test) ngày 2026-10-01. Chờ 
 
 ## Việc tiếp theo
 - [ ] Ethan duyệt kế hoạch bản iOS: `PLAN-ios.md` (DUYỆT-$)
-- [ ] Ethan duyệt kế hoạch đăng ký tài khoản: `PLAN-account.md` (DUYỆT-$)
+- [x] Code đăng ký, đăng nhập (email + Google), quên mật khẩu, xóa tài khoản (CI xanh 2026-10-01)
+- [ ] Ethan tạo project Firebase và dán `google-services.json` vào GitHub Secret `GOOGLE_SERVICES_JSON_SNAP_SHEET` (xem `PLAN-account.md` mục 3). Chưa có thì app chạy được nhưng đăng nhập báo "chưa bật"
+- [ ] Dán link trang xóa tài khoản vào Play Console: https://nguyentranminhnhat3536-gif.github.io/howtogetapp/snap-sheet/delete-account.html
 - [x] CI xanh
 - [ ] Ethan thử APK trên điện thoại và góp ý (DUYỆT-2)
 - [ ] Ethan tạo sản phẩm trong Play Console (xem mục Kiếm tiền) và chốt giá (DUYỆT-$)
@@ -70,7 +72,7 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 ## Quyền (permissions) và lý do
 | Quyền | Lý do |
 |---|---|
-| (không có) | Quét dùng màn hình của Google Play services (không cần CAMERA), ảnh chọn bằng trình chọn ảnh hệ thống (không cần đọc thư viện). BILLING, INTERNET, ACCESS_NETWORK_STATE do thư viện Play Billing và ML Kit tự thêm (app không tự gọi mạng). |
+| (không có) | Quét dùng màn hình của Google Play services (không cần CAMERA), ảnh chọn bằng trình chọn ảnh hệ thống (không cần đọc thư viện). BILLING, INTERNET, ACCESS_NETWORK_STATE, READ_GSERVICES do thư viện Play Billing, ML Kit và Firebase tự thêm. Mạng chỉ dùng khi đăng nhập. USE_BIOMETRIC và USE_FINGERPRINT (Credential Manager tự thêm) đã gỡ vì app không dùng. |
 
 ## Tài nguyên bên thứ ba và giấy phép
 | Tài nguyên (hình, font, âm thanh, dữ liệu…) | Nguồn | Giấy phép |
@@ -81,7 +83,7 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 | Play Billing Library 9.1.0 | Google | Apache 2.0 |
 
 ## Soạn sẵn cho Play Console
-- **Data safety:** Không thu thập dữ liệu cá nhân để gửi đi. Khai: lịch sử mua hàng được Google Play xử lý (Purchase history, không dùng cho quảng cáo). ML Kit và Google Play services có thể thu thập chẩn đoán (Diagnostics) theo chính sách Google; kiểm tra lại mục "SDK thu thập" trong Play Console trước khi nộp.
+- **Data safety:** Personal info › Email address và User IDs: có thu thập (chỉ khi người dùng tự tạo tài khoản, không bắt buộc), mục đích App functionality + Account management, không chia sẻ, không bán, mã hóa khi truyền, có cho yêu cầu xóa (link trang xóa tài khoản). Tài liệu quét không thu thập. Khai: lịch sử mua hàng được Google Play xử lý (Purchase history, không dùng cho quảng cáo). ML Kit và Google Play services có thể thu thập chẩn đoán (Diagnostics) theo chính sách Google; kiểm tra lại mục "SDK thu thập" trong Play Console trước khi nộp.
 - **Content rating (IARC):**
 - **Target audience:** 18+
 - **App access:** Toàn bộ tính năng dùng được mà không cần đăng nhập.
@@ -108,3 +110,4 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 - 2026-10-01: Ethan muốn thêm đăng ký tài khoản. Đã thiết kế 4 màn (https://claude.ai/artifact/Nug9pRAZzY5ejELXK2TNZz) và viết kế hoạch kỹ thuật + chi phí trong `PLAN-account.md`. Chưa code, chờ duyệt. Tài khoản là tùy chọn, vẫn dùng được không cần đăng nhập.
 - 2026-10-01: Ethan hỏi bản iOS. Viết kế hoạch kỹ thuật và chi phí trong `PLAN-ios.md`: app riêng bằng Swift + SwiftUI (VisionKit, Vision, PDFKit, StoreKit 2), build trên GitHub Actions macOS, thử qua TestFlight. Chưa code, chờ duyệt.
 - 2026-10-01: Ethan chọn tối ưu bản Android trước rồi mới làm iOS. Đợt tối ưu 1: tắt sao lưu tự động của Android (đúng lời hứa tài liệu chỉ nằm trên máy, chính sách đã ghi); hỏi lại Google Play mỗi lần quay lại app (bắt kịp gia hạn, hủy, hoàn tiền, giao dịch chờ); bộ nhớ đệm ảnh thu nhỏ để cuộn mượt; không mở/chia sẻ file đã mất; màn tài liệu hiện số lượt xuất miễn phí còn lại; đổi chiều cao cố định thành tối thiểu để chữ to (cỡ chữ hệ thống 200%) không bị cắt.
+- 2026-10-01: Ethan yêu cầu có đăng ký và đăng nhập ở đầu app. Đã code: màn chào (Đăng nhập / Đăng ký / Dùng không cần tài khoản) hiện ở lần mở đầu tiên; đăng ký email + mật khẩu có email xác nhận; đăng nhập email và Google (Credential Manager); quên mật khẩu; tab Tài khoản có Đăng xuất và Xóa tài khoản. Dùng Firebase Authentication (BoM 34.17.0, plugin google-services 4.5.0; credentials 1.6.0; googleid 1.2.0). Cấu hình Firebase nằm trong GitHub Secret, không commit. Nút Google chưa có logo chính thức của Google (phải thêm đúng hướng dẫn thương hiệu trước khi phát hành).

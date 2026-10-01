@@ -1,6 +1,6 @@
 # Kế hoạch kỹ thuật: đăng ký và đăng nhập tài khoản (SnapSheet)
 
-Trạng thái: **chờ Ethan duyệt (DUYỆT-$)**. Chưa viết dòng code nào. Ngày 2026-10-01.
+Trạng thái: **đã code giai đoạn 1 (2026-10-01), CI xanh.** Chờ Ethan làm mục 3 (tạo Firebase) để đăng nhập chạy thật.
 Màn hình đã thiết kế: https://claude.ai/artifact/Nug9pRAZzY5ejELXK2TNZz
 
 ## 1. Nguyên tắc
