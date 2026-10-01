@@ -107,14 +107,27 @@ fun PaywallScreen(
             PlanCard(Plan.MONTHLY, stringResource(R.string.plan_monthly), monthly, saving = null, selected == Plan.MONTHLY) { selected = Plan.MONTHLY }
             PlanCard(Plan.YEARLY, stringResource(R.string.plan_yearly), yearly, saving, selected == Plan.YEARLY) { selected = Plan.YEARLY }
             PlanCard(Plan.LIFETIME, stringResource(R.string.plan_lifetime), offers[Plan.LIFETIME], saving = null, selected == Plan.LIFETIME) { selected = Plan.LIFETIME }
+            val chosen = offers[selected]
+            val trialDays = chosen?.trialDays
             GradientButton(
-                text = stringResource(R.string.paywall_continue),
+                text = if (trialDays != null) stringResource(R.string.paywall_start_trial, trialDays) else stringResource(R.string.paywall_continue),
                 onClick = { onBuy(selected) },
                 enabled = offers[selected] != null,
                 modifier = Modifier.fillMaxWidth(),
                 minHeight = 60.dp,
                 fontSize = 19.sp,
             )
+            if (chosen != null && trialDays != null) {
+                Text(
+                    stringResource(R.string.paywall_trial_terms, trialDays, priceText(selected, chosen.price)),
+                    Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    fontSize = 13.sp,
+                    lineHeight = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
             Text(
                 stringResource(R.string.paywall_legal),
                 Modifier.fillMaxWidth(),
@@ -166,7 +179,10 @@ private fun PlanCard(plan: Plan, name: String, offer: PlanOffer?, saving: Int?, 
                         }
                     }
                 }
-                if (offer?.hasFreeTrial == true) {
+                val days = offer?.trialDays
+                if (days != null) {
+                    Text(stringResource(R.string.plan_trial_days, days), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = color.secondary)
+                } else if (offer?.hasFreeTrial == true) {
                     Text(stringResource(R.string.plan_trial), fontSize = 12.sp, color = color.onSurfaceVariant)
                 }
             }

@@ -65,4 +65,20 @@ class PlanTest {
         assertNull(yearlySavingPercent(1_000_000, 12_000_000))
         assertNull(yearlySavingPercent(0, 5_000_000))
     }
+
+    @Test
+    fun periodDaysReadsGooglePlayPeriods() {
+        assertEquals(7, periodDays("P7D"))
+        assertEquals(7, periodDays("P1W"))
+        assertEquals(30, periodDays("P1M"))
+        assertNull(periodDays(""))
+        assertNull(periodDays("7 days"))
+    }
+
+    @Test
+    fun trialDaysComeFromTheFreePhase() {
+        val sevenDay = OfferInfo("trial7", "t", listOf(PhaseInfo(0, "Free", "P7D"), PhaseInfo(990_000, "$0.99", "P1M")))
+        assertEquals(7, sevenDay.trialDays)
+        assertNull(OfferInfo(null, "t", listOf(PhaseInfo(990_000, "$0.99", "P1M"))).trialDays)
+    }
 }

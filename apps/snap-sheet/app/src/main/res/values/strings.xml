@@ -175,6 +175,9 @@
     <string name="stat_page_limit">Pages per document</string>
     <string name="account_help">Help &amp; contact</string>
     <string name="stat_unlimited">∞</string>
+    <string name="plan_trial_days">%1$d-day free trial</string>
+    <string name="paywall_start_trial">Start %1$d-day free trial</string>
+    <string name="paywall_trial_terms">Free for %1$d days, then %2$s. Cancel anytime in Google Play before the trial ends and you won\'t be charged.</string>
     <plurals name="pages">
         <item quantity="one">%1$d page</item>
         <item quantity="other">%1$d pages</item>

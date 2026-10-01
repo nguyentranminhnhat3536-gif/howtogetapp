@@ -31,12 +31,27 @@ fun activeKind(purchases: List<PurchaseInfo>): ProKind? {
 }
 
 /** Một giai đoạn giá của gói đăng ký (dùng thử miễn phí, giá giới thiệu, giá thường). */
-data class PhaseInfo(val priceMicros: Long, val formattedPrice: String)
+data class PhaseInfo(val priceMicros: Long, val formattedPrice: String, val billingPeriod: String = "")
 
 /** Một ưu đãi của gói cơ bản. Giai đoạn cuối cùng là giá gia hạn lâu dài. */
 data class OfferInfo(val offerId: String?, val token: String, val phases: List<PhaseInfo>) {
     val hasFreeTrial: Boolean get() = phases.size > 1 && phases.first().priceMicros == 0L
     val recurring: PhaseInfo get() = phases.last()
+
+    /** Số ngày dùng thử miễn phí (ví dụ 7), null nếu không có. */
+    val trialDays: Int? get() = if (hasFreeTrial) periodDays(phases.first().billingPeriod) else null
+}
+
+/** Đổi kỳ hạn ISO 8601 của Google Play ("P7D", "P1W", "P1M") thành số ngày. Tháng tính 30 ngày. */
+fun periodDays(period: String): Int? {
+    val match = Regex("^P(\\d+)([DWMY])$").find(period.trim().uppercase()) ?: return null
+    val n = match.groupValues[1].toInt()
+    return when (match.groupValues[2]) {
+        "D" -> n
+        "W" -> n * 7
+        "M" -> n * 30
+        else -> n * 365
+    }
 }
 
 /** Chọn ưu đãi để hiện: ưu tiên ưu đãi có dùng thử miễn phí, nếu không có thì lấy gói thường. */

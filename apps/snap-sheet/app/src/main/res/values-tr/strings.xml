@@ -172,6 +172,9 @@
     <string name="stat_page_limit">Belge başına sayfa</string>
     <string name="account_help">Yardım ve iletişim</string>
     <string name="stat_unlimited">∞</string>
+    <string name="plan_trial_days">%1$d gün ücretsiz deneme</string>
+    <string name="paywall_start_trial">%1$d günlük ücretsiz denemeyi başlat</string>
+    <string name="paywall_trial_terms">%1$d gün ücretsiz, sonra %2$s. Deneme bitmeden Google Play’de iptal ederseniz ücret alınmaz.</string>
     <plurals name="pages">
         <item quantity="one">%1$d sayfa</item>
         <item quantity="other">%1$d sayfa</item>

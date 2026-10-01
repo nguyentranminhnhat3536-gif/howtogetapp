@@ -34,6 +34,8 @@ data class PlanOffer(
     val hasFreeTrial: Boolean,
     internal val details: ProductDetails,
     internal val offerToken: String?,
+    /** Số ngày dùng thử miễn phí của ưu đãi đang hiện (ví dụ 7), null nếu không có. */
+    val trialDays: Int? = null,
 )
 
 data class BillingUiState(
@@ -136,13 +138,13 @@ class BillingManager(
                     OfferInfo(
                         o.offerId,
                         o.offerToken,
-                        o.pricingPhases.pricingPhaseList.map { PhaseInfo(it.priceAmountMicros, it.formattedPrice) },
+                        o.pricingPhases.pricingPhaseList.map { PhaseInfo(it.priceAmountMicros, it.formattedPrice, it.billingPeriod) },
                     )
                 }
                 val picked = pickOffer(infos) ?: continue
                 offers[plan] = PlanOffer(
                     plan, picked.recurring.formattedPrice, picked.recurring.priceMicros,
-                    picked.hasFreeTrial, details, picked.token,
+                    picked.hasFreeTrial, details, picked.token, picked.trialDays,
                 )
             }
         }

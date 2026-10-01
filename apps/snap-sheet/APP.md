@@ -63,11 +63,12 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 
 ## Kiếm tiền
 - Mô hình: freemium. Không quảng cáo (không AdMob, không cần UMP).
+- Gói tháng có **ưu đãi dùng thử miễn phí 7 ngày** (tạo trong Play Console: base plan `monthly` › Add offer › Free trial 7 ngày, điều kiện "New customer acquisition"). Trong 7 ngày: dùng đủ Pro. Hết 7 ngày: tự trừ 0,99 USD/tháng. Nếu hủy trong 7 ngày: không mất tiền, về bản miễn phí (5 trang/tài liệu, 3 lượt xuất/ngày, không OCR; tài liệu đã tạo vẫn giữ). Mỗi tài khoản Google chỉ được dùng thử một lần (Play tự kiểm tra).
 - Bản miễn phí: quét không giới hạn số tài liệu, 5 trang mỗi tài liệu, 3 lượt xuất (mở/chia sẻ PDF hoặc ảnh) mỗi ngày, không OCR. Không đóng dấu logo.
 - Sản phẩm Play Billing (ID phải khớp từng chữ):
   - Đăng ký (Subscription) `snapsheet_pro`, hai base plan: `monthly` (gia hạn mỗi tháng) và `yearly` (mỗi năm). Có thể thêm ưu đãi dùng thử miễn phí; app tự nhận và hiện.
   - Sản phẩm trong app (One-time product) `snapsheet_lifetime`: mua một lần, không hoàn trả tự động.
-- Giá Ethan chốt ngày 2026-10-01: tháng **0,99 USD**, năm **9,99 USD** (rẻ hơn 12 tháng lẻ 16%, màn mua tự hiện "Save 15%"), vĩnh viễn **19,99 USD** (Ethan nói 20 USD; giá kết thúc .99 là thông lệ, Ethan có thể đặt đúng 20). Đặt trong Play Console bằng USD, Play tự quy đổi giá từng nước. App lấy giá thật từ Google Play, không gõ cứng.
+- Giá Ethan chốt ngày 2026-10-01: tháng **0,99 USD**, năm **9,99 USD** (rẻ hơn 12 tháng lẻ 16%, màn mua tự hiện "Save 15%"), vĩnh viễn **19,97 USD** (Ethan chốt lại). Đặt trong Play Console bằng USD, Play tự quy đổi giá từng nước. App lấy giá thật từ Google Play, không gõ cứng.
 - Mua xong: acknowledge trong vòng 3 ngày (app tự làm), nếu không Google hoàn tiền.
 
 ## Quyền (permissions) và lý do
@@ -116,3 +117,4 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 - 2026-10-01: Lỗi đầu tiên khi đăng ký là do chưa bấm "Get started" và chưa bật Email/Password trong Firebase Authentication. App giờ báo rõ lỗi này và hiện mã lỗi cho các lỗi lạ. Ethan xác nhận đăng ký và đăng nhập (email + Google) chạy được trên máy thật.
 - 2026-10-01: Ethan muốn app quốc tế. Thêm 10 ngôn ngữ (es, pt-BR, fr, de, id, ru, tr, ja, ko, hi) ngoài en và vi; Android tự chọn theo ngôn ngữ máy, Android 13+ chọn riêng cho app được (generateLocaleConfig). Bản dịch do AI làm, nên nhờ người bản xứ đọc lại trước khi quảng bá ở nước đó. OCR hiện chỉ đọc chữ Latin (Anh, Việt, Tây Ban Nha, Pháp, Đức, Indonesia, Thổ Nhĩ Kỳ...); chữ Nhật, Hàn, Hindi, Nga cần thêm mô hình ML Kit riêng (để sau, app nặng thêm).
 - 2026-10-01: Đổi giao diện theo yêu cầu Ethan: nền trắng chủ đạo, xanh là màu phụ, trình bày bằng gradient (nút, nút +, ảnh đại diện, dải đầu trang, thẻ Pro, vòng icon). Màn đăng nhập chuyển từ nền tối sang nền trắng.
+- 2026-10-01: Ethan giao mình quyết giới hạn sau dùng thử: giữ nguyên bản miễn phí như cũ. Màn mua hiện "Dùng thử miễn phí 7 ngày", nút đổi thành "Dùng thử miễn phí 7 ngày", có dòng nói rõ giá sau dùng thử và cách hủy (chính sách Google Play bắt buộc).

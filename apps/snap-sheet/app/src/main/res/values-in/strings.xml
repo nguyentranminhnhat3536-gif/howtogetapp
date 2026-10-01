@@ -172,6 +172,9 @@
     <string name="stat_page_limit">Halaman per dokumen</string>
     <string name="account_help">Bantuan &amp; kontak</string>
     <string name="stat_unlimited">∞</string>
+    <string name="plan_trial_days">Uji coba gratis %1$d hari</string>
+    <string name="paywall_start_trial">Mulai uji coba gratis %1$d hari</string>
+    <string name="paywall_trial_terms">Gratis selama %1$d hari, lalu %2$s. Batalkan di Google Play sebelum uji coba berakhir agar tidak ditagih.</string>
     <plurals name="pages">
         <item quantity="other">%1$d halaman</item>
     </plurals>
