@@ -65,7 +65,6 @@ import com.ethanstudio.snapsheet.data.FreeLimits
 import com.ethanstudio.snapsheet.scan.ScanActions
 import com.ethanstudio.snapsheet.scan.ScanMode
 import com.ethanstudio.snapsheet.scan.rememberScanActions
-import com.ethanstudio.snapsheet.ui.account.AccountAuthCard
 import com.ethanstudio.snapsheet.ui.account.AccountScreen
 import com.ethanstudio.snapsheet.ui.auth.AuthEvent
 import com.ethanstudio.snapsheet.ui.auth.AuthViewModel
@@ -212,25 +211,21 @@ fun AppRoot() {
                         2 -> ToolsScreen(state.pro.isPro, actions, padding)
                         else -> AccountScreen(
                             state = state,
+                            user = user,
+                            authBusy = authState.busy,
+                            authError = authState.error,
                             version = version,
+                            onSignIn = { nav.navigate(ROUTE_SIGN_IN) },
                             onGetPro = { nav.navigate(ROUTE_PAYWALL) },
                             onRestore = vm::restore,
                             onRate = { report(context.openStoreListing()) },
                             onShareApp = { report(context.shareText(shareBody, shareLabel)) },
                             onContact = { report(context.sendFeedbackEmail(supportEmail, feedbackSubject)) },
                             onPrivacy = { report(context.openUrl(privacyUrl)) },
+                            onResend = authVm::resendVerification,
+                            onSignOut = authVm::signOut,
+                            onDelete = authVm::deleteAccount,
                             modifier = padding,
-                            accountCard = {
-                                AccountAuthCard(
-                                    user = user,
-                                    busy = authState.busy,
-                                    error = authState.error,
-                                    onSignIn = { nav.navigate(ROUTE_SIGN_IN) },
-                                    onResend = authVm::resendVerification,
-                                    onSignOut = authVm::signOut,
-                                    onDelete = authVm::deleteAccount,
-                                )
-                            },
                         )
                     }
                 }

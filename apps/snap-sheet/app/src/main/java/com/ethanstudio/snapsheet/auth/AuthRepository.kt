@@ -32,7 +32,10 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /** Người dùng đang đăng nhập (chỉ những gì app cần hiển thị). */
-data class AuthUser(val email: String?, val verified: Boolean, val usesPassword: Boolean)
+data class AuthUser(val email: String?, val verified: Boolean, val usesPassword: Boolean, val displayName: String? = null) {
+    /** Tên hiện trên hồ sơ: tên Google, nếu không có thì phần trước @ của email. */
+    val shownName: String get() = displayName?.takeIf { it.isNotBlank() } ?: email?.substringBefore('@').orEmpty()
+}
 
 /** Lỗi đã đổi sang loại của app để giao diện hiện câu dễ hiểu. */
 class AuthException(val error: AuthError, val code: String? = null) : Exception(code ?: error.name)
@@ -149,6 +152,7 @@ private fun FirebaseUser.toAuthUser() = AuthUser(
     email = email,
     verified = isEmailVerified,
     usesPassword = providerData.any { it.providerId == EmailAuthProvider.PROVIDER_ID },
+    displayName = displayName,
 )
 
 /** Đổi lỗi của Firebase và Credential Manager thành [AuthError]. Thứ tự quan trọng: lớp con trước lớp cha. */

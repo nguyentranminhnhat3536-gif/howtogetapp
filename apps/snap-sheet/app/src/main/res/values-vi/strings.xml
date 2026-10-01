@@ -158,6 +158,19 @@
     <string name="err_unknown">Có lỗi xảy ra. Hãy thử lại.</string>
     <string name="err_provider_disabled">Đăng nhập bằng email đang tắt. Nhà phát triển cần bật Email/Password trong Firebase.</string>
     <string name="err_with_code">%1$s (Mã: %2$s)</string>
+    <string name="account_guest">Khách</string>
+    <string name="account_sign_in_link">Đăng nhập hoặc đăng ký</string>
+    <string name="account_plan_free">Bạn đang dùng bản miễn phí</string>
+    <string name="account_plan_sub">Gói đăng ký · gia hạn qua Google Play</string>
+    <string name="account_plan_lifetime">Vĩnh viễn · đã mua một lần</string>
+    <string name="account_details">Xem chi tiết</string>
+    <string name="account_upgrade">Nâng cấp</string>
+    <string name="stat_docs">Tài liệu</string>
+    <string name="stat_pages">Trang đã quét</string>
+    <string name="stat_exports">Lượt xuất còn hôm nay</string>
+    <string name="stat_page_limit">Trang mỗi tài liệu</string>
+    <string name="account_help">Trợ giúp và liên hệ</string>
+    <string name="stat_unlimited">∞</string>
     <plurals name="pages">
         <item quantity="other">%1$d trang</item>
     </plurals>
