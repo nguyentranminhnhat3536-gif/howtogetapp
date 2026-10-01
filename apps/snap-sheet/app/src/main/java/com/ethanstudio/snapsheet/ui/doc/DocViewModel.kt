@@ -32,6 +32,8 @@ data class DocUiState(
     val pro: ProState = ProState(),
     val ocrText: String? = null,
     val ocrBusy: Boolean = false,
+    /** Đã đọc xong từ cơ sở dữ liệu chưa (để phân biệt "đang tải" với "tài liệu không còn"). */
+    val loaded: Boolean = false,
 ) {
     val exportsLeft: Int
         get() = FreeLimits.remaining(pro.isPro, pro.usage, LocalDate.now().toEpochDay())
@@ -57,7 +59,7 @@ class DocViewModel(
     val events = _events.receiveAsFlow()
 
     val uiState: StateFlow<DocUiState> = combine(repo.observe(id), proStore.state, ocr) { doc, pro, (text, busy) ->
-        DocUiState(doc = doc, pro = pro, ocrText = text, ocrBusy = busy)
+        DocUiState(doc = doc, pro = pro, ocrText = text, ocrBusy = busy, loaded = true)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DocUiState())
 
     fun pdfFile(): File = repo.pdfFile(id)

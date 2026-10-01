@@ -1,5 +1,11 @@
 package com.ethanstudio.snapsheet.billing
 
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.text.NumberFormat
+import java.util.Currency
+import java.util.Locale
+
 /**
  * Ba gói bán trong app. Tên mã (ID) phải khớp từng chữ với Play Console:
  *  - Đăng ký (Subscription) `snapsheet_pro` có 2 gói cơ bản (base plan): `monthly` và `yearly`.
@@ -31,7 +37,13 @@ fun activeKind(purchases: List<PurchaseInfo>): ProKind? {
 }
 
 /** Một giai đoạn giá của gói đăng ký (dùng thử miễn phí, giá giới thiệu, giá thường). */
-data class PhaseInfo(val priceMicros: Long, val formattedPrice: String, val billingPeriod: String = "")
+data class PhaseInfo(
+    val priceMicros: Long,
+    val formattedPrice: String,
+    val billingPeriod: String = "",
+    /** Mã tiền tệ ISO 4217 (ví dụ "USD"), do Google Play trả về. */
+    val currencyCode: String = "",
+)
 
 /** Một ưu đãi của gói cơ bản. Giai đoạn cuối cùng là giá gia hạn lâu dài. */
 data class OfferInfo(val offerId: String?, val token: String, val phases: List<PhaseInfo>) {
@@ -64,4 +76,26 @@ fun yearlySavingPercent(monthlyMicros: Long, yearlyMicros: Long): Int? {
     val full = monthlyMicros * 12
     if (yearlyMicros >= full) return null
     return (((full - yearlyMicros) * 100) / full).toInt()
+}
+
+/**
+ * Giá gói năm chia 12, định dạng theo tiền tệ và [locale] (ví dụ "$0.83").
+ * Null nếu giá <= 0 hoặc mã tiền tệ không hợp lệ.
+ */
+fun formatPerMonth(yearlyMicros: Long, currencyCode: String, locale: Locale): String? {
+    if (yearlyMicros <= 0) return null
+    val money = try {
+        Currency.getInstance(currencyCode)
+    } catch (e: IllegalArgumentException) {
+        return null
+    }
+    val digits = money.defaultFractionDigits.coerceAtLeast(0)
+    val perMonth = BigDecimal.valueOf(yearlyMicros)
+        .divide(BigDecimal.valueOf(12_000_000L), digits, RoundingMode.HALF_UP)
+    val format = NumberFormat.getCurrencyInstance(locale).apply {
+        currency = money
+        minimumFractionDigits = digits
+        maximumFractionDigits = digits
+    }
+    return format.format(perMonth)
 }

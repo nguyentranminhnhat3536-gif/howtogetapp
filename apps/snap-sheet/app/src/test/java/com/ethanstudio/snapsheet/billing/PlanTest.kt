@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import java.util.Locale
 import org.junit.Test
 
 class PlanTest {
@@ -80,5 +81,50 @@ class PlanTest {
         val sevenDay = OfferInfo("trial7", "t", listOf(PhaseInfo(0, "Free", "P7D"), PhaseInfo(990_000, "$0.99", "P1M")))
         assertEquals(7, sevenDay.trialDays)
         assertNull(OfferInfo(null, "t", listOf(PhaseInfo(990_000, "$0.99", "P1M"))).trialDays)
+    }
+
+    // --- formatPerMonth (giá gói năm quy ra mỗi tháng) ---
+
+    @Test
+    fun perMonthPriceInDollars() {
+        // 9.99 / 12 = 0.8325 → làm tròn 0.83
+        assertEquals("$0.83", formatPerMonth(9_990_000, "USD", Locale.US))
+    }
+
+    @Test
+    fun perMonthPriceRoundsHalfUp() {
+        // 29.99 / 12 = 2.49916… → 2.50
+        assertEquals("$2.50", formatPerMonth(29_990_000, "USD", Locale.US))
+    }
+
+    @Test
+    fun perMonthPriceForCurrencyWithoutDecimals() {
+        val text = formatPerMonth(1_200_000_000, "JPY", Locale.US)
+        assertTrue(text, text!!.contains("100"))
+        assertFalse(text, text.contains("."))
+    }
+
+    @Test
+    fun perMonthPriceFollowsLocaleFormat() {
+        // 11.99 EUR / 12 = 0.99916… → 1,00 (dấu phẩy thập phân kiểu Đức)
+        val text = formatPerMonth(11_990_000, "EUR", Locale.GERMANY)
+        assertTrue(text, text!!.contains("1,00"))
+    }
+
+    @Test
+    fun perMonthPriceIsNullForZeroOrNegativePrice() {
+        assertNull(formatPerMonth(0, "USD", Locale.US))
+        assertNull(formatPerMonth(-1_000_000, "USD", Locale.US))
+    }
+
+    @Test
+    fun perMonthPriceIsNullForUnknownOrMissingCurrency() {
+        assertNull(formatPerMonth(9_990_000, "ZZZ", Locale.US))
+        assertNull(formatPerMonth(9_990_000, "", Locale.US))
+    }
+
+    @Test
+    fun phaseInfoCurrencyDefaultsToEmpty() {
+        assertEquals("", PhaseInfo(990_000, "$0.99", "P1M").currencyCode)
     }
 }

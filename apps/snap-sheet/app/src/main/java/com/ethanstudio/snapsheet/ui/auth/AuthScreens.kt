@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -43,9 +43,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -57,6 +54,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.selection.toggleable
@@ -64,8 +62,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ethanstudio.snapsheet.R
 import com.ethanstudio.snapsheet.auth.AuthError
 import com.ethanstudio.snapsheet.auth.AuthValidation
+import com.ethanstudio.snapsheet.ui.common.GlassCard
 import com.ethanstudio.snapsheet.ui.common.GradientButton
+import com.ethanstudio.snapsheet.ui.common.SkyBackground
+import com.ethanstudio.snapsheet.ui.theme.Accent
 import com.ethanstudio.snapsheet.ui.theme.Gradients
+import com.ethanstudio.snapsheet.ui.theme.InkSoft
+import com.ethanstudio.snapsheet.ui.theme.InkStrong
+import com.ethanstudio.snapsheet.ui.theme.displaySerif
 import com.ethanstudio.snapsheet.util.findActivity
 
 /** Màu của nhóm màn đăng nhập: nền trắng, khối xanh nhạt nhòe phía sau, thẻ trắng mờ, nút gradient xanh. */
@@ -77,8 +81,6 @@ private object AuthColors {
     val OnPrimary = Color(0xFFFFFFFF)
     val Link = Color(0xFF235FDC)
     val Error = Color(0xFFC62828)
-    val Blob1 = Color(0xFF8FBCFF)
-    val Blob2 = Color(0xFFB9D4FF)
     val Glass = Color(0xEBFFFFFF)
     val Border = Color(0xFFE3E9F4)
     val FieldBorder = Color(0xFF7F8AA0)
@@ -103,12 +105,11 @@ fun AuthError.messageRes(): Int = when (this) {
     AuthError.CANCELED, AuthError.UNKNOWN -> R.string.err_unknown
 }
 
-/** Nền tối với các khối màu nhòe, thẻ kính mờ ở giữa. Cuộn được và né bàn phím. */
+/** Nền "bầu trời" có mây mờ, thẻ kính ở giữa. Cuộn được và né bàn phím. */
 @Composable
 private fun AuthBackground(content: @Composable ColumnScope.() -> Unit) {
-    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFFD6E6FF), AuthColors.Ground)))) {
-        Box(Modifier.offset(x = (-70).dp, y = 80.dp).size(250.dp).blur(48.dp, BlurredEdgeTreatment.Unbounded).background(AuthColors.Blob1, CircleShape))
-        Box(Modifier.align(Alignment.BottomEnd).offset(x = 60.dp, y = (-90).dp).size(230.dp).blur(48.dp, BlurredEdgeTreatment.Unbounded).background(AuthColors.Blob2, RoundedCornerShape(40.dp)))
+    Box(Modifier.fillMaxSize().background(AuthColors.Ground)) {
+        SkyBackground()
         Column(
             Modifier.fillMaxSize().systemBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -240,15 +241,74 @@ private fun GoogleButton(vm: AuthViewModel, busy: Boolean) {
     }
 }
 
-/** Màn chào: đăng nhập, đăng ký, hoặc dùng không cần tài khoản. */
+/** Màn chào: đăng nhập, tạo tài khoản, đăng nhập Google, hoặc dùng không cần tài khoản. */
 @Composable
-fun WelcomeScreen(onSignIn: () -> Unit, onSignUp: () -> Unit, onSkip: () -> Unit) {
-    AuthBackground {
-        Text(stringResource(R.string.auth_hello), fontSize = 34.sp, lineHeight = 42.sp, fontWeight = FontWeight.Bold, color = AuthColors.Ink)
-        Body(stringResource(R.string.auth_welcome_body))
-        PrimaryButton(stringResource(R.string.auth_sign_in), busy = false, onClick = onSignIn)
-        OutlineButton(stringResource(R.string.auth_sign_up), onClick = onSignUp)
-        LinkButton(stringResource(R.string.auth_skip), onSkip, Modifier.fillMaxWidth())
+fun WelcomeScreen(
+    onSignIn: () -> Unit,
+    onSignUp: () -> Unit,
+    onGoogle: () -> Unit,
+    onSkip: () -> Unit,
+    busy: Boolean,
+    error: AuthError?,
+    errorCode: String?,
+) {
+    Box(Modifier.fillMaxSize().background(AuthColors.Ground)) {
+        SkyBackground()
+        Column(
+            Modifier.fillMaxSize().systemBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Column(Modifier.widthIn(max = 520.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Icon(painterResource(R.drawable.ic_scan), null, Modifier.size(34.dp), tint = Gradients.ButtonEnd)
+                    Text(stringResource(R.string.app_name_short), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = AuthColors.Ink)
+                }
+                Text(
+                    stringResource(R.string.welcome_title),
+                    Modifier.padding(top = 24.dp),
+                    fontFamily = displaySerif(),
+                    fontSize = 40.sp,
+                    lineHeight = 44.sp,
+                    color = InkStrong,
+                )
+                Text(stringResource(R.string.welcome_body), fontSize = 16.sp, lineHeight = 23.sp, color = InkSoft)
+                Spacer(Modifier.heightIn(min = 24.dp))
+                GlassCard {
+                    PrimaryButton(stringResource(R.string.auth_sign_in), busy = false, onClick = onSignIn)
+                    WelcomeOutlineButton(stringResource(R.string.auth_create), Color(0xFF9EBDF2), 1.5.dp, Accent, onClick = onSignUp)
+                    WelcomeOutlineButton(stringResource(R.string.auth_google), AuthColors.Border, 1.dp, AuthColors.Ink, enabled = !busy, busy = busy, onClick = onGoogle)
+                    ErrorText(error, errorCode)
+                    LinkButton(stringResource(R.string.auth_skip), onSkip, Modifier.fillMaxWidth())
+                }
+            }
+        }
+    }
+}
+
+/** Nút viền trắng của màn chào (tạo tài khoản, Google). Khi [busy] hiện vòng xoay nhỏ thay cho chữ. */
+@Composable
+private fun WelcomeOutlineButton(
+    text: String,
+    borderColor: Color,
+    borderWidth: Dp,
+    textColor: Color,
+    enabled: Boolean = true,
+    busy: Boolean = false,
+    onClick: () -> Unit,
+) {
+    OutlinedButton(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+        shape = CircleShape,
+        border = BorderStroke(borderWidth, borderColor),
+        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White, contentColor = textColor, disabledContainerColor = Color.White),
+    ) {
+        if (busy) {
+            CircularProgressIndicator(Modifier.size(20.dp), color = textColor, strokeWidth = 2.dp)
+        } else {
+            Text(text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+        }
     }
 }
 

@@ -8,12 +8,14 @@ import com.ethanstudio.snapsheet.R
 import com.ethanstudio.snapsheet.billing.BillingEvent
 import com.ethanstudio.snapsheet.billing.BillingManager
 import com.ethanstudio.snapsheet.data.Doc
+import com.ethanstudio.snapsheet.data.DocSort
 import com.ethanstudio.snapsheet.data.DocRepository
 import com.ethanstudio.snapsheet.data.FreeLimits
 import com.ethanstudio.snapsheet.data.ProState
 import com.ethanstudio.snapsheet.data.ProStore
 import com.ethanstudio.snapsheet.data.defaultDocName
 import com.ethanstudio.snapsheet.data.filterDocs
+import com.ethanstudio.snapsheet.data.sortDocs
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,6 +30,8 @@ data class MainUiState(
     val allDocs: List<Doc> = emptyList(),
     val docs: List<Doc> = emptyList(),
     val query: String = "",
+    /** Cách sắp xếp ở tab Files (chỉ áp cho [docs]; [allDocs] luôn mới nhất trước). */
+    val sort: DocSort = DocSort.NEWEST,
     val pro: ProState = ProState(),
     val saving: Boolean = false,
 ) {
@@ -48,14 +52,15 @@ class MainViewModel(
     private val billing: BillingManager,
 ) : ViewModel() {
     private val query = MutableStateFlow("")
+    private val sort = MutableStateFlow(DocSort.NEWEST)
     private val saving = MutableStateFlow(false)
     private val _events = Channel<MainEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
     val billingState = billing.state
 
-    val uiState: StateFlow<MainUiState> = combine(repo.docs, query, proStore.state, saving) { docs, q, pro, busy ->
-        MainUiState(allDocs = docs, docs = filterDocs(docs, q), query = q, pro = pro, saving = busy)
+    val uiState: StateFlow<MainUiState> = combine(repo.docs, query, sort, proStore.state, saving) { docs, q, order, pro, busy ->
+        MainUiState(allDocs = docs, docs = sortDocs(filterDocs(docs, q), order), query = q, sort = order, pro = pro, saving = busy)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), MainUiState())
 
     init {
@@ -81,6 +86,10 @@ class MainViewModel(
 
     fun setQuery(value: String) {
         query.value = value
+    }
+
+    fun setSort(value: DocSort) {
+        sort.value = value
     }
 
     /** Lưu kết quả của trình quét rồi mở tài liệu vừa tạo. */

@@ -1,13 +1,14 @@
 package com.ethanstudio.snapsheet.ui.common
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,8 +21,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,18 +32,22 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ethanstudio.snapsheet.R
 import com.ethanstudio.snapsheet.data.Doc
+import com.ethanstudio.snapsheet.ui.theme.Accent
 import com.ethanstudio.snapsheet.ui.theme.Gradients
 import com.ethanstudio.snapsheet.util.decodeSampledCached
 import kotlinx.coroutines.Dispatchers
@@ -53,41 +56,26 @@ import java.io.File
 import java.text.DateFormat
 import java.util.Date
 
-/** Huy hiệu PRO: nền xanh đậm (đủ tương phản với chữ trắng), ngôi sao và chữ PRO. */
+/** Nhãn PRO nhỏ: chữ trắng đậm trên nền gradient xanh. */
 @Composable
-fun ProBadge(modifier: Modifier = Modifier) {
-    Surface(modifier = modifier, shape = MaterialTheme.shapes.extraSmall, color = MaterialTheme.colorScheme.secondary) {
-        Row(
-            modifier = Modifier.heightIn(min = 23.dp).padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Icon(painterResource(R.drawable.ic_star), null, Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onSecondary)
-            Text(
-                stringResource(R.string.pro_badge),
-                color = MaterialTheme.colorScheme.onSecondary,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-            )
-        }
-    }
+fun ProTag(modifier: Modifier = Modifier) {
+    Text(
+        stringResource(R.string.pro_badge),
+        modifier = modifier.background(Gradients.Primary, RoundedCornerShape(6.dp)).padding(horizontal = 6.dp, vertical = 2.dp),
+        color = Color.White,
+        fontSize = 11.sp,
+        fontWeight = FontWeight.Bold,
+    )
 }
 
-/** Hàng tiêu đề của một tab: tên ở giữa, huy hiệu PRO bên trái nếu đã mua. */
+/** Đầu trang của một tab: nền gradient xanh nhạt, né thanh trạng thái. */
 @Composable
-fun TabHeader(title: String, isPro: Boolean) {
-    Box(Modifier.background(Gradients.header())) {
-        Box(Modifier.fillMaxWidth().statusBarsPadding().heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 8.dp)) {
-            if (isPro) ProBadge(Modifier.align(Alignment.CenterStart))
-            Text(
-                title,
-                modifier = Modifier.align(Alignment.Center).padding(horizontal = 72.dp),
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-    }
+fun ScreenHeader(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        modifier.fillMaxWidth().background(Gradients.header()).statusBarsPadding().padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+        content = content,
+    )
 }
 
 @Composable
@@ -101,53 +89,53 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-/** Lối tắt tròn trên trang chủ: vòng tròn có icon và nhãn ngắn bên dưới. */
+/** Lối tắt tròn: vòng tròn có icon và nhãn ngắn (tối đa 2 dòng) bên dưới. */
 @Composable
-fun QuickAction(@DrawableRes icon: Int, label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun ShortcutCircle(@DrawableRes icon: Int, label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.heightIn(min = 48.dp).clip(MaterialTheme.shapes.small).clickable(onClick = onClick).padding(4.dp),
+        modifier = modifier.heightIn(min = 48.dp).clip(MaterialTheme.shapes.small).clickable(role = Role.Button, onClick = onClick).padding(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Box(Modifier.size(56.dp).background(Gradients.soft(), CircleShape), contentAlignment = Alignment.Center) {
-            Icon(painterResource(icon), null, Modifier.size(28.dp), tint = MaterialTheme.colorScheme.secondary)
+            Icon(painterResource(icon), null, Modifier.size(26.dp), tint = Accent)
         }
         Text(
             label,
-            fontSize = 13.sp,
+            fontSize = 12.5.sp,
             lineHeight = 16.sp,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
 
-/** Thẻ công cụ lớn: icon, tên, mô tả một dòng, mũi tên. */
+/** Ô công cụ trong lưới: icon, tên, mô tả ngắn; nhãn PRO ở góc phải trên nếu cần Pro. */
 @Composable
-fun ToolCard(@DrawableRes icon: Int, title: String, subtitle: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Card(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth().heightIn(min = 96.dp),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        elevation = CardDefaults.cardElevation(0.dp),
+fun ToolTile(@DrawableRes icon: Int, title: String, desc: String, pro: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
+    Box(
+        modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(colors.surface)
+            .border(1.dp, colors.outlineVariant, RoundedCornerShape(20.dp))
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(16.dp),
     ) {
-        Row(
-            Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Box(Modifier.size(64.dp).background(Gradients.soft(), RoundedCornerShape(18.dp)), contentAlignment = Alignment.Center) {
-                Icon(painterResource(icon), null, Modifier.size(34.dp), tint = MaterialTheme.colorScheme.secondary)
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Box(Modifier.size(48.dp).background(Gradients.soft(), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
+                Icon(painterResource(icon), null, Modifier.size(24.dp), tint = Accent)
             }
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(title, fontSize = 20.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f))
-                Text(subtitle, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(title, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.onSurface)
+                Text(desc, fontSize = 13.sp, lineHeight = 17.sp, color = colors.onSurfaceVariant)
             }
-            Icon(painterResource(R.drawable.ic_chevron), null, tint = MaterialTheme.colorScheme.primary)
         }
+        if (pro) ProTag(Modifier.align(Alignment.TopEnd))
     }
 }
 
@@ -162,26 +150,32 @@ fun PageThumbnail(file: File, modifier: Modifier = Modifier, target: Int = 256, 
     }
 }
 
-/** Một hàng tài liệu: ảnh trang đầu, tên, ngày và số trang. */
+/** Một hàng tài liệu: ảnh trang đầu, tên, dòng phụ dựng sẵn (ngày, số trang, dung lượng…). */
 @Composable
-fun DocRow(doc: Doc, firstPage: File, onClick: () -> Unit) {
-    val date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(doc.createdAt))
+fun DocRow(doc: Doc, firstPage: File, subtitle: String, onClick: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
     Row(
-        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 8.dp),
+        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 20.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        PageThumbnail(firstPage, Modifier.size(width = 48.dp, height = 64.dp).clip(MaterialTheme.shapes.extraSmall))
-        Column(Modifier.weight(1f)) {
-            Text(doc.name, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1)
-            Text(
-                "$date · " + pluralStringResource(R.plurals.pages, doc.pageCount, doc.pageCount),
-                fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+        PageThumbnail(
+            firstPage,
+            Modifier.size(width = 46.dp, height = 60.dp).clip(RoundedCornerShape(8.dp)).border(1.dp, colors.outlineVariant, RoundedCornerShape(8.dp)),
+        )
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(doc.name, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(subtitle, fontSize = 13.sp, color = colors.onSurfaceVariant)
         }
-        Icon(painterResource(R.drawable.ic_chevron), null, tint = MaterialTheme.colorScheme.outline)
+        Icon(painterResource(R.drawable.ic_chevron), null, tint = colors.outline)
     }
+}
+
+/** Ngày tạo của tài liệu, kiểu ngắn gọn theo ngôn ngữ đang hiện (ví dụ "Oct 1, 2026"). */
+@Composable
+fun docDate(doc: Doc): String {
+    val locale = LocalConfiguration.current.locales[0]
+    return DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(Date(doc.createdAt))
 }
 
 /** Trạng thái trống: hình, tiêu đề, một câu hướng dẫn. */

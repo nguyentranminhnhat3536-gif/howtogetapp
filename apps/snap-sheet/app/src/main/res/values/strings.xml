@@ -183,4 +183,61 @@
         <item quantity="one">%1$d page</item>
         <item quantity="other">%1$d pages</item>
     </plurals>
+    <string name="paywall_kicker" translatable="false">SNAPSHEET PRO</string>
+    <string name="lang_en" translatable="false">English</string>
+    <string name="lang_vi" translatable="false">Tiếng Việt</string>
+    <string name="lang_es" translatable="false">Español</string>
+    <string name="lang_pt_br" translatable="false">Português (Brasil)</string>
+    <string name="lang_fr" translatable="false">Français</string>
+    <string name="lang_de" translatable="false">Deutsch</string>
+    <string name="lang_id" translatable="false">Bahasa Indonesia</string>
+    <string name="lang_ru" translatable="false">Русский</string>
+    <string name="lang_tr" translatable="false">Türkçe</string>
+    <string name="lang_ja" translatable="false">日本語</string>
+    <string name="lang_ko" translatable="false">한국어</string>
+    <string name="lang_hi" translatable="false">हिन्दी</string>
+    <string name="home_greeting">Hi, %1$s</string>
+    <string name="home_greeting_guest">Hi there</string>
+    <string name="home_scan_title">Scan document</string>
+    <string name="home_scan_sub">Auto-crop, sharpen text, save as PDF</string>
+    <string name="shortcut_single">Single page</string>
+    <string name="shortcut_multi">Multi-page</string>
+    <string name="shortcut_id">ID card</string>
+    <string name="shortcut_import">Import photos</string>
+    <string name="tools_subtitle">Pick the right scan for your paperwork.</string>
+    <string name="tool_single_desc">One sheet, fast</string>
+    <string name="tool_multi_desc">Merge into one PDF</string>
+    <string name="tool_id_desc">Front and back</string>
+    <string name="tool_import_desc">Use photos you have</string>
+    <string name="tool_ocr_desc">Copy text from images</string>
+    <string name="tool_share_title">Quick share</string>
+    <string name="tool_share_desc">PDF or images</string>
+    <string name="tool_need_doc">Scan a document first.</string>
+    <string name="tool_pick_ocr">Open a document, then tap Extract text.</string>
+    <string name="tool_pick_share">Open a document to share it.</string>
+    <string name="files_search_hint">Search documents</string>
+    <string name="files_today">TODAY</string>
+    <string name="files_earlier">EARLIER</string>
+    <string name="sort_newest">Newest</string>
+    <string name="sort_name">Name</string>
+    <string name="sheet_start">Start a scan</string>
+    <string name="sheet_camera_sub">Auto-crop, multiple pages</string>
+    <string name="sheet_photos_sub">Turn your photos into a PDF</string>
+    <string name="doc_extract">Extract text</string>
+    <string name="doc_page_of">Page %1$d of %2$d · %3$s</string>
+    <string name="doc_missing">This document is no longer available.</string>
+    <string name="paywall_headline">Scan without limits. Keep it all on your phone.</string>
+    <string name="plan_sub_year">12 months · %1$s</string>
+    <string name="plan_sub_month">Billed monthly</string>
+    <string name="plan_sub_month_trial">Then billed monthly</string>
+    <string name="plan_sub_lifetime">Pay once, yours forever</string>
+    <string name="plan_per_month">%1$s/mo</string>
+    <string name="paywall_terms_month">%1$s per month, renews automatically. Cancel anytime in Google Play.</string>
+    <string name="paywall_terms_year">%1$s per year, renews automatically. Cancel anytime in Google Play.</string>
+    <string name="paywall_terms_lifetime">One-time payment of %1$s. No renewal.</string>
+    <string name="welcome_title">Your paperwork, tidy in one tap</string>
+    <string name="welcome_body">Scan, save PDFs and pull out text right on your phone. Your documents never leave your device.</string>
+    <string name="account_language">Language</string>
+    <string name="language_title">App language</string>
+    <string name="language_system">System default</string>
 </resources>

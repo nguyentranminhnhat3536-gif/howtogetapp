@@ -46,12 +46,12 @@ Bước 3 · Code MVP xong, CI xanh (build + unit test) ngày 2026-10-01. Chờ 
 ## Màn hình
 | Màn hình | Làm gì |
 |---|---|
-| Home | Lối tắt (quét một trang, nhiều trang, thẻ căn cước, nhập ảnh) và danh sách gần đây |
-| Files | Tìm kiếm và danh sách tài liệu |
-| Tools | Thẻ công cụ: một trang, nhiều trang, thẻ căn cước, ảnh sang PDF |
-| Account | Thẻ Pro, nâng cấp, khôi phục giao dịch, đánh giá, chia sẻ, liên hệ, chính sách |
-| Tài liệu | Xem các trang, mở/chia sẻ PDF và ảnh, lấy chữ, đổi tên, xóa |
-| Màn mua | Ba gói, chọn gói, Continue, dòng pháp lý, Restore |
+| Home | Lời chào + ảnh đại diện, thẻ lớn "Scan document", 4 lối tắt tròn (một trang, nhiều trang, thẻ căn cước, nhập ảnh), danh sách gần đây + "See all" |
+| Files | Tìm kiếm, sắp xếp (mới nhất / tên), nhóm "Hôm nay" / "Trước đó", dòng phụ có số trang và dung lượng |
+| Tools | Lưới thẻ công cụ: một trang, nhiều trang, thẻ căn cước, ảnh sang PDF, lấy chữ (PRO), chia sẻ nhanh |
+| Account | Thẻ Pro, nâng cấp, khôi phục giao dịch, Language (chọn ngôn ngữ của app), đánh giá, chia sẻ, liên hệ, chính sách |
+| Tài liệu | Vuốt xem từng trang ("Page x of y"), 4 nút tròn (mở PDF, chia sẻ PDF, chia sẻ ảnh, lấy chữ), thanh lượt xuất miễn phí, đổi tên, xóa |
+| Màn mua | Nền "bầu trời", tiêu đề chữ có chân, ba gói (năm, tháng, vĩnh viễn) có nhãn góc, giá năm quy ra mỗi tháng, dòng điều khoản theo gói, Restore, link chính sách |
 | Bảng Scan | Bấm nút + ở giữa: quét bằng camera hoặc nhập ảnh |
 
 Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHrdgpB6w).
@@ -81,6 +81,7 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 |---|---|---|
 | Icon giao diện và icon app | Tự vẽ (vector) theo Scan Design System | Của Ethan |
 | Font | Roboto mặc định của Android | Apache 2.0 |
+| Font tiêu đề DM Serif Display (`res/font/dm_serif_display.ttf`, chỉ dùng cho en/es/pt/fr/de/id/tr; ngôn ngữ khác dùng font có chân của hệ thống) | https://github.com/google/fonts/tree/main/ofl/dmserifdisplay | SIL OFL 1.1 (văn bản kèm theo ở `assets/licenses/DMSerifDisplay-OFL.txt`) |
 | ML Kit Document Scanner, ML Kit Text Recognition | Google | Điều khoản ML Kit |
 | Play Billing Library 9.1.0 | Google | Apache 2.0 |
 
@@ -119,3 +120,6 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 - 2026-10-01: Đổi giao diện theo yêu cầu Ethan: nền trắng chủ đạo, xanh là màu phụ, trình bày bằng gradient (nút, nút +, ảnh đại diện, dải đầu trang, thẻ Pro, vòng icon). Màn đăng nhập chuyển từ nền tối sang nền trắng.
 - 2026-10-01: Ethan giao mình quyết giới hạn sau dùng thử: giữ nguyên bản miễn phí như cũ. Màn mua hiện "Dùng thử miễn phí 7 ngày", nút đổi thành "Dùng thử miễn phí 7 ngày", có dòng nói rõ giá sau dùng thử và cách hủy (chính sách Google Play bắt buộc).
 - 2026-10-01: Ethan thấy màn mua vẫn nền tối (máy bật chế độ tối). Đổi app luôn dùng giao diện trắng bất kể cài đặt máy (bộ màu tối vẫn giữ trong code, bật lại bằng AppTheme(darkTheme = true)); thanh trạng thái luôn icon tối. Màn mua thêm "Đang tải giá…" và thôi chờ Google Play sau 10 giây để hiện thông báo rõ thay vì trống.
+- 2026-10-01: Làm lại giao diện theo bản thiết kế "SnapSheet Redesign" Ethan đã duyệt (Home, Files, Tools, Tài liệu, bảng Scan, màn mua kiểu bầu trời, Account, màn chào) và vẽ lại bộ icon nét 2px. Màn mua bỏ dòng "Terms" vì app chưa có trang điều khoản (chỉ giữ link chính sách); không hiện số sao hay đánh giá. Màn chào vẫn cho dùng không cần tài khoản, thêm nút "Continue with Google" (chỉ chữ, chưa có logo Google).
+- 2026-10-01: Thêm Account › Language: chọn "System default" hoặc 1 trong 12 ngôn ngữ, đổi ngay. Không thêm thư viện appcompat: Android 13+ dùng LocaleManager của hệ thống (khớp với Cài đặt › Ứng dụng › Ngôn ngữ), Android 8–12 lưu mã ngôn ngữ trong SharedPreferences `app_locale` (chỉ trên máy) rồi tạo lại màn hình.
+- 2026-10-01: Nhúng font DM Serif Display (SIL OFL 1.1) cho tiêu đề lớn. Font chỉ có chữ Latin nên tiếng Việt, Nga, Nhật, Hàn, Hindi dùng font có chân của hệ thống để không vỡ dấu.

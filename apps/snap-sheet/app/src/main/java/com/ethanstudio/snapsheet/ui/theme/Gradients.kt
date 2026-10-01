@@ -20,7 +20,7 @@ object Gradients {
     fun header(): Brush = if (LocalDarkTheme.current) {
         Brush.verticalGradient(listOf(Color(0xFF13233F), Color(0xFF0F1114)))
     } else {
-        Brush.verticalGradient(listOf(Color(0xFFD6E6FF), Color(0xFFFFFFFF)))
+        Brush.verticalGradient(0f to Color(0xFFD6E6FF), 0.55f to Color(0xFFEEF4FF), 1f to Color(0xFFFFFFFF))
     }
 
     /** Nền nhẹ cho thẻ, vòng tròn icon, thẻ Pro. */

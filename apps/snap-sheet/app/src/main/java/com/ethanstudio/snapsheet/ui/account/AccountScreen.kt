@@ -59,10 +59,8 @@ import com.ethanstudio.snapsheet.ui.common.GradientButton
 import com.ethanstudio.snapsheet.ui.theme.Gradients
 import com.ethanstudio.snapsheet.ui.main.MainUiState
 
-/** Màu nền nhạt của đầu trang và thẻ Pro (tím lavender sang xanh), có bản cho chế độ tối. */
+/** Màu nền nhạt của thẻ Pro (xanh nhạt), có bản cho chế độ tối. */
 private object ProfileColors {
-    @Composable fun headerTop() = if (LocalDarkTheme.current) Color(0xFF13233F) else Color(0xFFCFE2FF)
-    @Composable fun headerMid() = if (LocalDarkTheme.current) Color(0xFF111A2B) else Color(0xFFEAF2FF)
     @Composable fun cardStart() = if (LocalDarkTheme.current) Color(0xFF1A2E52) else Color(0xFFDDEAFF)
     @Composable fun cardEnd() = if (LocalDarkTheme.current) Color(0xFF151C2A) else Color(0xFFF4F8FF)
 }
@@ -84,16 +82,14 @@ fun AccountScreen(
     onResend: () -> Unit,
     onSignOut: () -> Unit,
     onDelete: (password: String?) -> Unit,
+    languageLabel: String,
+    onLanguage: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
     val colors = MaterialTheme.colorScheme
     Column(modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        Box(
-            Modifier.fillMaxWidth().background(
-                Brush.verticalGradient(listOf(ProfileColors.headerTop(), ProfileColors.headerMid(), colors.background)),
-            ),
-        ) {
+        Box(Modifier.fillMaxWidth().background(Gradients.header())) {
             Column(Modifier.statusBarsPadding().padding(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 8.dp)) {
                 ProfileHeader(user, state.pro.isPro, onSignIn)
                 Spacer(Modifier.height(24.dp))
@@ -111,11 +107,12 @@ fun AccountScreen(
         }
         Spacer(Modifier.height(8.dp))
         MenuRow(R.drawable.ic_restore, stringResource(R.string.account_restore), onRestore)
+        MenuRow(R.drawable.ic_globe, stringResource(R.string.account_language), onLanguage, detail = languageLabel)
         MenuRow(R.drawable.ic_rate, stringResource(R.string.account_rate), onRate)
         MenuRow(R.drawable.ic_share, stringResource(R.string.account_share), onShareApp)
         MenuDivider()
         MenuRow(R.drawable.ic_headset, stringResource(R.string.account_help), onContact)
-        MenuRow(R.drawable.ic_doc, stringResource(R.string.account_privacy), onPrivacy)
+        MenuRow(R.drawable.ic_shield, stringResource(R.string.account_privacy), onPrivacy)
         if (user != null) {
             MenuDivider()
             MenuRow(R.drawable.ic_logout, stringResource(R.string.account_sign_out), onSignOut, enabled = !authBusy)
@@ -143,7 +140,7 @@ fun AccountScreen(
 private fun ProfileHeader(user: AuthUser?, isPro: Boolean, onSignIn: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-        Box(Modifier.size(84.dp).background(Gradients.Primary, CircleShape), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(80.dp).background(Gradients.Primary, CircleShape), contentAlignment = Alignment.Center) {
             if (user != null) {
                 Text(user.shownName.take(1).uppercase(), fontSize = 38.sp, fontWeight = FontWeight.Medium, color = Color.White)
             } else {
@@ -237,16 +234,34 @@ private fun Stat(value: String, label: String, modifier: Modifier = Modifier) {
 
 /** Một mục trong danh sách: icon nét, nhãn, mũi tên. */
 @Composable
-private fun MenuRow(@DrawableRes icon: Int, label: String, onClick: () -> Unit, enabled: Boolean = true, danger: Boolean = false) {
+private fun MenuRow(
+    @DrawableRes icon: Int,
+    label: String,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    danger: Boolean = false,
+    detail: String? = null,
+) {
     val colors = MaterialTheme.colorScheme
     val tint = if (danger) colors.error else colors.onSurface
     Row(
-        Modifier.fillMaxWidth().heightIn(min = 60.dp).clickable(enabled = enabled, role = Role.Button, onClick = onClick).padding(horizontal = 24.dp, vertical = 8.dp),
+        Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(enabled = enabled, role = Role.Button, onClick = onClick).padding(horizontal = 24.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Icon(painterResource(icon), null, Modifier.size(26.dp), tint = tint)
-        Text(label, Modifier.weight(1f), fontSize = 18.sp, color = tint)
+        Text(label, Modifier.weight(1f), fontSize = 17.sp, color = tint)
+        if (detail != null) {
+            Text(
+                detail,
+                Modifier.weight(1f, fill = false),
+                fontSize = 14.sp,
+                color = colors.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.End,
+            )
+        }
         Icon(painterResource(R.drawable.ic_chevron), null, Modifier.size(20.dp), tint = colors.outline)
     }
 }

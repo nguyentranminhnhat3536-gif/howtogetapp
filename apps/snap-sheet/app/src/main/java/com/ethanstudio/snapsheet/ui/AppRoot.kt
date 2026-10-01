@@ -1,11 +1,11 @@
 package com.ethanstudio.snapsheet.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -62,10 +64,13 @@ import androidx.navigation.navArgument
 import com.ethanstudio.snapsheet.R
 import com.ethanstudio.snapsheet.SnapSheetApp
 import com.ethanstudio.snapsheet.data.FreeLimits
+import com.ethanstudio.snapsheet.i18n.AppLocale
 import com.ethanstudio.snapsheet.scan.ScanActions
 import com.ethanstudio.snapsheet.scan.ScanMode
 import com.ethanstudio.snapsheet.scan.rememberScanActions
 import com.ethanstudio.snapsheet.ui.account.AccountScreen
+import com.ethanstudio.snapsheet.ui.account.LanguageDialog
+import com.ethanstudio.snapsheet.ui.account.languageNameRes
 import com.ethanstudio.snapsheet.ui.auth.AuthEvent
 import com.ethanstudio.snapsheet.ui.auth.AuthViewModel
 import com.ethanstudio.snapsheet.ui.auth.CheckEmailScreen
@@ -81,7 +86,9 @@ import com.ethanstudio.snapsheet.ui.home.HomeScreen
 import com.ethanstudio.snapsheet.ui.main.MainEvent
 import com.ethanstudio.snapsheet.ui.main.MainViewModel
 import com.ethanstudio.snapsheet.ui.paywall.PaywallScreen
+import com.ethanstudio.snapsheet.ui.theme.Accent
 import com.ethanstudio.snapsheet.ui.theme.Gradients
+import com.ethanstudio.snapsheet.ui.theme.NavMuted
 import com.ethanstudio.snapsheet.ui.tools.ToolsScreen
 import com.ethanstudio.snapsheet.util.findActivity
 import com.ethanstudio.snapsheet.util.openEmailApp
@@ -116,6 +123,11 @@ fun AppRoot() {
     val snackbar = remember { SnackbarHostState() }
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var sheetOpen by rememberSaveable { mutableStateOf(false) }
+    var languageOpen by rememberSaveable { mutableStateOf(false) }
+    // Đọc lại mỗi khi cấu hình đổi (Activity được tạo lại sau khi đổi ngôn ngữ).
+    val configuration = LocalConfiguration.current
+    val currentLanguage = remember(configuration) { AppLocale.current(context) }
+    val languageLabel = languageNameRes(currentLanguage)?.let { stringResource(it) } ?: stringResource(R.string.language_system)
 
     val prefix = stringResource(R.string.scan_default_name)
     val actions = rememberScanActions(
@@ -174,7 +186,11 @@ fun AppRoot() {
                 WelcomeScreen(
                     onSignIn = { nav.navigate(ROUTE_SIGN_IN) },
                     onSignUp = { nav.navigate(ROUTE_SIGN_UP) },
+                    onGoogle = { context.findActivity()?.let(authVm::signInWithGoogle) },
                     onSkip = authVm::continueWithoutAccount,
+                    busy = authState.busy,
+                    error = authState.error,
+                    errorCode = authState.errorCode,
                 )
             }
             composable(ROUTE_SIGN_IN) {
@@ -207,9 +223,46 @@ fun AppRoot() {
                     onScanButton = { sheetOpen = true },
                 ) { padding ->
                     when (tab) {
-                        0 -> HomeScreen(state, actions, ::pageFile, { nav.navigate("doc/$it") }, { tab = 1 }, padding)
-                        1 -> FilesScreen(state, vm::setQuery, ::pageFile, { nav.navigate("doc/$it") }, padding)
-                        2 -> ToolsScreen(state.pro.isPro, actions, padding)
+                        0 -> HomeScreen(
+                            state = state,
+                            userName = user?.shownName,
+                            actions = actions,
+                            pageFile = ::pageFile,
+                            onOpenDoc = { nav.navigate("doc/$it") },
+                            onSeeAll = { tab = 1 },
+                            onScanCard = { sheetOpen = true },
+                            onAccount = { tab = 3 },
+                            modifier = padding,
+                        )
+                        1 -> FilesScreen(
+                            state = state,
+                            onQuery = vm::setQuery,
+                            onSort = vm::setSort,
+                            pageFile = ::pageFile,
+                            pdfFile = { app.docs.pdfFile(it) },
+                            onOpenDoc = { nav.navigate("doc/$it") },
+                            modifier = padding,
+                        )
+                        2 -> ToolsScreen(
+                            isPro = state.pro.isPro,
+                            actions = actions,
+                            onOcr = {
+                                when {
+                                    !state.pro.isPro -> nav.navigate(ROUTE_PAYWALL)
+                                    state.allDocs.isEmpty() -> vm.message(R.string.tool_need_doc)
+                                    else -> { tab = 1; vm.message(R.string.tool_pick_ocr) }
+                                }
+                            },
+                            onShare = {
+                                if (state.allDocs.isEmpty()) {
+                                    vm.message(R.string.tool_need_doc)
+                                } else {
+                                    tab = 1
+                                    vm.message(R.string.tool_pick_share)
+                                }
+                            },
+                            modifier = padding,
+                        )
                         else -> AccountScreen(
                             state = state,
                             user = user,
@@ -226,6 +279,8 @@ fun AppRoot() {
                             onResend = authVm::resendVerification,
                             onSignOut = authVm::signOut,
                             onDelete = authVm::deleteAccount,
+                            languageLabel = languageLabel,
+                            onLanguage = { languageOpen = true },
                             modifier = padding,
                         )
                     }
@@ -241,6 +296,7 @@ fun AppRoot() {
                     onClose = { nav.popBackStack() },
                     onBuy = { plan -> context.findActivity()?.let { vm.buy(it, plan) } },
                     onRestore = vm::restore,
+                    onPrivacy = { report(context.openUrl(privacyUrl)) },
                 )
             }
         }
@@ -253,6 +309,16 @@ fun AppRoot() {
             onCamera = { sheetOpen = false; actions.scan(ScanMode.BATCH) },
             onPhotos = { sheetOpen = false; actions.importPhotos() },
             onDismiss = { sheetOpen = false },
+        )
+    }
+    if (languageOpen) {
+        LanguageDialog(
+            current = currentLanguage,
+            onPick = { tag ->
+                languageOpen = false
+                context.findActivity()?.let { AppLocale.apply(it, tag) }
+            },
+            onDismiss = { languageOpen = false },
         )
     }
 }
@@ -288,7 +354,7 @@ private fun MainTabs(
 private fun SnapBottomBar(selected: Int, onSelect: (Int) -> Unit, onScan: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Box(Modifier.fillMaxWidth()) {
-        Surface(Modifier.padding(top = 26.dp).fillMaxWidth(), color = colors.surface) {
+        Surface(Modifier.padding(top = 28.dp).fillMaxWidth(), color = colors.surface) {
             Column {
                 HorizontalDivider(color = colors.outlineVariant)
                 Row(Modifier.fillMaxWidth().heightIn(min = 64.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -302,11 +368,11 @@ private fun SnapBottomBar(selected: Int, onSelect: (Int) -> Unit, onScan: () -> 
             }
         }
         Box(
-            Modifier.align(Alignment.TopCenter).size(72.dp).clip(CircleShape).background(colors.primary.copy(alpha = 0.2f)),
+            Modifier.align(Alignment.TopCenter).size(76.dp).clip(CircleShape).background(Gradients.ButtonStart.copy(alpha = 0.16f)),
             contentAlignment = Alignment.Center,
         ) {
             Box(
-                Modifier.size(56.dp).clip(CircleShape).background(Gradients.Primary).clickable(role = Role.Button, onClick = onScan),
+                Modifier.size(58.dp).clip(CircleShape).background(Gradients.Primary).clickable(role = Role.Button, onClick = onScan),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(painterResource(R.drawable.ic_plus), stringResource(R.string.nav_scan), Modifier.size(28.dp), tint = Color.White)
@@ -317,23 +383,24 @@ private fun SnapBottomBar(selected: Int, onSelect: (Int) -> Unit, onScan: () -> 
 
 @Composable
 private fun RowScope.NavItem(icon: Int, label: Int, selected: Boolean, onClick: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
+    val tint = if (selected) Accent else NavMuted
     Column(
         Modifier.weight(1f).heightIn(min = 64.dp).clickable(role = Role.Tab, onClick = onClick).padding(vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Icon(painterResource(icon), null, tint = if (selected) colors.primary else colors.outline)
+        Icon(painterResource(icon), null, tint = tint)
         Text(
             stringResource(label),
-            fontSize = 13.sp,
+            fontSize = 12.sp,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-            color = if (selected) colors.secondary else colors.onSurfaceVariant,
+            color = tint,
+            maxLines = 1,
         )
     }
 }
 
-/** Bảng chọn nguồn khi bấm nút +: quét bằng camera hoặc nhập ảnh. */
+/** Bảng chọn nguồn khi bấm nút + hoặc thẻ "Scan document": quét bằng camera hoặc nhập ảnh. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScanSheet(onCamera: () -> Unit, onPhotos: () -> Unit, onDismiss: () -> Unit) {
@@ -341,34 +408,67 @@ private fun ScanSheet(onCamera: () -> Unit, onPhotos: () -> Unit, onDismiss: () 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(),
-        containerColor = colors.background,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        containerColor = colors.surface,
     ) {
-        Column(Modifier.navigationBarsPadding()) {
-            Text(
-                stringResource(R.string.sheet_title),
-                Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = colors.onBackground,
+        Column(
+            Modifier.navigationBarsPadding().padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            Text(stringResource(R.string.sheet_start), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = colors.onSurface)
+            SheetCard(
+                icon = R.drawable.ic_scan,
+                title = R.string.sheet_camera,
+                sub = R.string.sheet_camera_sub,
+                primary = true,
+                onClick = onCamera,
             )
-            SheetRow(R.drawable.ic_scan, R.string.sheet_camera, onCamera)
-            SheetRow(R.drawable.ic_photo, R.string.sheet_photos, onPhotos)
-            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp)) {
-                Text(stringResource(R.string.cancel), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = colors.onSurface)
+            SheetCard(
+                icon = R.drawable.ic_photo,
+                title = R.string.sheet_photos,
+                sub = R.string.sheet_photos_sub,
+                primary = false,
+                onClick = onPhotos,
+            )
+            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
+                Text(stringResource(R.string.cancel), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.onSurfaceVariant)
             }
         }
     }
 }
 
+/** Một lựa chọn trong bảng Scan. [primary]: thẻ nền gradient xanh chữ trắng; không thì thẻ trắng viền mảnh. */
 @Composable
-private fun ColumnScope.SheetRow(icon: Int, label: Int, onClick: () -> Unit) {
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+private fun SheetCard(icon: Int, title: Int, sub: Int, primary: Boolean, onClick: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val shape = RoundedCornerShape(20.dp)
+    val base = Modifier.fillMaxWidth().clip(shape)
+    val background = if (primary) base.background(Gradients.Primary) else base.background(colors.surface).border(1.dp, colors.outlineVariant, shape)
     Row(
-        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).clickable(onClick = onClick).heightIn(min = 54.dp).padding(horizontal = 24.dp, vertical = 8.dp),
+        background.clickable(role = Role.Button, onClick = onClick).padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(20.dp),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Icon(painterResource(icon), null, tint = MaterialTheme.colorScheme.outline)
-        Text(stringResource(label), fontSize = 17.sp, color = MaterialTheme.colorScheme.onSurface)
+        val iconBox = Modifier.size(50.dp)
+        Box(
+            if (primary) iconBox.background(Color.White.copy(alpha = 0.18f), RoundedCornerShape(16.dp)) else iconBox.background(Gradients.soft(), RoundedCornerShape(16.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(painterResource(icon), null, Modifier.size(26.dp), tint = if (primary) Color.White else Accent)
+        }
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                stringResource(title),
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (primary) Color.White else colors.onSurface,
+            )
+            Text(
+                stringResource(sub),
+                fontSize = 13.5.sp,
+                lineHeight = 18.sp,
+                color = if (primary) Color.White.copy(alpha = 0.9f) else colors.onSurfaceVariant,
+            )
+        }
     }
 }

@@ -37,6 +37,8 @@ data class PlanOffer(
     internal val offerToken: String?,
     /** Số ngày dùng thử miễn phí của ưu đãi đang hiện (ví dụ 7), null nếu không có. */
     val trialDays: Int? = null,
+    /** Mã tiền tệ ISO 4217 của giá (ví dụ "USD"), dùng để quy giá năm ra mỗi tháng. */
+    val currencyCode: String = "",
 )
 
 data class BillingUiState(
@@ -148,19 +150,19 @@ class BillingManager(
                     OfferInfo(
                         o.offerId,
                         o.offerToken,
-                        o.pricingPhases.pricingPhaseList.map { PhaseInfo(it.priceAmountMicros, it.formattedPrice, it.billingPeriod) },
+                        o.pricingPhases.pricingPhaseList.map { PhaseInfo(it.priceAmountMicros, it.formattedPrice, it.billingPeriod, it.priceCurrencyCode) },
                     )
                 }
                 val picked = pickOffer(infos) ?: continue
                 offers[plan] = PlanOffer(
                     plan, picked.recurring.formattedPrice, picked.recurring.priceMicros,
-                    picked.hasFreeTrial, details, picked.token, picked.trialDays,
+                    picked.hasFreeTrial, details, picked.token, picked.trialDays, picked.recurring.currencyCode,
                 )
             }
         }
         queryDetails(BillingClient.ProductType.INAPP, LIFETIME_ID).firstOrNull()?.let { details ->
             details.oneTimePurchaseOfferDetails?.let { o ->
-                offers[Plan.LIFETIME] = PlanOffer(Plan.LIFETIME, o.formattedPrice, o.priceAmountMicros, false, details, null)
+                offers[Plan.LIFETIME] = PlanOffer(Plan.LIFETIME, o.formattedPrice, o.priceAmountMicros, false, details, null, currencyCode = o.priceCurrencyCode)
             }
         }
         _state.update { BillingUiState(offers = offers, loading = false) }
