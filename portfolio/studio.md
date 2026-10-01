@@ -4,7 +4,7 @@ AI đọc file này khi tạo app mới (`scripts/new_app.py`). Điền một l�
 
 - **Tên nhà phát triển (trên Play):** ETHANVIBECODE (tài khoản cá nhân, ID 8730374021872098776; đang chờ Google xác minh danh tính, 2026-10-01)
 - **Tiền tố package:** 
-- **Email hỗ trợ:** 
+- **Email hỗ trợ:** ntmn.ethan@gmail.com
 - **Tài khoản Play tạo sau 13/11/2023 (có/không):** có (đăng ký 2026-10-01, cá nhân; mỗi app phải closed test 12 người × 14 ngày)
 - **Google Group tester:** 
 - **AdMob Publisher ID:** 
@@ -13,8 +13,8 @@ AI đọc file này khi tạo app mới (`scripts/new_app.py`). Điền một l�
 
 ## Tiến độ thiết lập (skill factory-setup)
 - [ ] 1. CI template xanh
-- [ ] 2. Thông tin nhà phát triển (các dòng ở trên)
-- [ ] 3. Upload key và 4 GitHub Secrets
+- [x] 2. Thông tin nhà phát triển (các dòng ở trên)
+- [ ] 3. Upload key và 4 GitHub Secrets (khóa đã tạo và gửi Ethan 2026-10-01; SHA-1 1E:7E:DE:02:AE:F5:12:CE:A7:68:F3:71:A0:8A:23:2D:C1:95:76:19; chờ Ethan dán secrets)
 - [ ] 4. Bật GitHub Pages (main /docs)
 - [ ] 5. Play Console: xác minh nhà phát triển, hồ sơ thanh toán, license testing
 - [ ] 6. Nhóm tester (Google Group, từ 15 người trở lên)

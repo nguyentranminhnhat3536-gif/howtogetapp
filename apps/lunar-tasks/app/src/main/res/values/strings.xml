@@ -2,7 +2,7 @@
     <string name="app_name">Your Schedule</string>
     <!-- new_app.py tự điền 2 dòng dưới cho từng app -->
     <string name="privacy_policy_url" translatable="false">https://nguyentranminhnhat3536-gif.github.io/howtogetapp/lunar-tasks/privacy-policy.html</string>
-    <string name="support_email" translatable="false">support@example.com</string>
+    <string name="support_email" translatable="false">ntmn.ethan@gmail.com</string>
 
     <string name="menu_more">More options</string>
     <string name="menu_privacy">Privacy policy</string>
