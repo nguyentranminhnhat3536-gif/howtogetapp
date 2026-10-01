@@ -5,7 +5,7 @@ AI đọc file này khi tạo app mới (`scripts/new_app.py`). Điền một l�
 - **Tên nhà phát triển (trên Play):** 
 - **Tiền tố package:** 
 - **Email hỗ trợ:** 
-- **Tài khoản Play tạo sau 13/11/2023 (có/không):** 
+- **Tài khoản Play tạo sau 13/11/2023 (có/không):** có (đăng ký 2026-10-01, cá nhân; mỗi app phải closed test 12 người × 14 ngày)
 - **Google Group tester:** 
 - **AdMob Publisher ID:** 
 - **Website / domain riêng (nếu có):** 
