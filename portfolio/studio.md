@@ -2,7 +2,7 @@
 
 AI đọc file này khi tạo app mới (`scripts/new_app.py`). Điền một lần qua skill `factory-setup`. Giữ nguyên định dạng `- **Nhãn:** giá trị`.
 
-- **Tên nhà phát triển (trên Play):** 
+- **Tên nhà phát triển (trên Play):** ETHANVIBECODE (tài khoản cá nhân, ID 8730374021872098776; đang chờ Google xác minh danh tính, 2026-10-01)
 - **Tiền tố package:** 
 - **Email hỗ trợ:** 
 - **Tài khoản Play tạo sau 13/11/2023 (có/không):** có (đăng ký 2026-10-01, cá nhân; mỗi app phải closed test 12 người × 14 ngày)
