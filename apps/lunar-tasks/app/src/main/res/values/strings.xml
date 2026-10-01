@@ -1,0 +1,152 @@
+<resources>
+    <string name="app_name">Your Schedule</string>
+    <!-- new_app.py tự điền 2 dòng dưới cho từng app -->
+    <string name="privacy_policy_url" translatable="false">https://nguyentranminhnhat3536-gif.github.io/howtogetapp/lunar-tasks/privacy-policy.html</string>
+    <string name="support_email" translatable="false">ntmn.ethan@gmail.com</string>
+
+    <string name="menu_more">More options</string>
+    <string name="menu_privacy">Privacy policy</string>
+    <string name="menu_rate">Rate this app</string>
+    <string name="menu_feedback">Send feedback</string>
+    <string name="feedback_subject">Feedback: %1$s</string>
+    <string name="error_no_app">No app found to open this.</string>
+
+    <string name="date_today">Today</string>
+    <string name="date_tomorrow">Tomorrow</string>
+    <string name="date_yesterday">Yesterday</string>
+    <string name="lunar_short">Lunar %1$d/%2$s</string>
+    <string name="lunar_long">%1$d/%2$s, year of %3$s</string>
+    <string name="lunar_leap_month">%1$dL</string>
+    <string name="lunar_prefix">Lunar date: %1$s</string>
+    <string name="today_lunar">Lunar: %1$s</string>
+    <string name="next_first_day">Next new moon (1st): %1$s</string>
+    <string name="next_full_moon">Next full moon (15th): %1$s</string>
+
+    <string name="repeat_none">Does not repeat</string>
+    <string name="repeat_daily">Every day</string>
+    <string name="repeat_weekly">Every week</string>
+    <string name="repeat_monthly">Every month</string>
+    <string name="repeat_yearly">Every year</string>
+    <string name="repeat_lunar_monthly">Every lunar month</string>
+    <string name="repeat_lunar_yearly">Every lunar year</string>
+
+    <string name="section_overdue">Overdue</string>
+    <string name="section_today">Today</string>
+    <string name="section_tomorrow">Tomorrow</string>
+    <string name="section_upcoming">Upcoming</string>
+    <string name="section_no_date">No date</string>
+    <string name="section_done">Completed (%1$d)</string>
+
+    <string name="empty_title">Nothing to do yet</string>
+    <string name="empty_body">Tap Add task to start. Tasks can repeat on the lunar calendar, for example on the 1st and 15th of every lunar month or on a yearly memorial day.</string>
+
+    <string name="action_add_task">Add task</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_pick_lunar_date">Pick a lunar date</string>
+    <string name="snackbar_done">Task completed</string>
+    <string name="snackbar_next_due">Done. Next time: %1$02d/%2$02d</string>
+
+    <string name="title_new_task">New task</string>
+    <string name="title_edit_task">Edit task</string>
+    <string name="field_title">What do you need to do?</string>
+    <string name="field_note">Notes</string>
+    <string name="field_no_date">No date</string>
+    <string name="field_no_time">No time</string>
+    <string name="field_repeat">Repeat</string>
+    <string name="field_remind">Remind me</string>
+    <string name="field_important">Important</string>
+    <string name="remind_at">Notification at %1$s on the due date</string>
+    <string name="remind_blocked">Notifications are turned off for this app. Turn them on in Settings to get reminders.</string>
+    <string name="chip_first_day">1st (new moon)</string>
+    <string name="chip_full_moon">15th (full moon)</string>
+    <string name="lunar_dialog_title">Lunar date</string>
+    <string name="lunar_dialog_body">Enter a lunar day and month. The task will be set to the next time that date comes around.</string>
+    <string name="lunar_day">Day (1–30)</string>
+    <string name="lunar_month">Month (1–12)</string>
+    <string name="delete_confirm_title">Delete this task?</string>
+
+    <string name="cd_back">Back</string>
+    <string name="cd_clear">Clear</string>
+    <string name="cd_repeats">Repeats</string>
+    <string name="cd_has_reminder">Has reminder</string>
+    <string name="cd_mark_important">Mark as important</string>
+    <string name="cd_unmark_important">Remove from important</string>
+
+    <string name="notification_channel_name">Task reminders</string>
+    <string name="notification_due_now">This task is due now.</string>
+    <string name="field_remind_day_before">Remind me the day before</string>
+    <string name="remind_day_before_hint">At 19:00 the evening before, to get ready</string>
+    <string name="notification_tomorrow">Tomorrow: %1$s</string>
+    <string name="notification_due_tomorrow">This task is due tomorrow.</string>
+    <string name="notification_action_done">Done</string>
+    <string name="action_text_size" translatable="false">Aa</string>
+    <string name="title_display">Settings</string>
+    <string name="setting_high_contrast">High contrast</string>
+    <string name="setting_high_contrast_body">Black and white colors, bolder secondary text. Easier to read in sunlight or with weak eyesight.</string>
+    <string name="preview_title">Preview: Light incense</string>
+    <string name="preview_body">Tomorrow · 07:00 · Lunar 15/8</string>
+    <string name="setting_talkback_note">The app also works with TalkBack, the screen reader built into Android (Settings, Accessibility).</string>
+    <string name="cd_mark_done">Mark as done: %1$s</string>
+    <string name="title_add_medicine">Medicine reminder</string>
+    <string name="action_add_medicine">Medicine</string>
+    <string name="field_medicine_name">Medicine name</string>
+    <string name="field_medicine_note">How to take it (e.g. 1 tablet after meals)</string>
+    <string name="medicine_times">Times each day</string>
+    <string name="action_add_time">Add another time</string>
+    <string name="medicine_disclaimer">This app only reminds you when to take your medicine. It does not give medical advice. Always follow your doctor\'s instructions.</string>
+    <string name="action_save_medicine">Save (%1$d times a day)</string>
+    <string name="cd_medicine">Medicine</string>
+    <string name="notification_medicine">Time to take: %1$s</string>
+    <string name="action_call_contact">Call %1$s</string>
+    <string name="contact_section_title">Quick call a family member</string>
+    <string name="contact_none">Not set. A big Call button will appear on the home screen once you choose someone.</string>
+    <string name="contact_current">%1$s · %2$s</string>
+    <string name="contact_pick">Choose from contacts</string>
+    <string name="contact_manual">Type a number</string>
+    <string name="contact_remove">Remove</string>
+    <string name="contact_name">Name</string>
+    <string name="contact_phone">Phone number</string>
+    <string name="text_size_smaller_symbol" translatable="false">A−</string>
+    <string name="text_size_bigger_symbol" translatable="false">A+</string>
+    <string name="cd_text_smaller">Smaller text</string>
+    <string name="cd_text_bigger">Bigger text</string>
+    <string name="setting_text_size">Text size</string>
+    <string name="setting_speak_reminders">Read reminders aloud</string>
+    <string name="setting_speak_reminders_body">When a reminder arrives, the phone also reads it out loud.</string>
+    <string name="setting_haptics">Vibrate on tap</string>
+    <string name="setting_haptics_body">A short vibration when you tick a task, so you know it worked.</string>
+    <string name="action_read_today">Read today aloud</string>
+    <string name="action_read_aloud">Read aloud</string>
+    <string name="error_no_tts">This phone has no text-to-speech voice. Install one in Settings, Accessibility.</string>
+    <string name="speak_today">Today is %1$s, lunar date %2$s.</string>
+    <string name="speak_no_tasks_today">You have nothing to do today.</string>
+    <string name="speak_tasks_today">You have %1$d tasks today: %2$s.</string>
+    <string name="speak_task_at">%1$s at %2$s</string>
+    <string name="speak_overdue">And %1$d overdue tasks.</string>
+
+    <!-- Lệnh giọng nói -->
+    <string name="voice_prompt">Say a command, e.g. “Add buy milk tomorrow at 8 am”</string>
+    <string name="action_voice">Speak a command</string>
+    <string name="action_voice_help">What can I say?</string>
+    <string name="action_read_today_short">Read today</string>
+    <string name="action_close">Close</string>
+    <string name="voice_help_title">Voice commands</string>
+    <string name="voice_help_body">Tap the microphone, then say for example:\n• “Add task buy milk tomorrow at 8 am”\n• “Remind me to call mom at 7 pm”\n• “Read today”\n• “Turn on high contrast” / “Turn off high contrast”\n• “Turn on read reminders aloud”\n• “Turn off vibration”\n• “Bigger text” / “Smaller text”\n• “Call” (your saved relative)\n• “Add medicine”, “Open settings”\nThe microphone only listens after you tap it inside the app.</string>
+    <string name="voice_added">Added: %1$s %2$s</string>
+    <string name="voice_at_time">at %1$s</string>
+    <string name="voice_contrast_on">High contrast is on.</string>
+    <string name="voice_contrast_off">High contrast is off.</string>
+    <string name="voice_speak_on">Reminders will be read aloud.</string>
+    <string name="voice_speak_off">Reminders will no longer be read aloud.</string>
+    <string name="voice_haptics_on">Vibration is on.</string>
+    <string name="voice_haptics_off">Vibration is off.</string>
+    <string name="voice_text_bigger">Text is bigger.</string>
+    <string name="voice_text_smaller">Text is smaller.</string>
+    <string name="voice_no_contact">No relative saved yet. Add one in Settings.</string>
+    <string name="voice_unknown">Sorry, I did not understand “%1$s”. Tap “What can I say?” for examples.</string>
+    <string name="error_no_voice">This phone has no voice input. Install or turn on Google voice typing.</string>
+</resources>

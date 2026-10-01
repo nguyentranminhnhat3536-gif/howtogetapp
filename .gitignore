@@ -1,0 +1,18 @@
+# Gradle / Android build output
+build/
+.gradle/
+.kotlin/
+local.properties
+*.iml
+.idea/
+captures/
+
+# Secrets never go in git
+*.jks
+*.keystore
+keystore.properties
+google-services.json
+GoogleService-Info.plist
+
+# Sổ bàn giao của dây chuyền /ship (chỉ dùng trong phiên, không lên GitHub)
+.bangiao/

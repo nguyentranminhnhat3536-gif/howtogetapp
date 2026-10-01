@@ -1,0 +1,111 @@
+# Your Schedule — Lịch Trình Của Bạn
+
+| | |
+|---|---|
+| Slug | `lunar-tasks` |
+| Package | `com.ethanstudio.lunartasks` (không bao giờ đổi) |
+| Tạo ngày | 2026-09-29 |
+| Chính sách quyền riêng tư | https://nguyentranminhnhat3536-gif.github.io/howtogetapp/lunar-tasks/privacy-policy.html |
+| Bản chạy thử | https://github.com/nguyentranminhnhat3536-gif/howtogetapp/releases/tag/preview-lunar-tasks |
+| Bản xem trên web | https://claude.ai/artifact/15qynzoELFA9653Q3fNiyY (nguồn: `store/web-preview.html`) |
+| Hệ thiết kế | https://claude.ai/artifact/9JrS5p4Uf7g3nAuham6MvY (màu 3 chế độ, chữ, component web, logo, icon) |
+| Link Google Play | (chưa có) |
+
+## Trạng thái
+**Tạm dừng (2026-09-29, theo lời Ethan).** Bản thử APK và bản xem web đã có, CI xanh. Khi làm tiếp: chờ Ethan thử và góp ý (DUYỆT-2), merge PR #1.
+
+## Việc tiếp theo
+- [x] Điền mục Ý tưởng và Phạm vi MVP
+- [x] Icon riêng và màu thương hiệu
+- [x] Code MVP
+- [x] CI xanh, gửi link APK cho Ethan thử (DUYỆT-2)
+- [x] Đổi tên, giao diện theo logo, lệnh giọng nói
+- [ ] Ethan thử bản mới và góp ý
+- [ ] Làm icon 512×512 và ảnh nền store từ logo (bước play-listing)
+- [ ] Điền studio.md (tên nhà phát triển, email hỗ trợ), chốt package trước lần upload đầu
+
+## Ý tưởng
+- Dành cho ai: người Việt cần một danh sách việc đơn giản, đặc biệt là người hay phải nhớ việc theo âm lịch (thắp hương mùng 1 và rằm, ngày giỗ, lễ tết).
+- Giải quyết việc gì: ghi việc cần làm, nhắc đúng giờ, và lặp lại theo lịch âm, điều mà các app việc cần làm phổ biến không làm.
+- Đối thủ chính: Google Keep, Todoist, Microsoft To Do (mạnh nhưng không có âm lịch); các app lịch vạn niên (có âm lịch nhưng quản lý việc yếu). Chưa tra số lượt tải cụ thể.
+- Điểm khác biệt của mình: việc lặp theo tháng âm / năm âm, chọn nhanh "Mùng 1" / "Rằm", nhập ngày giỗ bằng ngày âm, mỗi việc hiện kèm ngày âm. Chạy offline, không cần tài khoản.
+
+## Phạm vi MVP
+**Bắt buộc (3–5):**
+1. Thêm, sửa, xóa việc; đánh dấu xong có Hoàn tác; đánh dấu quan trọng
+2. Nhóm việc: Quá hạn / Hôm nay / Ngày mai / Sắp tới / Không có ngày / Đã xong
+3. Lặp lại: ngày, tuần, tháng, năm, tháng âm lịch, năm âm lịch
+4. Nhắc việc bằng thông báo (mặc định 7:00 nếu việc không có giờ)
+5. Thẻ đầu trang: hôm nay, ngày âm, mùng 1 và rằm sắp tới
+6. Nút "Xong" trên thông báo; tùy chọn nhắc trước 1 ngày lúc 19:00
+7. Dễ dùng cho người lớn tuổi và người khuyết tật (lấy từ bản thiết kế UniBridge của Ethan): nút "Aa" mở Cài đặt; cỡ chữ A−/A+ 6 mức (100–200%); tương phản cao chữ vàng nền đen; đọc to việc hôm nay, đọc to từng việc, đọc to lời nhắc (TextToSpeech của máy); rung khi tick; nhãn TalkBack
+8. Nhắc uống thuốc: tên thuốc, cách uống, nhiều cữ mỗi ngày (mỗi cữ là một việc lặp hằng ngày có nhắc)
+9. Gọi nhanh người thân: chọn từ danh bạ (không cần quyền READ_CONTACTS) hoặc nhập số; nút Gọi to ở màn hình chính mở trình quay số (không cần quyền CALL_PHONE)
+
+**Để sau:**
+- Widget màn hình chính
+- Danh mục / nhãn, tìm kiếm
+- Sao lưu và xuất dữ liệu (gói Pro)
+
+## Màn hình
+| Màn hình | Làm gì |
+|---|---|
+| Danh sách việc | Thẻ ngày dương/âm, các nhóm việc, tick xong, sao quan trọng, nút Thêm việc |
+| Thêm / sửa việc | Tên, ghi chú, ngày (kèm ngày âm), giờ, chọn theo ngày âm, lặp lại, nhắc, quan trọng, xóa |
+
+## Dữ liệu
+- DataStore `settings`: cỡ chữ, tương phản cao, đọc to lời nhắc, rung, tên và số người thân (chỉ lưu trên máy).
+- Room (`tasks.db`, bảng `tasks`, schema v3, có migration 1→2→3), chỉ nằm trên máy. Không có mạng, không có tài khoản.
+
+## Kiếm tiền
+- Mô hình:
+- AdMob App ID / ad unit ID:
+- Sản phẩm Play Billing:
+
+## Quyền (permissions) và lý do
+| Quyền | Lý do |
+|---|---|
+| POST_NOTIFICATIONS | Hiện thông báo nhắc việc (Android 13+ hỏi người dùng khi bật Nhắc tôi) |
+| RECEIVE_BOOT_COMPLETED | Hẹn lại giờ nhắc sau khi khởi động lại máy |
+
+Không dùng SCHEDULE_EXACT_ALARM (Play hạn chế quyền này); nhắc bằng `setAndAllowWhileIdle` nên có thể trễ vài phút.
+
+## Tài nguyên bên thứ ba và giấy phép
+| Tài nguyên (hình, font, âm thanh, dữ liệu…) | Nguồn | Giấy phép |
+|---|---|---|
+| Icon trong app và icon launcher (vẽ lại từ Material icons) | https://fonts.google.com/icons | Apache 2.0 |
+| Logo "Lịch Trình Của Bạn" (`store/brand/`) và icon launcher vẽ lại theo logo | Ethan cung cấp ngày 2026-09-29 | Ethan xác nhận có quyền dùng trước khi phát hành |
+| Nhận giọng nói | Dịch vụ có sẵn của máy (RecognizerIntent), không nhúng SDK | — |
+| Thuật toán âm lịch (viết lại bằng Kotlin) | Hồ Ngọc Đức, https://www.informatik.uni-leipzig.de/~duc/amlich/ | Cần kiểm tra điều kiện dùng lại trước khi phát hành |
+
+## Soạn sẵn cho Play Console
+- **Data safety:** Không thu thập, không chia sẻ dữ liệu (mọi thứ nằm trên máy, kể cả tên thuốc và số người thân). Lệnh giọng nói do dịch vụ của máy nghe; app chỉ nhận chữ, không xin quyền micro, không lưu âm thanh.
+- **Health apps declaration:** app chỉ nhắc giờ uống thuốc, không phải thiết bị y tế; có câu miễn trừ trong màn hình thuốc. Cần khai đúng ở mục Health apps nếu Play Console hỏi.
+- **Content rating (IARC):**
+- **Target audience:** 18+
+- **App access:** Toàn bộ tính năng dùng được mà không cần đăng nhập.
+- **Ads:** Không
+
+## Closed test
+- Ngày tester thứ 12 tham gia:
+- Ngày đủ 14 ngày:
+- Góp ý nhận được → đã sửa:
+
+## Lịch sử phát hành
+| Ngày | Version | Track | Nội dung chính |
+|---|---|---|---|
+| | | | |
+
+## Nhật ký quyết định
+- 2026-09-29: Tạo app từ template.
+- 2026-09-29: Ethan chọn "app quản lý công việc". Chọn điểm khác biệt là lặp và nhắc theo âm lịch để không bị na ná Keep/Todoist.
+- 2026-09-29: Package tạm `com.ethanstudio.lunartasks` (studio.md chưa có tiền tố). Phải chốt trước lần upload đầu vì package không đổi được.
+- 2026-09-29: Dùng navigation-compose (route dạng chuỗi) và Room + KSP có sẵn trong catalog của template, không thêm thư viện ngoài.
+- 2026-09-29: Thêm nút "Xong" trên thông báo và nhắc trước 1 ngày (19:00 hôm trước). DB lên v2 bằng migration, không xóa dữ liệu người dùng.
+- 2026-09-29: Ethan muốn phục vụ người khuyết tật và người lớn tuổi. Làm trước chữ to và tương phản cao trong app này. Không dùng AccessibilityService và SMS vì Play kiểm tra gắt.
+- 2026-09-29: Ethan chọn gộp tính năng người lớn tuổi vào app này. Thêm nhắc uống thuốc và gọi nhanh người thân.
+- 2026-09-29: Ethan gửi bản thiết kế UniBridge (web/PWA cho sinh viên khuyết tật). Lấy các phần chạy offline (đọc to, tương phản đen-vàng, A−/A+, rung). Chưa làm: bạn đồng hành/SOS gửi trường (cần máy chủ, thành mạng xã hội theo NĐ 147), phụ đề trực tiếp (cần micro, Google Live Transcribe đã làm tốt), tóm tắt AI (tốn phí).
+- 2026-09-29: Ethan gửi logo "Lịch Trình Của Bạn" và đổi tên app. Tên tiếng Anh mặc định "Your Schedule". Giữ slug `lunar-tasks` để link bản thử không đổi. Màu: navy #1C3A5E, cam #E8553D, nền kem #FBF3E9.
+- 2026-09-29: Ethan muốn bật tắt chức năng bằng giọng nói, chỉ khi đang ở trong app. Chọn cách mở ô nghe giọng nói của máy khi bấm nút micro (RecognizerIntent): không cần quyền RECORD_AUDIO, không nghe ngầm, Data safety vẫn "không thu thập". Không làm nghe liên tục vì phải xin quyền micro và tốn pin. Lệnh được hiểu ngay trên máy (VoiceCommandParser, có unit test).
+- 2026-09-29: Ethan gọi "/mcp-builder". Skill này dùng để làm máy chủ MCP cho AI, không dùng được cho app Android, nên không dùng.
+- 2026-09-30: Trích hệ thiết kế từ code (Theme.kt, Color.kt, web-preview.html) thành artifact Design System. Phát hiện: Theme.kt chưa đặt `inverseSurface`, `inversePrimary`, `outlineVariant` nên snackbar và đường kẻ còn màu tím mặc định của Material; bản xem web dùng chữ trắng trên nút cam ở chế độ Tối (2.3:1, không đạt).

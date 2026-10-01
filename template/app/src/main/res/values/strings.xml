@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name" translatable="false">Factory Template</string>
+    <!-- new_app.py tự điền 2 dòng dưới cho từng app -->
+    <string name="privacy_policy_url" translatable="false">https://nguyentranminhnhat3536-gif.github.io/howtogetapp/</string>
+    <string name="support_email" translatable="false">support@example.com</string>
+
+    <string name="menu_more">More options</string>
+    <string name="menu_privacy">Privacy policy</string>
+    <string name="menu_rate">Rate this app</string>
+    <string name="menu_feedback">Send feedback</string>
+    <string name="feedback_subject">Feedback: %1$s</string>
+    <string name="error_no_app">No app found to open this.</string>
+
+    <string name="home_title">Hello!</string>
+    <string name="home_body">This is the App Factory template. Replace this screen with your app.</string>
+    <string name="home_counter">Taps: %1$d</string>
+    <string name="home_button">Tap me</string>
+</resources>

@@ -1,0 +1,13 @@
+<resources>
+    <string name="menu_more">Tùy chọn khác</string>
+    <string name="menu_privacy">Chính sách quyền riêng tư</string>
+    <string name="menu_rate">Đánh giá ứng dụng</string>
+    <string name="menu_feedback">Gửi góp ý</string>
+    <string name="feedback_subject">Góp ý: %1$s</string>
+    <string name="error_no_app">Không tìm thấy ứng dụng để mở.</string>
+
+    <string name="home_title">Xin chào!</string>
+    <string name="home_body">Đây là app mẫu của Xưởng App. Hãy thay màn hình này bằng app của bạn.</string>
+    <string name="home_counter">Số lần bấm: %1$d</string>
+    <string name="home_button">Bấm thử</string>
+</resources>

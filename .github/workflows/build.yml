@@ -1,0 +1,239 @@
+name: Build apps
+
+# Push có sửa trong apps/ hoặc template/ → build APK debug (và chạy unit test).
+# Bấm "Run workflow" bằng tay → build một app; tick "release" để build AAB đã ký.
+on:
+  push:
+    paths:
+      - "apps/**"
+      - "template/**"
+      - ".github/workflows/build.yml"
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "Slug của app (thư mục trong apps/), hoặc template"
+        required: true
+      release:
+        description: "Build AAB đã ký để nộp lên Google Play"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}-${{ github.event.inputs.app || 'push' }}
+  cancel-in-progress: true
+
+jobs:
+  detect:
+    name: Tìm app cần build
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.pick.outputs.matrix }}
+      any: ${{ steps.pick.outputs.any }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: pick
+        shell: python
+        env:
+          EVENT: ${{ github.event_name }}
+          INPUT_APP: ${{ github.event.inputs.app }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          import json, os, re, subprocess
+          from pathlib import Path
+
+          def is_project(p):
+              return p == "template" or Path("apps", p, "settings.gradle.kts").is_file()
+
+          def all_projects():
+              apps = sorted(d.name for d in Path("apps").glob("*") if d.is_dir()) if Path("apps").is_dir() else []
+              return ["template"] + apps
+
+          event, before, sha = os.environ["EVENT"], os.environ.get("BEFORE", ""), os.environ["GITHUB_SHA"]
+          if event == "workflow_dispatch":
+              app = os.environ.get("INPUT_APP", "")
+              if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", app):
+                  print(f"::error::Slug không hợp lệ: {app}")
+                  raise SystemExit(1)
+              projects = [app]
+          else:
+              ok = before and set(before) != {"0"} and subprocess.run(
+                  ["git", "cat-file", "-e", f"{before}^{{commit}}"], capture_output=True).returncode == 0
+              if not ok:
+                  projects = all_projects()
+              else:
+                  changed = subprocess.run(["git", "diff", "--name-only", before, sha],
+                                           capture_output=True, text=True, check=True).stdout.split()
+                  if ".github/workflows/build.yml" in changed:
+                      projects = all_projects()
+                  else:
+                      projects = (["template"] if any(f.startswith("template/") for f in changed) else []) + sorted(
+                          {f.split("/")[1] for f in changed if f.startswith("apps/") and f.count("/") >= 2})
+          projects = sorted({p for p in projects if is_project(p)})
+          print("Sẽ build:", projects)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              out.write(f"matrix={json.dumps(projects)}\n")
+              out.write(f"any={'true' if projects else 'false'}\n")
+
+  build:
+    name: Build ${{ matrix.project }}
+    needs: detect
+    if: needs.detect.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.detect.outputs.matrix) }}
+    env:
+      PROJECT_DIR: ${{ matrix.project == 'template' && 'template' || format('apps/{0}', matrix.project) }}
+      RELEASE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Ghi cấu hình Firebase (nếu app có secret)
+        shell: bash
+        env:
+          SLUG: ${{ matrix.project }}
+          GOOGLE_SERVICES_JSON_SNAP_SHEET: ${{ secrets.GOOGLE_SERVICES_JSON_SNAP_SHEET }}
+        run: |
+          # Tên secret: GOOGLE_SERVICES_JSON_<SLUG viết hoa, '-' thành '_'>. Thêm app mới thì thêm một dòng env ở trên.
+          name="GOOGLE_SERVICES_JSON_$(echo "$SLUG" | tr 'a-z-' 'A-Z_')"
+          value="${!name:-}"
+          if [ -n "$value" ]; then
+            printf '%s' "$value" > "$PROJECT_DIR/app/google-services.json"
+            echo "Đã ghi google-services.json cho $SLUG"
+          else
+            echo "Không có secret $name: build không có đăng nhập Firebase"
+          fi
+
+      - name: Khóa ký cố định cho bản debug (nếu có secret)
+        if: env.RELEASE != 'true'
+        shell: bash
+        env:
+          DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+        run: |
+          # Đăng nhập Google cần mã SHA-1 cố định. Không có secret thì Gradle tự tạo khóa mới mỗi lần (SHA đổi liên tục).
+          if [ -n "$DEBUG_KEYSTORE_BASE64" ]; then
+            mkdir -p "$HOME/.android"
+            echo "$DEBUG_KEYSTORE_BASE64" | base64 -d > "$HOME/.android/debug.keystore"
+            echo "Dùng khóa debug cố định"
+          else
+            echo "Không có secret DEBUG_KEYSTORE_BASE64: khóa debug ngẫu nhiên"
+          fi
+
+      - name: Build APK debug và chạy unit test
+        if: env.RELEASE != 'true'
+        shell: bash
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          set -o pipefail
+          chmod +x gradlew
+          ./gradlew assembleDebug testDebugUnitTest lintDebug --stacktrace --console=plain 2>&1 | tee "$RUNNER_TEMP/build.log"
+
+      - name: Chuẩn bị upload key
+        if: env.RELEASE == 'true'
+        shell: bash
+        env:
+          UPLOAD_KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$UPLOAD_KEYSTORE_BASE64" ]; then
+            echo "::error::Chưa có secret UPLOAD_KEYSTORE_BASE64 (xem skill factory-setup)"; exit 1
+          fi
+          echo "$UPLOAD_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          echo "UPLOAD_KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+
+      - name: Build AAB release đã ký
+        if: env.RELEASE == 'true'
+        shell: bash
+        working-directory: ${{ env.PROJECT_DIR }}
+        env:
+          UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+          UPLOAD_KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+          UPLOAD_KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+        run: |
+          set -o pipefail
+          chmod +x gradlew
+          ./gradlew bundleRelease testReleaseUnitTest --stacktrace --console=plain 2>&1 | tee "$RUNNER_TEMP/build.log"
+
+      - name: Gom lỗi build thành annotation
+        if: failure()
+        shell: bash
+        run: |
+          set +e +o pipefail  # grep không khớp thì bỏ qua, bước này chỉ gom lỗi
+          log="$RUNNER_TEMP/build.log"
+          [ -f "$log" ] || exit 0
+          # Lỗi Kotlin: "e: file:///path/File.kt:12:5 message"
+          grep -E '^e: ' "$log" | head -40 | while IFS= read -r line; do
+            rest="${line#e: }"; rest="${rest#file://}"
+            file="$(echo "$rest" | sed -E 's/^([^:]+):([0-9]+):([0-9]+) .*/\1/')"
+            ln="$(echo "$rest" | sed -E 's/^([^:]+):([0-9]+):([0-9]+) .*/\2/')"
+            msg="$(echo "$rest" | sed -E 's/^[^:]+:[0-9]+:[0-9]+ //')"
+            file="${file#$GITHUB_WORKSPACE/}"
+            echo "::error file=$file,line=$ln,title=Kotlin::$msg"
+          done
+          # Lỗi Gradle chung và test thất bại
+          { grep -A 12 -E '^\* What went wrong:' "$log" | head -30; } > "$RUNNER_TEMP/what.txt" || true
+          if [ -s "$RUNNER_TEMP/what.txt" ]; then
+            body="$(sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g' "$RUNNER_TEMP/what.txt")"
+            echo "::error title=Gradle::$body"
+          fi
+          grep -E 'FAILED$|AssertionError|Expected' "$log" | head -20 | while IFS= read -r line; do
+            echo "::error title=Test::$line"
+          done
+          # Lỗi AAPT / resource
+          grep -E 'AAPT|error: resource|ERROR: ' "$log" | head -10 | while IFS= read -r line; do
+            echo "::error title=Resource::$line"
+          done
+          # Lỗi tải thư viện (mạng tới Maven chập chờn)
+          grep -m 3 -E "Could not (GET|get resource) '" "$log" | while IFS= read -r line; do
+            echo "::error title=Download::$line"
+          done
+          exit 0
+
+      - name: Quyền app xin
+        if: success() && env.RELEASE != 'true'
+        shell: bash
+        run: |
+          apk="$(find "$PROJECT_DIR/app/build/outputs/apk/debug" -name '*.apk' | head -1)"
+          aapt2="$(ls -d "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -1)"
+          perms="$("$aapt2" dump permissions "$apk" 2>/dev/null | sed -n "s/.*name='\([^']*\)'.*/\1/p" | sort -u | tr '\n' ' ')"
+          echo "::notice title=Quyền app xin (${{ matrix.project }})::${perms:-không có}"
+
+      - name: Upload APK / AAB
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.project }}-${{ env.RELEASE == 'true' && 'release-aab' || 'debug-apk' }}
+          path: |
+            ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/*.apk
+            ${{ env.PROJECT_DIR }}/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+
+      - name: Đăng bản chạy thử (preview-<slug>)
+        if: success() && env.RELEASE != 'true' && matrix.project != 'template'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SLUG: ${{ matrix.project }}
+        run: |
+          apk="$(find "$PROJECT_DIR/app/build/outputs/apk/debug" -name '*.apk' | head -1)"
+          cp "$apk" "$RUNNER_TEMP/$SLUG-debug.apk"
+          tag="preview-$SLUG"
+          gh release delete "$tag" --cleanup-tag --yes --repo "$GITHUB_REPOSITORY" 2>/dev/null || true
+          gh release create "$tag" "$RUNNER_TEMP/$SLUG-debug.apk" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title "Bản chạy thử: $SLUG" \
+            --notes "APK debug từ commit ${GITHUB_SHA::7} (nhánh ${GITHUB_REF_NAME}). Mở trên điện thoại Android, tải file .apk rồi cài."
+          echo "::notice title=Bản chạy thử::https://github.com/$GITHUB_REPOSITORY/releases/tag/$tag"

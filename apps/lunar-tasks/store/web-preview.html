@@ -1,0 +1,499 @@
+<title>Lịch Trình Của Bạn</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one phone-sized app column centred on the page, a short note beside/below it. */
+:root {
+  --navy: #1C3A5E; --coral: #B93A25; --coral-soft: #FFDBD1; --on-coral-soft: #3B0A02;
+  --bg: #FBF3E9; --card: #FFFFFF; --ink: #1B2433; --muted: #4A5363; --line: #E6D8C6;
+  --head-bg: #1C3A5E; --head-fg: #FBF3E9; --star: #B93A25; --danger: #B3261E;
+  --font: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --scale: 1;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0F1B2B; --card: #172638; --ink: #EDE6DC; --muted: #C3C8D2; --line: #2A3C54;
+  --head-bg: #1C3A5E; --head-fg: #FBF3E9; --coral: #FF8A70; --coral-soft: #7D2A1A; --on-coral-soft: #FFDBD1;
+  --star: #FF8A70; --danger: #FFB4AB; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0F1B2B; --card: #172638; --ink: #EDE6DC; --muted: #C3C8D2; --line: #2A3C54;
+  --head-bg: #1C3A5E; --head-fg: #FBF3E9; --coral: #FF8A70; --coral-soft: #7D2A1A; --on-coral-soft: #FFDBD1;
+  --star: #FF8A70; --danger: #FFB4AB; color-scheme: dark }
+/* Tương phản cao: vàng trên đen, như trong app */
+.hc { --bg:#000; --card:#141414; --ink:#FFE14D; --muted:#FFE14D; --line:#FFE14D; --head-bg:#000; --head-fg:#FFE14D;
+  --coral:#FFE14D; --coral-soft:#FFE14D; --on-coral-soft:#000; --star:#FFE14D; --danger:#FF8A80; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--font); padding: 16px; }
+.wrap { max-width: 980px; margin: 0 auto; display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+.note { flex: 1 1 260px; max-width: 360px; min-width: 0; color: var(--muted); line-height: 1.55; font-size: 14px; }
+.note h1 { color: var(--ink); font-size: 22px; margin: 4px 0 8px; text-wrap: balance; }
+.note ul { padding-left: 18px; margin: 8px 0; }
+
+.phone { width: 100%; max-width: 400px; background: var(--bg); border: 1px solid var(--line); border-radius: 28px;
+  overflow: hidden; box-shadow: 0 12px 40px rgba(15,27,43,.18); position: relative; font-size: calc(15px * var(--scale)); }
+.bar { display: flex; align-items: center; gap: 4px; padding: 14px 10px 10px 18px; }
+.bar h2 { flex: 1; margin: 0; font-size: 1.25em; font-weight: 800; color: var(--ink); }
+.icon-btn { background: none; border: 0; color: var(--ink); width: 44px; height: 44px; border-radius: 22px; cursor: pointer;
+  display: grid; place-items: center; font: 700 1em var(--font); }
+.icon-btn:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+svg { width: 22px; height: 22px; fill: currentColor; }
+.scroll { padding: 0 14px 150px; max-height: 720px; overflow-y: auto; }
+
+.today { background: var(--head-bg); color: var(--head-fg); border-radius: 18px; padding: 16px; border: 1px solid var(--line); }
+.today .date { font-size: 1.3em; font-weight: 800; }
+.today .lunar { margin-top: 4px; display: flex; gap: 6px; align-items: center; }
+.today .small { font-size: .9em; opacity: .92; margin-top: 2px; }
+.voice-btn { margin-top: 12px; width: 100%; min-height: 56px; border: 0; border-radius: 28px; background: var(--coral); color: #fff;
+  font: 800 1.05em var(--font); display: flex; gap: 8px; align-items: center; justify-content: center; cursor: pointer; }
+.hc .voice-btn { color: #000; }
+.row2 { display: flex; gap: 8px; margin-top: 8px; }
+.ghost { flex: 1; min-height: 46px; border-radius: 23px; border: 1px solid color-mix(in srgb, var(--head-fg) 55%, transparent);
+  background: none; color: var(--head-fg); font: 600 .92em var(--font); cursor: pointer; display: flex; gap: 6px; align-items: center; justify-content: center; }
+
+.sec { margin: 16px 2px 6px; font-weight: 800; font-size: .92em; color: var(--ink); }
+.sec.over { color: var(--danger); }
+.task { background: var(--card); border: 1px solid var(--line); border-radius: 14px; display: flex; align-items: center;
+  padding: 6px 4px 6px 6px; margin-bottom: 6px; }
+.task input { width: 22px; height: 22px; margin: 0 10px; accent-color: var(--coral); flex: none; }
+.task .body { flex: 1; min-width: 0; padding: 6px 0; }
+.task .t { font-size: 1.02em; overflow-wrap: anywhere; }
+.task.done .t { text-decoration: line-through; color: var(--muted); }
+.task .m { font-size: .8em; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.task .m.over { color: var(--danger); }
+.star { color: var(--muted); }
+.star.on { color: var(--star); }
+.empty { text-align: center; color: var(--muted); padding: 30px 10px; }
+
+.fabs { position: absolute; right: 14px; bottom: 14px; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+.fab { border: 0; min-height: 52px; border-radius: 18px; padding: 0 18px; font: 700 .95em var(--font); display: flex; gap: 8px;
+  align-items: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.2); }
+.fab.main { background: var(--coral); color: #fff; }
+.hc .fab.main { color: #000; }
+.fab.med { background: var(--coral-soft); color: var(--on-coral-soft); }
+
+.sheet { position: absolute; inset: 0; background: rgba(10,18,30,.55); display: flex; align-items: flex-end; z-index: 5; }
+.panel { background: var(--bg); color: var(--ink); width: 100%; border-radius: 22px 22px 0 0; padding: 18px 16px 20px; max-height: 88%; overflow-y: auto;
+  border-top: 1px solid var(--line); }
+.panel h3 { margin: 0 0 10px; font-size: 1.15em; }
+.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; font-size: .9em; color: var(--muted); }
+.field input, .field select { font: 1.05em var(--font); padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+.btn { min-height: 46px; padding: 0 18px; border-radius: 23px; font: 700 .95em var(--font); cursor: pointer; border: 1px solid var(--line); background: none; color: var(--ink); }
+.btn.fill { background: var(--coral); color: #fff; border-color: var(--coral); }
+.hc .btn.fill { color: #000; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px; }
+.chip { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 16px; padding: 7px 11px; font: .85em var(--font); cursor: pointer; text-align: left; }
+.listen { display: flex; gap: 8px; }
+.listen input { flex: 1; min-width: 0; font: 1.05em var(--font); padding: 12px; border-radius: 12px; border: 2px solid var(--coral); background: var(--card); color: var(--ink); }
+.hint { font-size: .82em; color: var(--muted); margin-top: 6px; }
+.setrow { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.setrow span { flex: 1; }
+.setrow input[type=checkbox] { width: 24px; height: 24px; accent-color: var(--coral); }
+.size { display: flex; align-items: center; gap: 8px; }
+.size b { min-width: 52px; text-align: center; font-variant-numeric: tabular-nums; }
+
+.toast { position: absolute; left: 14px; right: 14px; bottom: 14px; background: var(--ink); color: var(--bg); padding: 14px 16px; border-radius: 12px;
+  font-size: .92em; z-index: 9; display: flex; gap: 10px; align-items: center; }
+.toast button { background: none; border: 0; color: var(--coral-soft); font: 700 1em var(--font); cursor: pointer; }
+.hc .toast { background: #FFE14D; color: #000; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--coral); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <div class="phone" id="phone">
+    <div class="bar">
+      <h2>Lịch Trình Của Bạn</h2>
+      <button class="icon-btn" id="micTop" aria-label="Nói lệnh"><svg viewBox="0 0 24 24"><path d="M12,14c1.66,0 2.99,-1.34 2.99,-3L15,5c0,-1.66 -1.34,-3 -3,-3S9,3.34 9,5v6c0,1.66 1.34,3 3,3zM17.3,11c0,3 -2.54,5.1 -5.3,5.1S6.7,14 6.7,11H5c0,3.41 2.72,6.23 6,6.72V21h2v-3.28c3.28,-0.48 6,-3.3 6,-6.72h-1.7z"/></svg></button>
+      <button class="icon-btn" id="openSettings" aria-label="Cài đặt">Aa</button>
+    </div>
+    <div class="scroll" id="list"></div>
+    <div class="fabs">
+      <button class="fab med" id="fabMed"><svg viewBox="0 0 24 24"><path d="M6,3h12v2H6zM17,6H7c-1.1,0 -2,0.9 -2,2v11c0,1.1 0.9,2 2,2h10c1.1,0 2,-0.9 2,-2V8c0,-1.1 -0.9,-2 -2,-2zM16,15h-2.5v2.5h-3V15H8v-3h2.5V9.5h3V12H16z"/></svg>Uống thuốc</button>
+      <button class="fab main" id="fabAdd"><svg viewBox="0 0 24 24"><path d="M19,13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>Thêm việc</button>
+    </div>
+    <div id="overlay"></div>
+    <div id="toastHost"></div>
+  </div>
+
+  <div class="note">
+    <h1>Bản xem thử trên web</h1>
+    <p>Đây là bản mô phỏng app Android <b>Lịch Trình Của Bạn</b> để xem giao diện và thử các chức năng ngay trên trình duyệt. Dữ liệu chỉ lưu trong trình duyệt của bạn.</p>
+    <ul>
+      <li>Bấm <b>Nói lệnh</b>: trên web, trang này không được dùng micro, nên bạn <b>gõ</b> câu lệnh hoặc bấm câu mẫu. App thật trên điện thoại thì nói bằng giọng.</li>
+      <li>Thử: “Thêm việc đi chợ 8 giờ sáng mai”, “Bật tương phản”, “Chữ to hơn”, “Đọc việc hôm nay”.</li>
+      <li>Ngày âm lịch tính bằng cùng thuật toán với app.</li>
+    </ul>
+    <p>Bản cài thật cho Android: <a href="https://github.com/nguyentranminhnhat3536-gif/howtogetapp/releases/tag/preview-lunar-tasks">tải APK bản thử</a>.</p>
+  </div>
+</div>
+
+<script>
+/* ---------- Âm lịch (thuật toán Hồ Ngọc Đức, múi giờ +7) ---------- */
+const TZ = 7, PI = Math.PI, INT = Math.floor;
+function jdFromDate(dd, mm, yy) {
+  const a = INT((14 - mm) / 12), y = yy + 4800 - a, m = mm + 12 * a - 3;
+  let jd = dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
+  if (jd < 2299161) jd = dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - 32083;
+  return jd;
+}
+function newMoon(k) {
+  const T = k / 1236.85, T2 = T * T, T3 = T2 * T, dr = PI / 180;
+  let Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+  Jd1 += 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * dr);
+  const M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
+  const Mpr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
+  const F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
+  let C1 = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M);
+  C1 = C1 - 0.4068 * Math.sin(Mpr * dr) + 0.0161 * Math.sin(dr * 2 * Mpr);
+  C1 = C1 - 0.0004 * Math.sin(dr * 3 * Mpr);
+  C1 = C1 + 0.0104 * Math.sin(dr * 2 * F) - 0.0051 * Math.sin(dr * (M + Mpr));
+  C1 = C1 - 0.0074 * Math.sin(dr * (M - Mpr)) + 0.0004 * Math.sin(dr * (2 * F + M));
+  C1 = C1 - 0.0004 * Math.sin(dr * (2 * F - M)) - 0.0006 * Math.sin(dr * (2 * F + Mpr));
+  C1 = C1 + 0.0010 * Math.sin(dr * (2 * F - Mpr)) + 0.0005 * Math.sin(dr * (2 * Mpr + M));
+  const deltat = T < -11 ? 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3
+    : -0.000278 + 0.000265 * T + 0.000262 * T2;
+  return Jd1 + C1 - deltat;
+}
+function sunLong(jdn) {
+  const T = (jdn - 2451545.0) / 36525, T2 = T * T, dr = PI / 180;
+  const M = 357.52910 + 35999.05030 * T - 0.0001559 * T2 - 0.00000048 * T * T2;
+  const L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
+  let DL = (1.914600 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M);
+  DL += (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) + 0.000290 * Math.sin(dr * 3 * M);
+  let L = (L0 + DL) * dr;
+  L = L - PI * 2 * INT(L / (PI * 2));
+  return L;
+}
+const getNewMoonDay = k => INT(newMoon(k) + 0.5 + TZ / 24);
+const getSunLongitude = d => INT(sunLong(d - 0.5 - TZ / 24) / PI * 6);
+function getLunarMonth11(yy) {
+  const off = jdFromDate(31, 12, yy) - 2415021, k = INT(off / 29.530588853);
+  let nm = getNewMoonDay(k);
+  if (getSunLongitude(nm) >= 9) nm = getNewMoonDay(k - 1);
+  return nm;
+}
+function getLeapMonthOffset(a11) {
+  const k = INT((a11 - 2415021.076998695) / 29.530588853 + 0.5);
+  let last, i = 1, arc = getSunLongitude(getNewMoonDay(k + i));
+  do { last = arc; i++; arc = getSunLongitude(getNewMoonDay(k + i)); } while (arc != last && i < 14);
+  return i - 1;
+}
+function toLunar(date) {
+  const dd = date.getDate(), mm = date.getMonth() + 1, yy = date.getFullYear();
+  const dayNumber = jdFromDate(dd, mm, yy), k = INT((dayNumber - 2415021.076998695) / 29.530588853);
+  let monthStart = getNewMoonDay(k + 1);
+  if (monthStart > dayNumber) monthStart = getNewMoonDay(k);
+  let a11 = getLunarMonth11(yy), b11 = a11, lunarYear;
+  if (a11 >= monthStart) { lunarYear = yy; a11 = getLunarMonth11(yy - 1); }
+  else { lunarYear = yy + 1; b11 = getLunarMonth11(yy + 1); }
+  const lunarDay = dayNumber - monthStart + 1, diff = INT((monthStart - a11) / 29);
+  let leap = false, lunarMonth = diff + 11;
+  if (b11 - a11 > 365) {
+    const leapDiff = getLeapMonthOffset(a11);
+    if (diff >= leapDiff) { lunarMonth = diff + 10; if (diff == leapDiff) leap = true; }
+  }
+  if (lunarMonth > 12) lunarMonth -= 12;
+  if (lunarMonth >= 11 && diff < 4) lunarYear -= 1;
+  return { day: lunarDay, month: lunarMonth, year: lunarYear, leap };
+}
+const CAN = ["Giáp","Ất","Bính","Đinh","Mậu","Kỷ","Canh","Tân","Nhâm","Quý"], CHI = ["Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi"];
+const canChi = y => CAN[(y + 6) % 10] + " " + CHI[(y + 8) % 12];
+function nextLunarDay(from, day) { const d = new Date(from); for (let i = 0; i < 400; i++) { if (toLunar(d).day === day) return d; d.setDate(d.getDate() + 1); } return d; }
+
+/* ---------- Dữ liệu ---------- */
+const DAY = 864e5;
+const startOf = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const today = () => startOf(new Date());
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const parseIso = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const fmtTime = m => `${String(INT(m/60)).padStart(2,"0")}:${String(m%60).padStart(2,"0")}`;
+const WD = ["CN","T2","T3","T4","T5","T6","T7"], WDL = ["Chủ nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy"];
+function rel(d) { const t = today(), n = Math.round((d - t) / DAY);
+  if (n === 0) return "Hôm nay"; if (n === 1) return "Ngày mai"; if (n === -1) return "Hôm qua";
+  return `${WD[d.getDay()]}, ${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}`; }
+const lunarShort = d => { const l = toLunar(d); return `ÂL ${l.day}/${l.month}${l.leap ? "N" : ""}`; };
+
+function sample() {
+  const t = today(), id = () => Math.random().toString(36).slice(2);
+  const ram = nextLunarDay(t, 15);
+  return [
+    { id: id(), title: "Uống thuốc huyết áp", date: iso(t), min: 19*60, remind: true, med: true, repeat: "Hằng ngày" },
+    { id: id(), title: "Đi chợ mua rau", date: iso(t), min: 8*60, remind: true },
+    { id: id(), title: "Gọi điện cho cô Hai", date: iso(addDays(t,1)), min: 17*60+30, remind: true, important: true },
+    { id: id(), title: "Thắp hương ngày rằm", date: iso(ram), min: 6*60, remind: true, repeat: "Hằng tháng (âm)" },
+    { id: id(), title: "Đóng tiền điện", date: iso(addDays(t,-1)), min: null },
+    { id: id(), title: "Mua quà sinh nhật cháu", date: null, min: null },
+  ];
+}
+const store = { get(k, f) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : f; } catch { return f; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+let tasks = store.get("ltcb.tasks", null) || sample();
+let prefs = Object.assign({ scale: 1, hc: false, speak: false, haptics: true, showDone: false }, store.get("ltcb.prefs", {}));
+const SCALES = [1, 1.15, 1.3, 1.5, 1.75, 2];
+const save = () => { store.set("ltcb.tasks", tasks); store.set("ltcb.prefs", prefs); };
+
+/* ---------- Giọng đọc (Web Speech, nếu trình duyệt có) ---------- */
+function speak(text) {
+  try { if (!("speechSynthesis" in window)) return; speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = "vi-VN";
+    const v = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith("vi")); if (v) u.voice = v;
+    speechSynthesis.speak(u); } catch {}
+}
+const buzz = () => { if (prefs.haptics) try { navigator.vibrate && navigator.vibrate(20); } catch {} };
+
+/* ---------- Hiểu lệnh (cùng luật với VoiceCommandParser trong app) ---------- */
+const fold = s => [...s.toLowerCase()].map(c => c === "đ" ? "d" : c.normalize("NFD")[0]).join("");
+const MED = ["them thuoc","nhac thuoc","nhac uong thuoc","add medicine"];
+const ADD = ["them cong viec","them viec","tao viec","nhac toi","nhac em","nhac minh","ghi nho","ghi chu","remind me to","remind me","add task","new task","them","nhac","ghi","add"];
+const DATES = [[/\b(ngay kia|ngay mot|day after tomorrow)\b/,2],[/\b(ngay mai|sang mai|chieu mai|toi mai|tomorrow)\b/,1],[/\bmai\b/,1],[/\b(hom nay|toi nay|chieu nay|sang nay|today|tonight)\b/,0]];
+const TIMES = [
+  /(?:\bat\s+)?\b(?<h>\d{1,2})(?::(?<m>\d{2}))?\s*(?<part>am|pm)(?:\s|$)/,
+  /(?:\b(?:luc|vao luc|vao)\s+)?\b(?<h>\d{1,2})\s*(?:gio|h|:)\s*(?:(?<m>\d{1,2})\s*(?:phut)?)?\s*(?<half>ruoi)?\s*(?<part>sang|trua|chieu|toi|dem)?\b/,
+  /\bat\s+(?<h>\d{1,2})(?::(?<m>\d{2}))?\b/];
+const has = (t, ...k) => k.some(x => t.includes(x));
+function onOff(w) { if (w.some(x => ["tat","off","ngung","dung"].includes(x))) return false; if (w.some(x => ["bat","mo","on"].includes(x))) return true; return null; }
+function findFrom(re, s, start) { const g = new RegExp(re.source, "g"); g.lastIndex = start; return g.exec(s); }
+function parse(spoken) {
+  const text = spoken.trim().replace(/\s+/g, " "); if (!text) return { k: "unknown" };
+  const f = fold(text);
+  if (MED.some(p => f.startsWith(p))) return { k: "medicine" };
+  const pre = ADD.find(p => f === p || f.startsWith(p + " "));
+  if (pre) {
+    const rm = new Array(text.length).fill(false); for (let i = 0; i < pre.length; i++) rm[i] = true;
+    let date = null, min = null;
+    for (const [re, off] of DATES) { const m = findFrom(re, f, pre.length); if (m) { date = addDays(today(), off); for (let i = m.index; i < m.index + m[0].length; i++) rm[i] = true; break; } }
+    for (const re of TIMES) { const m = findFrom(re, f, pre.length); if (!m) continue;
+      let h = +m.groups.h, mi = m.groups.m ? +m.groups.m : 0; if (m.groups.half) mi = 30;
+      const part = m.groups.part;
+      if (["chieu","toi","pm"].includes(part) && h >= 1 && h <= 11) h += 12;
+      if (part === "dem" && h >= 6 && h <= 11) h += 12;
+      if (part === "trua" && h >= 1 && h <= 4) h += 12;
+      if (["sang","am"].includes(part) && h === 12) h = 0;
+      if (h > 23 || mi > 59) continue;
+      min = h * 60 + mi; for (let i = m.index; i < m.index + m[0].length; i++) rm[i] = true; break; }
+    let words = [...text].filter((_, i) => !rm[i]).join("").replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
+    while (words.length && ["vao","luc","at","on","nhe","nha","ngay"].includes(fold(words.at(-1)))) words.pop();
+    while (words.length && ["la","rang","to","de"].includes(fold(words[0]))) words.shift();
+    let title = words.join(" ").replace(/^[,.\s]+|[,.\s]+$/g, "");
+    if (!title) return { k: "openAdd" };
+    title = title[0].toUpperCase() + title.slice(1);
+    if (min !== null && !date) { const n = new Date(); date = min <= n.getHours()*60 + n.getMinutes() ? addDays(today(), 1) : today(); }
+    return { k: "add", title, date, min };
+  }
+  const w = f.split(" ");
+  if (has(f, "tuong phan", "contrast", "den vang")) return { k: "hc", on: onOff(w) };
+  if (has(f, "doc nhac", "doc loi nhac", "doc to loi nhac", "doc thong bao", "read reminder")) return { k: "speak", on: onOff(w) };
+  if (w.includes("rung") || has(f, "vibrat")) return { k: "haptics", on: onOff(w) };
+  if (has(f, "chu to", "chu lon", "phong to", "to hon", "lon hon", "bigger", "larger")) return { k: "size", step: 1 };
+  if (has(f, "chu nho", "thu nho", "nho hon", "smaller")) return { k: "size", step: -1 };
+  if (has(f, "uong thuoc", "medicine")) return { k: "medicine" };
+  if (has(f, "doc viec", "doc lich", "hom nay co gi", "doc to", "read today")) return { k: "read" };
+  if (w.includes("goi") || w.includes("call")) return { k: "call" };
+  if (has(f, "cai dat", "setting")) return { k: "settings" };
+  if (has(f, "giup", "huong dan", "noi gi", "help")) return { k: "help" };
+  return { k: "unknown" };
+}
+
+/* ---------- Giao diện ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const ICON = {
+  star: '<svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21l-1.64,-7.03L22,9.24l-7.19,-0.61L12,2L9.19,8.63L2,9.24l5.46,4.73L5.82,21z"/></svg>',
+  starO: '<svg viewBox="0 0 24 24"><path d="M22,9.24l-7.19,-0.62L12,2L9.19,8.63L2,9.24l5.46,4.73L5.82,21L12,17.27L18.18,21l-1.63,-7.03L22,9.24zM12,15.4l-3.76,2.27l1,-4.28l-3.32,-2.88l4.38,-0.38L12,6.1l1.71,4.04l4.38,0.38l-3.32,2.88l1,4.28L12,15.4z"/></svg>',
+  vol: '<svg viewBox="0 0 24 24"><path d="M3,9v6h4l5,5V4L7,9H3zM16.5,12c0,-1.77 -1.02,-3.29 -2.5,-4.03v8.05c1.48,-0.73 2.5,-2.25 2.5,-4.02z"/></svg>',
+  mic: $("#micTop").innerHTML,
+  moon: '<svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M12,3c-4.97,0 -9,4.03 -9,9s4.03,9 9,9s9,-4.03 9,-9c0,-0.46 -0.04,-0.92 -0.1,-1.36c-0.98,1.37 -2.58,2.26 -4.4,2.26c-2.98,0 -5.4,-2.42 -5.4,-5.4c0,-1.81 0.89,-3.42 2.26,-4.4C12.92,3.04 12.46,3 12,3z"/></svg>',
+};
+
+function applyPrefs() {
+  $("#phone").style.setProperty("--scale", prefs.scale);
+  $("#phone").classList.toggle("hc", prefs.hc);
+}
+
+function groups() {
+  const t = today(), open = tasks.filter(x => !x.done), done = tasks.filter(x => x.done);
+  const sec = { "Quá hạn": [], "Hôm nay": [], "Ngày mai": [], "Sắp tới": [], "Chưa có ngày": [] };
+  for (const x of open) { if (!x.date) { sec["Chưa có ngày"].push(x); continue; }
+    const n = Math.round((parseIso(x.date) - t) / DAY);
+    sec[n < 0 ? "Quá hạn" : n === 0 ? "Hôm nay" : n === 1 ? "Ngày mai" : "Sắp tới"].push(x); }
+  for (const k in sec) sec[k].sort((a, b) => (a.date || "").localeCompare(b.date || "") || (b.important?1:0) - (a.important?1:0) || (a.min ?? 1e9) - (b.min ?? 1e9));
+  return { sec, done };
+}
+
+function summary() {
+  const t = today(), l = toLunar(t), g = groups();
+  let s = `Hôm nay là ${WDL[t.getDay()]}, ngày ${t.getDate()} tháng ${t.getMonth()+1}, âm lịch ngày ${l.day} tháng ${l.month} năm ${canChi(l.year)}. `;
+  const td = g.sec["Hôm nay"];
+  s += td.length ? `Hôm nay có ${td.length} việc: ${td.map(x => x.min != null ? `${x.title} lúc ${fmtTime(x.min)}` : x.title).join(", ")}.` : "Hôm nay không có việc nào.";
+  if (g.sec["Quá hạn"].length) s += ` Và ${g.sec["Quá hạn"].length} việc quá hạn.`;
+  return s;
+}
+
+function render() {
+  applyPrefs();
+  const t = today(), l = toLunar(t), g = groups();
+  let h = `<div class="today">
+    <div class="date">${WDL[t.getDay()]}, ${t.getDate()} tháng ${t.getMonth()+1}, ${t.getFullYear()}</div>
+    <div class="lunar">${ICON.moon}<span>Âm lịch: ${l.day}/${l.month}${l.leap?" nhuận":""}, năm ${canChi(l.year)}</span></div>
+    <div class="small">Mùng 1 tới: ${rel(nextLunarDay(t, 1))} · Rằm tới: ${rel(nextLunarDay(t, 15))}</div>
+    <button class="voice-btn" data-act="voice">${ICON.mic}Nói lệnh</button>
+    <div class="row2"><button class="ghost" data-act="read">${ICON.vol}Đọc hôm nay</button><button class="ghost" data-act="help">Nói được gì?</button></div>
+  </div>`;
+  const openCount = Object.values(g.sec).reduce((a, b) => a + b.length, 0);
+  if (!openCount) h += `<div class="empty"><b>Chưa có việc nào</b><br>Bấm Thêm việc hoặc Nói lệnh để bắt đầu.</div>`;
+  for (const [name, list] of Object.entries(g.sec)) { if (!list.length) continue;
+    h += `<div class="sec ${name === "Quá hạn" ? "over" : ""}">${name}</div>` + list.map(taskRow).join(""); }
+  if (g.done.length) {
+    h += `<button class="sec icon-btn" style="width:auto;padding:0 6px" data-act="toggleDone">Đã xong (${g.done.length}) ${prefs.showDone ? "▴" : "▾"}</button>`;
+    if (prefs.showDone) h += g.done.map(taskRow).join("");
+  }
+  $("#list").innerHTML = h;
+}
+function taskRow(x) {
+  const d = x.date ? parseIso(x.date) : null, over = d && !x.done && d < today();
+  const meta = d ? [rel(d), x.min != null ? fmtTime(x.min) : null, lunarShort(d)].filter(Boolean).join(" · ") : "";
+  const extra = [x.med ? "thuốc" : null, x.repeat || null, x.remind ? "có nhắc" : null].filter(Boolean).join(" · ");
+  return `<div class="task ${x.done ? "done" : ""}">
+    <input type="checkbox" ${x.done ? "checked" : ""} data-done="${x.id}" aria-label="Đánh dấu xong: ${esc(x.title)}">
+    <div class="body"><div class="t">${esc(x.title)}</div>${meta || extra ? `<div class="m ${over ? "over" : ""}">${[meta, extra].filter(Boolean).join(" · ")}</div>` : ""}</div>
+    <button class="icon-btn star ${x.important ? "on" : ""}" data-star="${x.id}" aria-label="${x.important ? "Bỏ quan trọng" : "Đánh dấu quan trọng"}">${x.important ? ICON.star : ICON.starO}</button>
+  </div>`;
+}
+
+let toastTimer;
+function toast(msg, undo) {
+  clearTimeout(toastTimer);
+  $("#toastHost").innerHTML = `<div class="toast" role="status"><span style="flex:1">${esc(msg)}</span>${undo ? '<button id="undoBtn">Hoàn tác</button>' : ""}</div>`;
+  if (undo) $("#undoBtn").onclick = () => { undo(); $("#toastHost").innerHTML = ""; };
+  toastTimer = setTimeout(() => { $("#toastHost").innerHTML = ""; }, 4000);
+}
+const respond = msg => { speak(msg); toast(msg); };
+const closeSheet = () => { $("#overlay").innerHTML = ""; };
+function sheet(html) {
+  $("#overlay").innerHTML = `<div class="sheet" id="sheetBg"><div class="panel" role="dialog">${html}</div></div>`;
+  $("#sheetBg").addEventListener("click", e => { if (e.target.id === "sheetBg") closeSheet(); });
+}
+
+/* Màn hình thêm việc */
+function openAdd(prefill = "") {
+  sheet(`<h3>Thêm việc</h3>
+    <form id="addForm">
+      <label class="field">Việc cần làm<input id="fTitle" required value="${esc(prefill)}" placeholder="Ví dụ: Đi chợ mua rau"></label>
+      <div class="grid2">
+        <label class="field">Ngày<input id="fDate" type="date" value="${iso(today())}"></label>
+        <label class="field">Giờ nhắc<input id="fTime" type="time" value="08:00"></label>
+      </div>
+      <label class="field">Lặp lại<select id="fRepeat"><option value="">Không lặp</option><option>Hằng ngày</option><option>Hằng tuần</option><option>Hằng tháng</option><option>Hằng tháng (âm)</option><option>Hằng năm (âm)</option></select></label>
+      <div class="hint" id="fLunar"></div>
+      <div class="actions"><button type="button" class="btn" id="fCancel">Hủy</button><button class="btn fill">Lưu</button></div>
+    </form>`);
+  const upd = () => { const v = $("#fDate").value; $("#fLunar").textContent = v ? `Ngày âm: ${lunarShort(parseIso(v)).replace("ÂL ","")}` : ""; };
+  $("#fDate").addEventListener("input", upd); upd();
+  $("#fCancel").onclick = closeSheet;
+  $("#addForm").addEventListener("submit", e => { e.preventDefault();
+    const tm = $("#fTime").value, min = tm ? (+tm.slice(0,2))*60 + (+tm.slice(3)) : null;
+    tasks.push({ id: Math.random().toString(36).slice(2), title: $("#fTitle").value.trim(), date: $("#fDate").value || null, min, remind: min != null, repeat: $("#fRepeat").value || null });
+    save(); closeSheet(); render(); toast("Đã lưu việc."); });
+  $("#fTitle").focus();
+}
+
+/* Màn hình nhắc uống thuốc */
+function openMedicine() {
+  const presets = [["Sáng", 420], ["Trưa", 720], ["Tối", 1140]];
+  sheet(`<h3>Nhắc uống thuốc</h3>
+    <form id="medForm">
+      <label class="field">Tên thuốc<input id="mName" required placeholder="Ví dụ: Thuốc huyết áp"></label>
+      <div class="field">Giờ uống mỗi ngày</div>
+      <div class="chips">${presets.map(([n, m]) => `<label class="chip"><input type="checkbox" value="${m}" ${m === 420 ? "checked" : ""}> ${n} ${fmtTime(m)}</label>`).join("")}</div>
+      <div class="hint">App chỉ nhắc giờ, không thay lời khuyên của bác sĩ.</div>
+      <div class="actions"><button type="button" class="btn" id="mCancel">Hủy</button><button class="btn fill">Lưu</button></div>
+    </form>`);
+  $("#mCancel").onclick = closeSheet;
+  $("#medForm").addEventListener("submit", e => { e.preventDefault();
+    const name = $("#mName").value.trim(), mins = [...document.querySelectorAll("#medForm .chips input:checked")].map(i => +i.value);
+    if (!mins.length) { toast("Hãy chọn ít nhất một giờ uống."); return; }
+    const n = new Date(), nowMin = n.getHours()*60 + n.getMinutes();
+    for (const m of mins) tasks.push({ id: Math.random().toString(36).slice(2), title: `Uống ${name}`, date: iso(m <= nowMin ? addDays(today(),1) : today()), min: m, remind: true, med: true, repeat: "Hằng ngày" });
+    save(); closeSheet(); render(); toast(`Đã thêm ${mins.length} cữ thuốc.`); });
+}
+
+/* Màn hình cài đặt */
+function openSettings() {
+  const row = (id, label, on) => `<label class="setrow"><span>${label}</span><input type="checkbox" id="${id}" ${on ? "checked" : ""}></label>`;
+  sheet(`<h3>Cài đặt</h3>
+    <div class="setrow"><span>Cỡ chữ</span><div class="size"><button class="btn" id="sMinus" aria-label="Chữ nhỏ hơn">A−</button><b id="sPct">${Math.round(prefs.scale*100)}%</b><button class="btn" id="sPlus" aria-label="Chữ to hơn">A+</button></div></div>
+    ${row("sHc", "Tương phản cao (chữ vàng trên nền đen)", prefs.hc)}
+    ${row("sSpeak", "Đọc to lời nhắc", prefs.speak)}
+    ${row("sHap", "Rung khi bấm", prefs.haptics)}
+    <div class="setrow"><span>Làm lại dữ liệu mẫu</span><button class="btn" id="sReset">Làm lại</button></div>
+    <div class="actions"><button class="btn fill" id="sClose">Xong</button></div>`);
+  const size = step => { changeSize(step); $("#sPct").textContent = Math.round(prefs.scale*100) + "%"; };
+  $("#sMinus").onclick = () => size(-1); $("#sPlus").onclick = () => size(1);
+  $("#sHc").onchange = e => { prefs.hc = e.target.checked; save(); render(); };
+  $("#sSpeak").onchange = e => { prefs.speak = e.target.checked; save(); };
+  $("#sHap").onchange = e => { prefs.haptics = e.target.checked; save(); };
+  $("#sReset").onclick = () => { tasks = sample(); save(); render(); toast("Đã làm lại dữ liệu mẫu."); };
+  $("#sClose").onclick = closeSheet;
+}
+function changeSize(step) {
+  const i = SCALES.findIndex(s => s >= prefs.scale - 0.01);
+  prefs.scale = SCALES[Math.min(SCALES.length - 1, Math.max(0, (i < 0 ? SCALES.length - 1 : i) + step))];
+  save(); render();
+}
+
+/* Ô "nói lệnh": trên web thì gõ, trong app thật thì nói */
+const EXAMPLES = ["Thêm việc đi chợ 8 giờ sáng mai", "Nhắc tôi gọi mẹ lúc 7 giờ tối", "Đọc việc hôm nay", "Bật tương phản", "Tắt tương phản", "Chữ to hơn", "Chữ nhỏ hơn", "Tắt rung", "Thêm thuốc", "Mở cài đặt"];
+function openVoice() {
+  sheet(`<h3>Nói lệnh</h3>
+    <form id="vForm" class="listen"><input id="vIn" placeholder="Gõ câu lệnh…" aria-label="Câu lệnh" autocomplete="off"><button class="btn fill">Làm</button></form>
+    <div class="hint">Trên điện thoại, bấm micro rồi nói. Bản web này không được dùng micro nên bạn gõ hoặc bấm câu mẫu.</div>
+    <div class="chips">${EXAMPLES.map(e => `<button class="chip" type="button" data-ex="${esc(e)}">${esc(e)}</button>`).join("")}</div>`);
+  $("#vForm").addEventListener("submit", e => { e.preventDefault(); const v = $("#vIn").value; if (v.trim()) { closeSheet(); handle(v); } });
+  document.querySelectorAll("[data-ex]").forEach(b => b.onclick = () => { closeSheet(); handle(b.dataset.ex); });
+  $("#vIn").focus();
+}
+const HELP = "Bạn có thể nói: Thêm việc đi chợ 8 giờ sáng mai. Nhắc tôi gọi mẹ lúc 7 giờ tối. Đọc việc hôm nay. Bật hoặc tắt tương phản. Bật đọc to lời nhắc. Tắt rung. Chữ to hơn, chữ nhỏ hơn. Gọi người thân. Thêm thuốc. Mở cài đặt.";
+function setPref(key, on, onMsg, offMsg) { prefs[key] = on ?? !prefs[key]; save(); render(); respond(prefs[key] ? onMsg : offMsg); }
+function handle(spoken) {
+  buzz();
+  const c = parse(spoken);
+  switch (c.k) {
+    case "add": {
+      tasks.push({ id: Math.random().toString(36).slice(2), title: c.title, date: c.date ? iso(c.date) : null, min: c.min, remind: c.min != null });
+      save(); render();
+      const when = [c.date ? rel(c.date) : "", c.min != null ? "lúc " + fmtTime(c.min) : ""].filter(Boolean).join(" ");
+      respond(`Đã thêm: ${c.title} ${when}`.trim()); break; }
+    case "openAdd": openAdd(); break;
+    case "read": speak(summary()); toast(summary()); break;
+    case "hc": setPref("hc", c.on, "Đã bật tương phản cao.", "Đã tắt tương phản cao."); break;
+    case "speak": setPref("speak", c.on, "Đã bật đọc to lời nhắc.", "Đã tắt đọc to lời nhắc."); break;
+    case "haptics": setPref("haptics", c.on, "Đã bật rung.", "Đã tắt rung."); break;
+    case "size": changeSize(c.step); respond(c.step > 0 ? "Đã tăng cỡ chữ." : "Đã giảm cỡ chữ."); break;
+    case "call": respond("Trên điện thoại, app sẽ mở màn hình gọi người thân đã lưu."); break;
+    case "medicine": openMedicine(); break;
+    case "settings": openSettings(); break;
+    case "help": sheet(`<h3>Lệnh bằng giọng nói</h3><p style="line-height:1.6">${esc(HELP)}</p><div class="actions"><button class="btn fill" id="hClose">Đóng</button></div>`); $("#hClose").onclick = closeSheet; speak(HELP); break;
+    default: respond(`Xin lỗi, tôi chưa hiểu “${spoken}”. Bấm “Nói được gì?” để xem ví dụ.`);
+  }
+}
+
+/* Sự kiện */
+$("#list").addEventListener("click", e => {
+  const b = e.target.closest("[data-act],[data-star]"); if (!b) return;
+  if (b.dataset.star) { const x = tasks.find(t => t.id === b.dataset.star); x.important = !x.important; save(); render(); return; }
+  ({ voice: openVoice, read: () => { speak(summary()); toast(summary()); }, help: () => handle("giúp"),
+     toggleDone: () => { prefs.showDone = !prefs.showDone; save(); render(); } })[b.dataset.act]();
+});
+$("#list").addEventListener("change", e => {
+  const id = e.target.dataset.done; if (!id) return;
+  const x = tasks.find(t => t.id === id), before = { ...x };
+  buzz(); x.done = !x.done; save(); render();
+  if (x.done) toast("Đã xong một việc.", () => { Object.assign(x, before); save(); render(); });
+});
+$("#micTop").onclick = openVoice;
+$("#openSettings").onclick = openSettings;
+$("#fabAdd").onclick = () => openAdd();
+$("#fabMed").onclick = openMedicine;
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+render();
+</script>

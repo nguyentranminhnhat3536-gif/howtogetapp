@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Đọc Giùm</title>
+<meta name="description" content="Dán chữ vào, bấm Đọc, nghe ngay. Đọc văn bản thành giọng nói miễn phí ngay trong trình duyệt.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Literata:opsz,wght@7..72,400;7..72,500&display=swap">
+<style>
+/* Layout: a small recording desk. The script (text) fills the left, the voice desk sits on the right,
+   and the transport bar is pinned under the script. The sentence being read gets a highlighter mark. */
+:root {
+  --bg: #EDF0F4;          /* cool studio paper */
+  --surface: #FFFFFF;
+  --sunk: #E2E7EE;
+  --ink: #121925;
+  --muted: #586376;
+  --line: #D2D9E3;
+  --accent: #2343C4;      /* cobalt */
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DCE3FA;
+  --mark: #FFE27A;        /* highlighter yellow */
+  --mark-ink: #121925;
+  --ok: #1D7A4E;
+  --warn-bg: #FFF3D1;
+  --warn-ink: #5E4300;
+  --toast-bg: #121925;
+  --toast-ink: #F3F5F9;
+
+  --font-display: "Bricolage Grotesque", "Be Vietnam Pro", system-ui, sans-serif;
+  --font-body: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-read: "Literata", Georgia, "Times New Roman", serif;
+  --radius: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1016; --surface: #151A22; --sunk: #1D232D; --ink: #E6EAF1; --muted: #9AA4B5; --line: #29303B;
+    --accent: #8FA3FF; --accent-ink: #0D1016; --accent-soft: #222B4A;
+    --mark: #5E4C08; --mark-ink: #FFF3C4; --ok: #5CC894;
+    --warn-bg: #2F2710; --warn-ink: #F2D88C; --toast-bg: #E6EAF1; --toast-ink: #0D1016;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1016; --surface: #151A22; --sunk: #1D232D; --ink: #E6EAF1; --muted: #9AA4B5; --line: #29303B;
+  --accent: #8FA3FF; --accent-ink: #0D1016; --accent-soft: #222B4A;
+  --mark: #5E4C08; --mark-ink: #FFF3C4; --ok: #5CC894;
+  --warn-bg: #2F2710; --warn-ink: #F2D88C; --toast-bg: #E6EAF1; --toast-ink: #0D1016;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 15px/1.55 var(--font-body);
+  -webkit-text-size-adjust: 100%;
+}
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.wrap { max-width: 1140px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 36px; }
+@media (min-width: 720px) { .wrap { padding-inline: 28px; padding-block: 28px 48px; } }
+
+/* Header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 14px 20px; flex-wrap: wrap; margin-bottom: 22px; }
+.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.mark { flex: none; width: 46px; height: 46px; border-radius: 14px; background: var(--accent); display: grid; place-items: center; }
+.bars { display: flex; align-items: center; gap: 3px; height: 22px; }
+.bars i { display: block; width: 3.5px; border-radius: 2px; background: var(--accent-ink); height: 35%; transform-origin: center; }
+.bars i:nth-child(2) { height: 70%; }
+.bars i:nth-child(3) { height: 100%; }
+.bars i:nth-child(4) { height: 60%; }
+.bars i:nth-child(5) { height: 30%; }
+body.speaking .bars i { animation: talk .9s ease-in-out infinite; }
+body.speaking .bars i:nth-child(2) { animation-delay: -.15s; }
+body.speaking .bars i:nth-child(3) { animation-delay: -.45s; }
+body.speaking .bars i:nth-child(4) { animation-delay: -.3s; }
+body.speaking .bars i:nth-child(5) { animation-delay: -.6s; }
+@keyframes talk { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.35); } }
+h1 { margin: 0; font: 800 clamp(1.6rem, 1.2rem + 1.4vw, 2.1rem)/1 var(--font-display); letter-spacing: -0.02em; text-wrap: balance; }
+.tagline { margin: 4px 0 0; color: var(--muted); font-size: .92rem; text-wrap: balance; }
+
+.langs { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); }
+.langs button { border: 0; background: transparent; color: var(--muted); font-weight: 600; font-size: .78rem; letter-spacing: .08em; padding: 6px 13px; border-radius: 999px; cursor: pointer; }
+.langs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+.notice { background: var(--warn-bg); color: var(--warn-ink); border-radius: 12px; padding: 12px 14px; font-size: .9rem; margin: 0 0 18px; }
+
+/* Main grid */
+.studio { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+@media (min-width: 900px) { .studio { grid-template-columns: minmax(0, 1fr) 330px; align-items: start; } }
+
+/* Script card */
+.script { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); display: flex; flex-direction: column; min-width: 0; }
+.script-head { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; padding: 12px 14px 12px 20px; border-bottom: 1px solid var(--line); }
+.label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+.tools { display: flex; gap: 6px; flex-wrap: wrap; }
+.ghost { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 13px; font-size: .85rem; font-weight: 500; cursor: pointer; }
+.ghost:hover { background: var(--sunk); }
+
+.page { position: relative; }
+#text, .reader {
+  display: block; width: 100%;
+  height: clamp(300px, 52vh, 620px);
+  margin: 0; border: 0; border-radius: 0;
+  padding: 20px 24px;
+  background: transparent; color: var(--ink);
+  font: 400 1.14rem/1.8 var(--font-read);
+}
+#text { resize: vertical; min-height: 220px; }
+#text::placeholder { color: var(--muted); }
+#text:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--accent-soft); }
+.reader { overflow-y: auto; position: relative; }
+.reader p { margin: 0 0 .9em; max-width: 68ch; }
+.s { cursor: pointer; border-radius: 4px; transition: background-color .2s, color .2s; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.s:hover { background: var(--sunk); }
+.s.done { color: var(--muted); }
+.s.now { background: var(--mark); color: var(--mark-ink); padding: 1px 3px; }
+.w { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 5px; text-decoration-color: var(--accent); }
+
+.stats { display: flex; gap: 4px 16px; flex-wrap: wrap; padding: 9px 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: .82rem; font-variant-numeric: tabular-nums; }
+
+/* Transport */
+.transport {
+  position: sticky; bottom: 0; z-index: 2;
+  display: flex; align-items: center; gap: 12px 14px; flex-wrap: wrap;
+  padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: var(--surface); border-top: 1px solid var(--line);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.play {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 50px;
+  padding: 0 24px 0 18px; border: 0; border-radius: 999px;
+  background: var(--accent); color: var(--accent-ink);
+  font-weight: 600; font-size: 1.02rem; cursor: pointer;
+}
+.play:hover { filter: brightness(1.08); }
+.play:disabled { opacity: .5; cursor: not-allowed; }
+.round { width: 50px; height: 50px; flex: none; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); cursor: pointer; }
+.round:hover:not(:disabled) { background: var(--sunk); }
+.round:disabled { opacity: .4; cursor: not-allowed; }
+svg.ic { width: 20px; height: 20px; fill: currentColor; display: block; }
+.progress { flex: 1 1 170px; min-width: 0; display: grid; gap: 7px; }
+.track { height: 6px; border-radius: 99px; background: var(--sunk); overflow: hidden; }
+.track span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .35s ease; }
+.progress-text { display: flex; justify-content: space-between; gap: 10px; font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* Voice desk */
+.desk { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 18px 20px; display: grid; gap: 18px; min-width: 0; }
+.desk h2 { margin: 0; font: 600 1.15rem/1.2 var(--font-display); letter-spacing: -0.01em; }
+.field { display: grid; gap: 7px; }
+.field-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.field-top label { font-weight: 600; font-size: .9rem; }
+.val { font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.select { position: relative; }
+.select::after { content: ""; position: absolute; right: 15px; top: 50%; width: 7px; height: 7px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+select { width: 100%; appearance: none; -webkit-appearance: none; background: var(--bg); border: 1px solid var(--line); border-radius: 11px; padding: 11px 38px 11px 12px; font-size: .93rem; font-weight: 500; cursor: pointer; text-overflow: ellipsis; }
+input[type="range"] { width: 100%; margin: 4px 0; accent-color: var(--accent); cursor: pointer; }
+.voice-kind { display: flex; align-items: flex-start; gap: 8px; font-size: .8rem; color: var(--muted); margin: 0; }
+.chip { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px; border-radius: 99px; background: var(--sunk); color: var(--ink); font-weight: 600; font-size: .74rem; }
+.chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+.chip.online::before { background: var(--accent); }
+.test { justify-self: start; }
+.help { border-top: 1px solid var(--line); padding-top: 14px; font-size: .86rem; }
+.help summary { cursor: pointer; font-weight: 600; }
+.help p { margin: .6em 0; color: var(--muted); }
+.help ul { margin: .5em 0; padding-left: 1.1em; display: grid; gap: .55em; }
+.help strong { font-weight: 600; }
+.privacy { margin: 0; font-size: .78rem; color: var(--muted); }
+
+footer { margin-top: 26px; color: var(--muted); font-size: .8rem; max-width: 70ch; display: grid; gap: 4px; }
+footer p { margin: 0; }
+kbd { font: 600 .74rem var(--font-body); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; background: var(--surface); }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  z-index: 10; display: flex; align-items: center; gap: 14px; max-width: calc(100% - 32px);
+  padding: 10px 12px 10px 16px; border-radius: 12px; background: var(--toast-bg); color: var(--toast-ink); font-size: .9rem;
+}
+.toast button { border: 1px solid currentColor; background: transparent; color: inherit; border-radius: 999px; padding: 4px 12px; font-weight: 600; font-size: .82rem; cursor: pointer; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="mark" aria-hidden="true"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div>
+        <h1>Đọc Giùm</h1>
+        <p class="tagline" data-t="tagline">Dán chữ vào, bấm Đọc, nghe ngay. Miễn phí, chạy ngay trong trình duyệt.</p>
+      </div>
+    </div>
+    <div class="langs" role="group" aria-label="Language">
+      <button type="button" id="ui-vi" data-ui="vi" aria-pressed="true">VI</button>
+      <button type="button" id="ui-en" data-ui="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <p class="notice" id="unsupported" hidden data-t="unsupported"></p>
+
+  <main class="studio">
+    <section class="script" aria-labelledby="script-label">
+      <div class="script-head">
+        <span class="label" id="script-label" data-t="textLabel">Văn bản</span>
+        <div class="tools" id="edit-tools">
+          <button type="button" class="ghost" id="btn-sample" data-t="sample">Văn bản mẫu</button>
+          <button type="button" class="ghost" id="btn-open" data-t="open">Mở tệp .txt</button>
+          <button type="button" class="ghost" id="btn-clear" data-t="clear">Xóa</button>
+          <input type="file" id="file" accept=".txt,text/plain" hidden>
+        </div>
+        <div class="tools" id="read-tools" hidden>
+          <button type="button" class="ghost" id="btn-edit" data-t="edit">Sửa văn bản</button>
+        </div>
+      </div>
+
+      <div class="page">
+        <textarea id="text" spellcheck="false" aria-labelledby="script-label"></textarea>
+        <div class="reader" id="reader" hidden aria-live="off"></div>
+      </div>
+
+      <div class="stats" id="stats" aria-live="polite"></div>
+
+      <div class="transport">
+        <button type="button" class="play" id="btn-play">
+          <svg class="ic" id="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+          <svg class="ic" id="ic-pause" viewBox="0 0 24 24" aria-hidden="true" hidden><rect x="6" y="5" width="4.2" height="14" rx="1.2"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.2"/></svg>
+          <span id="play-label">Đọc</span>
+        </button>
+        <button type="button" class="round" id="btn-stop" disabled>
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </button>
+        <div class="progress">
+          <div class="track" aria-hidden="true"><span id="bar"></span></div>
+          <div class="progress-text"><span id="prog-left"></span><span id="prog-right"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="desk" aria-labelledby="desk-title">
+      <h2 id="desk-title" data-t="deskTitle">Giọng đọc</h2>
+
+      <div class="field">
+        <div class="field-top"><label for="lang" data-t="lang">Ngôn ngữ</label></div>
+        <div class="select"><select id="lang"></select></div>
+      </div>
+
+      <div class="field">
+        <div class="field-top"><label for="voice" data-t="voice">Giọng</label></div>
+        <div class="select"><select id="voice"></select></div>
+        <p class="voice-kind" id="voice-kind" hidden><span class="chip" id="voice-chip"></span><span id="voice-desc"></span></p>
+      </div>
+
+      <div class="field">
+        <div class="field-top"><label for="rate" data-t="rate">Tốc độ</label><span class="val" id="rate-val"></span></div>
+        <input type="range" id="rate" min="0.5" max="2" step="0.1" value="1">
+      </div>
+
+      <div class="field">
+        <div class="field-top"><label for="pitch" data-t="pitch">Cao độ</label><span class="val" id="pitch-val"></span></div>
+        <input type="range" id="pitch" min="0.5" max="1.5" step="0.1" value="1">
+      </div>
+
+      <div class="field">
+        <div class="field-top"><label for="volume" data-t="volume">Âm lượng</label><span class="val" id="volume-val"></span></div>
+        <input type="range" id="volume" min="0" max="1" step="0.05" value="1">
+      </div>
+
+      <button type="button" class="ghost test" id="btn-test" data-t="test">Nghe thử giọng này</button>
+
+      <details class="help" id="help">
+        <summary data-t="moreVoices">Thêm giọng đọc cho máy</summary>
+        <p id="no-vi" hidden data-t="noVi"></p>
+        <ul>
+          <li><strong>Android:</strong> <span data-t="helpAndroid"></span></li>
+          <li><strong>iPhone, iPad:</strong> <span data-t="helpIos"></span></li>
+          <li><strong>Windows:</strong> <span data-t="helpWin"></span></li>
+          <li><strong>Mac:</strong> <span data-t="helpMac"></span></li>
+        </ul>
+        <p data-t="helpReload"></p>
+      </details>
+
+      <p class="privacy" data-t="privacy"></p>
+    </aside>
+  </main>
+
+  <footer>
+    <p data-t="footer"></p>
+    <p><kbd>Ctrl</kbd> + <kbd>Enter</kbd> <span data-t="keyPlay"></span> · <kbd>Esc</kbd> <span data-t="keyStop"></span></p>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" hidden><span id="toast-msg"></span><button type="button" id="toast-undo" hidden></button></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var T = {
+    vi: {
+      tagline: "Dán chữ vào, bấm Đọc, nghe ngay. Miễn phí, chạy ngay trong trình duyệt.",
+      textLabel: "Văn bản", sample: "Văn bản mẫu", open: "Mở tệp .txt", clear: "Xóa", edit: "Sửa văn bản",
+      placeholder: "Dán hoặc gõ văn bản cần đọc…",
+      play: "Đọc", pause: "Tạm dừng", resume: "Đọc tiếp", stop: "Dừng hẳn",
+      deskTitle: "Giọng đọc", lang: "Ngôn ngữ", voice: "Giọng", rate: "Tốc độ", pitch: "Cao độ", volume: "Âm lượng",
+      test: "Nghe thử giọng này", testPhrase: "Xin chào, đây là giọng đọc bạn vừa chọn.",
+      local: "Trên máy", online: "Trực tuyến",
+      localDesc: "Đọc ngay trên máy, không cần mạng.",
+      onlineDesc: "Cần mạng. Văn bản được gửi tới nhà cung cấp giọng để đọc.",
+      loadingVoices: "Đang tải giọng…", noVoiceOpt: "Không có giọng nào",
+      defaultVoice: "Giọng mặc định của máy",
+      moreVoices: "Thêm giọng đọc cho máy",
+      noVi: "Máy này chưa có giọng tiếng Việt. Làm theo hướng dẫn dưới đây để thêm.",
+      helpAndroid: "Mở Cài đặt, tìm \"Chuyển văn bản thành giọng nói\" (Text-to-speech). Chọn công cụ của Google, bấm bánh răng, vào \"Cài đặt dữ liệu giọng nói\" rồi tải Tiếng Việt.",
+      helpIos: "Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → Tiếng Việt → tải giọng Linh.",
+      helpWin: "Cài đặt → Thời gian và ngôn ngữ → Giọng nói → Thêm giọng nói → Tiếng Việt. Trình duyệt Microsoft Edge thường có sẵn giọng tiếng Việt tự nhiên (HoaiMy, NamMinh) loại trực tuyến.",
+      helpMac: "Cài đặt hệ thống → Trợ năng → Nội dung được đọc → Giọng hệ thống → Quản lý giọng → Tiếng Việt.",
+      helpReload: "Cài xong thì tải lại trang này.",
+      privacy: "Văn bản của bạn chỉ nằm trong trình duyệt. Riêng giọng có nhãn Trực tuyến: trình duyệt gửi văn bản tới Google hoặc Microsoft để đọc.",
+      unsupported: "Trình duyệt này chưa hỗ trợ đọc văn bản. Hãy mở trang bằng Chrome, Edge hoặc Safari bản mới.",
+      footer: "Đọc Giùm dùng giọng đọc có sẵn trong máy và trình duyệt của bạn, nên mỗi máy nghe sẽ khác nhau.",
+      keyPlay: "đọc hoặc tạm dừng", keyStop: "dừng hẳn",
+      chars: "{n} ký tự", words: "{n} từ", about: "khoảng {t}",
+      sentence: "Câu {i} / {n}", ready: "Sẵn sàng · {n} câu", left: "còn khoảng {t}", empty: "Chưa có chữ nào để đọc.",
+      sec: "{s} giây", min: "{m} phút", minSec: "{m} phút {s} giây", wpm: "≈ {n} từ/phút",
+      cleared: "Đã xóa văn bản.", undo: "Hoàn tác", fileErr: "Không mở được tệp này. Hãy chọn tệp .txt.",
+      speakErr: "Không đọc được câu này ({e}). Thử chọn giọng khác.",
+      sampleText: "Chào bạn! Đây là Đọc Giùm, công cụ đọc to văn bản ngay trong trình duyệt.\n\nHãy dán vào đây một bài báo dài, một email công việc hay bài học cần ôn, rồi bấm Đọc. Bạn có thể vừa nghe vừa nấu cơm, đi bộ, hoặc cho mắt nghỉ sau giờ làm.\n\nMuốn nghe nhanh hơn thì kéo thanh Tốc độ. Trong lúc đọc, bấm vào câu nào thì trang đọc lại từ câu đó."
+    },
+    en: {
+      tagline: "Paste your text, press Read, and listen. Free, and it runs right in your browser.",
+      textLabel: "Text", sample: "Sample text", open: "Open .txt file", clear: "Clear", edit: "Edit text",
+      placeholder: "Paste or type the text you want to hear…",
+      play: "Read", pause: "Pause", resume: "Resume", stop: "Stop",
+      deskTitle: "Voice", lang: "Language", voice: "Voice", rate: "Speed", pitch: "Pitch", volume: "Volume",
+      test: "Try this voice", testPhrase: "Hello, this is the voice you picked.",
+      local: "On device", online: "Online",
+      localDesc: "Reads on your device, no internet needed.",
+      onlineDesc: "Needs internet. Your text is sent to the voice provider to be read.",
+      loadingVoices: "Loading voices…", noVoiceOpt: "No voices found",
+      defaultVoice: "Device default voice",
+      moreVoices: "Add more voices to this device",
+      noVi: "This device has no Vietnamese voice yet. Follow the steps below to add one.",
+      helpAndroid: "Open Settings and search for \"Text-to-speech\". Pick Google's engine, tap the gear, open \"Install voice data\", then download the language you want.",
+      helpIos: "Settings → Accessibility → Spoken Content → Voices → pick a language and download a voice.",
+      helpWin: "Settings → Time & language → Speech → Add voices. Microsoft Edge also offers natural-sounding online voices.",
+      helpMac: "System Settings → Accessibility → Spoken Content → System voice → Manage Voices.",
+      helpReload: "Reload this page after installing.",
+      privacy: "Your text stays in your browser. Voices marked Online are the exception: the browser sends the text to Google or Microsoft to read it.",
+      unsupported: "This browser can't read text aloud. Open the page in a recent Chrome, Edge or Safari.",
+      footer: "Đọc Giùm (Vietnamese for \"read it for me\") uses the voices already on your device and browser, so it sounds different on each device.",
+      keyPlay: "read or pause", keyStop: "stop",
+      chars: "{n} characters", words: "{n} words", about: "about {t}",
+      sentence: "Sentence {i} of {n}", ready: "Ready · {n} sentences", left: "about {t} left", empty: "There's no text to read yet.",
+      sec: "{s} s", min: "{m} min", minSec: "{m} min {s} s", wpm: "≈ {n} words/min",
+      cleared: "Text cleared.", undo: "Undo", fileErr: "That file couldn't be opened. Choose a .txt file.",
+      speakErr: "This sentence couldn't be read ({e}). Try another voice.",
+      sampleText: "Hi there! This is Đọc Giùm, a tool that reads your text out loud, right in the browser.\n\nPaste a long article, a work email or your study notes here, then press Read. Listen while you cook, go for a walk, or rest your eyes after work.\n\nDrag the Speed slider to go faster. While it reads, tap any sentence to jump back to it."
+    }
+  };
+
+  var BASE_WPM = 160;          // rough speaking pace at 1.0× (estimate only)
+  var MAX_CHUNK = 200;         // long utterances get cut off in some browsers
+  var ENDERS = ".!?…。！？";
+  var CLOSERS = ".!?…。！？\"'”’)]»";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var synth = window.speechSynthesis;
+  var hasTTS = !!(synth && window.SpeechSynthesisUtterance);
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var store = {
+    get: function (k, d) { try { var v = localStorage.getItem("docgium." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem("docgium." + k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } }
+  };
+
+  var ui = store.get("ui", ((navigator.language || "en").toLowerCase().indexOf("vi") === 0) ? "vi" : "en");
+  if (!T[ui]) ui = "vi";
+
+  var el = {
+    text: $("text"), reader: $("reader"), stats: $("stats"),
+    play: $("btn-play"), stop: $("btn-stop"), playLabel: $("play-label"), icPlay: $("ic-play"), icPause: $("ic-pause"),
+    bar: $("bar"), progLeft: $("prog-left"), progRight: $("prog-right"),
+    lang: $("lang"), voice: $("voice"), voiceKind: $("voice-kind"), voiceChip: $("voice-chip"), voiceDesc: $("voice-desc"),
+    rate: $("rate"), pitch: $("pitch"), volume: $("volume"),
+    rateVal: $("rate-val"), pitchVal: $("pitch-val"), volumeVal: $("volume-val"),
+    editTools: $("edit-tools"), readTools: $("read-tools"), file: $("file"),
+    help: $("help"), noVi: $("no-vi"), toast: $("toast"), toastMsg: $("toast-msg"), toastUndo: $("toast-undo")
+  };
+
+  var voices = [];
+  var segs = [];            // [{ text, para }]
+  var idx = 0;
+  var state = "idle";       // idle | playing | paused
+  var gen = 0;              // bumps on every stop/restart so stale callbacks are ignored
+  var current = null;       // keep a reference so the utterance isn't garbage-collected mid-speech
+  var voicesSettled = false; // true once we've waited long enough for the browser to list its voices
+
+  function t(key, vars) {
+    var s = (T[ui] && T[ui][key]) || T.en[key] || key;
+    if (vars) for (var k in vars) s = s.split("{" + k + "}").join(vars[k]);
+    return s;
+  }
+  function num(n, digits) {
+    try { return n.toLocaleString(ui === "vi" ? "vi-VN" : "en-US", { minimumFractionDigits: digits || 0, maximumFractionDigits: digits || 0 }); }
+    catch (e) { return n.toFixed(digits || 0); }
+  }
+  function fmtTime(seconds) {
+    var s = Math.max(1, Math.round(seconds));
+    if (s < 60) return t("sec", { s: s });
+    var m = Math.floor(s / 60), r = s % 60;
+    return r ? t("minSec", { m: m, s: r }) : t("min", { m: m });
+  }
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[c]; }); }
+  function countWords(s) { var m = s.trim().match(/\S+/g); return m ? m.length : 0; }
+  function looksVietnamese(s) { return /[ăâđêôơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/i.test(s); }
+
+  /* ---------- Text → sentences ---------- */
+  function splitSentences(p) {
+    var out = [], start = 0;
+    for (var i = 0; i < p.length; i++) {
+      if (ENDERS.indexOf(p[i]) === -1) continue;
+      var j = i + 1;
+      while (j < p.length && CLOSERS.indexOf(p[j]) !== -1) j++;
+      if (j >= p.length || /\s/.test(p[j])) { out.push(p.slice(start, j).trim()); start = j; i = j - 1; }
+    }
+    if (start < p.length) out.push(p.slice(start).trim());
+    return out.filter(Boolean);
+  }
+  function splitLong(s) {
+    if (s.length <= MAX_CHUNK) return [s];
+    var parts = [], rest = s;
+    while (rest.length > MAX_CHUNK) {
+      var cut = Math.max(rest.lastIndexOf(", ", MAX_CHUNK), rest.lastIndexOf("; ", MAX_CHUNK), rest.lastIndexOf(": ", MAX_CHUNK));
+      if (cut < MAX_CHUNK * 0.4) cut = rest.lastIndexOf(" ", MAX_CHUNK);
+      if (cut <= 0) cut = MAX_CHUNK - 1;
+      parts.push(rest.slice(0, cut + 1).trim());
+      rest = rest.slice(cut + 1).trim();
+    }
+    if (rest) parts.push(rest);
+    return parts;
+  }
+  function buildSegments(text) {
+    var list = [];
+    text.split(/\n+/).forEach(function (para, pi) {
+      splitSentences(para.trim()).forEach(function (s) {
+        splitLong(s).forEach(function (piece) { list.push({ text: piece, para: pi }); });
+      });
+    });
+    return list;
+  }
+
+  /* ---------- Voices ---------- */
+  function langOf(v) { return (v.lang || "").replace("_", "-"); }
+  function primary(code) { return (code || "").split("-")[0].toLowerCase(); }
+  function langName(code) {
+    var name = code.toUpperCase();
+    try { name = new Intl.DisplayNames([ui], { type: "language" }).of(code) || name; } catch (e) { /* old browser */ }
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+  function loadVoices() {
+    if (!hasTTS) return;
+    var list = synth.getVoices() || [];
+    if (!list.length && voices.length) return;
+    voices = list.slice().sort(function (a, b) { return langOf(a).localeCompare(langOf(b)) || a.name.localeCompare(b.name); });
+    renderLangs();
+  }
+  function renderLangs() {
+    var codes = [];
+    voices.forEach(function (v) { var p = primary(langOf(v)); if (p && codes.indexOf(p) === -1) codes.push(p); });
+    var rank = function (c) { return c === "vi" ? 0 : c === "en" ? 1 : 2; };
+    codes.sort(function (a, b) { return rank(a) - rank(b) || langName(a).localeCompare(langName(b), ui); });
+
+    el.lang.innerHTML = "";
+    if (!codes.length) {
+      el.lang.appendChild(new Option(hasTTS && !voicesSettled ? t("loadingVoices") : t("noVoiceOpt"), ""));
+      el.lang.disabled = true;
+    } else {
+      el.lang.disabled = false;
+      codes.forEach(function (c) { el.lang.appendChild(new Option(langName(c), c)); });
+      var want = store.get("lang", ui);
+      el.lang.value = codes.indexOf(want) !== -1 ? want : (codes.indexOf(ui) !== -1 ? ui : codes[0]);
+    }
+    var noVi = voices.length > 0 && codes.indexOf("vi") === -1;
+    el.noVi.hidden = !noVi;
+    if (noVi && ui === "vi") el.help.open = true;
+    renderVoices();
+  }
+  function voicesFor(code) { return voices.filter(function (v) { return primary(langOf(v)) === code; }); }
+  function renderVoices() {
+    var list = voicesFor(el.lang.value);
+    el.voice.innerHTML = "";
+    if (!list.length) {
+      el.voice.appendChild(new Option(voices.length ? t("noVoiceOpt") : t("defaultVoice"), ""));
+      el.voice.disabled = true;
+      renderVoiceKind();
+      return;
+    }
+    el.voice.disabled = false;
+    list.forEach(function (v) {
+      var label = v.name + (v.localService ? "" : " · " + t("online"));
+      el.voice.appendChild(new Option(label, v.voiceURI));
+    });
+    var saved = store.get("voice", "");
+    var pick = list.filter(function (v) { return v.voiceURI === saved; })[0]
+      || list.filter(function (v) { return v.default; })[0]
+      || list.filter(function (v) { return v.localService; })[0]
+      || list[0];
+    el.voice.value = pick.voiceURI;
+    renderVoiceKind();
+  }
+  function currentVoice() {
+    var uri = el.voice.value;
+    return voices.filter(function (v) { return v.voiceURI === uri; })[0] || null;
+  }
+  function renderVoiceKind() {
+    var v = currentVoice();
+    el.voiceKind.hidden = !v;
+    if (!v) return;
+    el.voiceChip.textContent = v.localService ? t("local") : t("online");
+    el.voiceChip.className = "chip" + (v.localService ? "" : " online");
+    el.voiceDesc.textContent = v.localService ? t("localDesc") : t("onlineDesc");
+  }
+
+  /* ---------- Speaking ---------- */
+  function makeUtterance(text) {
+    var u = new SpeechSynthesisUtterance(text);
+    var v = currentVoice();
+    if (v) { u.voice = v; u.lang = v.lang; } else if (el.lang.value) { u.lang = el.lang.value; }
+    u.rate = parseFloat(el.rate.value);
+    u.pitch = parseFloat(el.pitch.value);
+    u.volume = parseFloat(el.volume.value);
+    return u;
+  }
+  function start(fromIndex) {
+    if (!hasTTS) return;
+    if (state === "idle") {
+      segs = buildSegments(el.text.value);
+      if (!segs.length) { showToast(t("empty")); el.text.focus(); return; }
+      renderReader();
+    }
+    idx = Math.max(0, Math.min(fromIndex || 0, segs.length - 1));
+    var my = ++gen;
+    synth.cancel();
+    setState("playing");
+    // A short gap after cancel() avoids Chrome silently dropping the next utterance.
+    setTimeout(function () { speakNext(my); }, 80);
+  }
+  function speakNext(my) {
+    if (my !== gen) return;
+    if (idx >= segs.length) { finish(); return; }
+    var i = idx;
+    var u = makeUtterance(segs[i].text);
+    u.onstart = function () { if (my === gen) highlight(i); };
+    u.onboundary = function (e) { if (my === gen && e.name !== "sentence") markWord(i, e.charIndex, e.charLength); };
+    u.onend = function () {
+      if (my !== gen) return;
+      clearWord(i);
+      idx = i + 1;
+      speakNext(my);
+    };
+    u.onerror = function (e) {
+      if (my !== gen) return;
+      if (e.error === "interrupted" || e.error === "canceled") return;
+      showToast(t("speakErr", { e: e.error || "error" }));
+      stop();
+    };
+    current = u;
+    highlight(i);
+    synth.speak(u);
+  }
+  function pause() {
+    gen++;
+    synth.cancel();
+    clearWord(idx);
+    setState("paused");
+  }
+  function stop() {
+    gen++;
+    if (hasTTS) synth.cancel();
+    current = null;
+    idx = 0;
+    setState("idle");
+  }
+  function finish() {
+    current = null;
+    idx = 0;
+    setState("idle");
+  }
+  function togglePlay() {
+    if (state === "playing") pause();
+    else if (state === "paused") start(idx);
+    else start(0);
+  }
+  function restartIfPlaying() { if (state === "playing") start(idx); }
+
+  function testVoice() {
+    if (!hasTTS) return;
+    if (state === "playing") pause();
+    gen++;
+    synth.cancel();
+    var code = el.lang.value;
+    var phrase = T[code] ? T[code].testPhrase : (buildSegments(el.text.value)[0] || { text: "Hello." }).text;
+    setTimeout(function () { current = makeUtterance(phrase); synth.speak(current); }, 80);
+  }
+
+  /* ---------- Reader view ---------- */
+  function renderReader() {
+    var html = "", lastPara = -1;
+    segs.forEach(function (s, i) {
+      if (s.para !== lastPara) { if (lastPara !== -1) html += "</p>"; html += "<p>"; lastPara = s.para; }
+      else html += " ";
+      html += '<span class="s" data-i="' + i + '">' + esc(s.text) + "</span>";
+    });
+    if (lastPara !== -1) html += "</p>";
+    el.reader.innerHTML = html;
+  }
+  function segEl(i) { return el.reader.querySelector('[data-i="' + i + '"]'); }
+  function highlight(i) {
+    var spans = el.reader.querySelectorAll(".s");
+    for (var k = 0; k < spans.length; k++) {
+      spans[k].classList.toggle("now", k === i);
+      spans[k].classList.toggle("done", k < i);
+    }
+    var node = segEl(i);
+    if (node) {
+      var top = node.offsetTop, h = el.reader.clientHeight;
+      if (top < el.reader.scrollTop + 20 || top > el.reader.scrollTop + h * 0.65) {
+        var y = Math.max(0, top - h / 3);
+        if (reduceMotion || !el.reader.scrollTo) el.reader.scrollTop = y;
+        else el.reader.scrollTo({ top: y, behavior: "smooth" });
+      }
+    }
+    renderProgress();
+  }
+  function markWord(i, charIndex, charLength) {
+    var node = segEl(i), text = segs[i] && segs[i].text;
+    if (!node || !text || charIndex == null || charIndex >= text.length) return;
+    var len = charLength;
+    if (!len) { var m = text.slice(charIndex).match(/^\S+/); len = m ? m[0].length : 0; }
+    if (!len) return;
+    node.innerHTML = esc(text.slice(0, charIndex)) + '<span class="w">' + esc(text.slice(charIndex, charIndex + len)) + "</span>" + esc(text.slice(charIndex + len));
+  }
+  function clearWord(i) {
+    var node = segEl(i);
+    if (node && segs[i]) node.textContent = segs[i].text;
+  }
+
+  /* ---------- UI state ---------- */
+  function setState(next) {
+    state = next;
+    var reading = state !== "idle";
+    if (reading && el.reader.hidden) el.reader.style.height = el.text.offsetHeight + "px";
+    el.text.hidden = reading;
+    el.reader.hidden = !reading;
+    el.editTools.hidden = reading;
+    el.readTools.hidden = !reading;
+    el.stop.disabled = !reading;
+    el.icPlay.hidden = state === "playing";
+    el.icPause.hidden = state !== "playing";
+    el.playLabel.textContent = state === "playing" ? t("pause") : state === "paused" ? t("resume") : t("play");
+    document.body.classList.toggle("speaking", state === "playing");
+    if (!reading) highlightNone();
+    renderProgress();
+  }
+  function highlightNone() {
+    var spans = el.reader.querySelectorAll(".s.now, .s.done");
+    for (var k = 0; k < spans.length; k++) spans[k].classList.remove("now", "done");
+  }
+  function secondsFor(words) { return words / (BASE_WPM * parseFloat(el.rate.value)) * 60; }
+  function renderStats() {
+    var text = el.text.value, words = countWords(text);
+    el.stats.textContent = [t("chars", { n: num(text.length) }), t("words", { n: num(words) }), words ? t("about", { t: fmtTime(secondsFor(words)) }) : ""].filter(Boolean).join(" · ");
+    if (state === "idle") renderProgress();
+  }
+  function renderProgress() {
+    if (state === "idle") {
+      var n = buildSegments(el.text.value).length;
+      el.bar.style.width = "0%";
+      el.progLeft.textContent = n ? t("ready", { n: num(n) }) : t("empty");
+      el.progRight.textContent = "";
+      return;
+    }
+    var total = segs.length || 1;
+    el.bar.style.width = (idx / total * 100) + "%";
+    el.progLeft.textContent = t("sentence", { i: num(Math.min(idx + 1, total)), n: num(total) });
+    var remaining = 0;
+    for (var k = idx; k < segs.length; k++) remaining += countWords(segs[k].text);
+    el.progRight.textContent = remaining ? t("left", { t: fmtTime(secondsFor(remaining)) }) : "";
+  }
+  function renderSliders() {
+    var rate = parseFloat(el.rate.value);
+    el.rateVal.textContent = num(rate, 1) + "× · " + t("wpm", { n: num(Math.round(BASE_WPM * rate / 5) * 5) });
+    el.pitchVal.textContent = num(parseFloat(el.pitch.value), 1);
+    el.volumeVal.textContent = Math.round(parseFloat(el.volume.value) * 100) + "%";
+  }
+
+  function applyUi() {
+    document.documentElement.lang = ui;
+    var nodes = document.querySelectorAll("[data-t]");
+    for (var k = 0; k < nodes.length; k++) nodes[k].textContent = t(nodes[k].getAttribute("data-t"));
+    el.text.placeholder = t("placeholder");
+    el.stop.setAttribute("aria-label", t("stop"));
+    el.stop.title = t("stop");
+    ["vi", "en"].forEach(function (c) { $("ui-" + c).setAttribute("aria-pressed", String(c === ui)); });
+    renderLangs();
+    renderSliders();
+    renderStats();
+    setState(state);
+    if (el.toastUndo) el.toastUndo.textContent = t("undo");
+  }
+
+  /* ---------- Toast ---------- */
+  var toastTimer = null, undoFn = null;
+  function showToast(msg, onUndo) {
+    el.toastMsg.textContent = msg;
+    undoFn = onUndo || null;
+    el.toastUndo.hidden = !onUndo;
+    el.toastUndo.textContent = t("undo");
+    el.toast.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.toast.hidden = true; undoFn = null; }, onUndo ? 6000 : 3500);
+  }
+  el.toastUndo.addEventListener("click", function () { if (undoFn) undoFn(); el.toast.hidden = true; undoFn = null; });
+
+  /* ---------- Text helpers ---------- */
+  var saveTimer = null;
+  function setText(value) {
+    el.text.value = value;
+    store.set("draft", value);
+    renderStats();
+  }
+  function followTextLanguage() {
+    var want = looksVietnamese(el.text.value) ? "vi" : null;
+    if (want && el.lang.value !== want && voicesFor(want).length) {
+      el.lang.value = want;
+      store.set("lang", want);
+      renderVoices();
+    }
+  }
+
+  /* ---------- Events ---------- */
+  el.play.addEventListener("click", togglePlay);
+  el.stop.addEventListener("click", stop);
+  $("btn-edit").addEventListener("click", function () { stop(); el.text.focus(); });
+  $("btn-test").addEventListener("click", testVoice);
+
+  el.reader.addEventListener("click", function (e) {
+    var node = e.target.closest ? e.target.closest(".s") : null;
+    if (node) start(parseInt(node.getAttribute("data-i"), 10));
+  });
+
+  el.text.addEventListener("input", function () {
+    renderStats();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () { store.set("draft", el.text.value); }, 400);
+  });
+  el.text.addEventListener("paste", function () { setTimeout(followTextLanguage, 0); });
+
+  $("btn-sample").addEventListener("click", function () {
+    setText(T[ui].sampleText);
+    if (voicesFor(ui).length) { el.lang.value = ui; store.set("lang", ui); renderVoices(); }
+  });
+  $("btn-clear").addEventListener("click", function () {
+    var before = el.text.value;
+    if (!before) return;
+    setText("");
+    el.text.focus();
+    showToast(t("cleared"), function () { setText(before); });
+  });
+  $("btn-open").addEventListener("click", function () { el.file.value = ""; el.file.click(); });
+  el.file.addEventListener("change", function () {
+    var f = el.file.files && el.file.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () { setText(String(reader.result || "")); followTextLanguage(); };
+    reader.onerror = function () { showToast(t("fileErr")); };
+    reader.readAsText(f);
+  });
+
+  el.lang.addEventListener("change", function () { store.set("lang", el.lang.value); renderVoices(); restartIfPlaying(); });
+  el.voice.addEventListener("change", function () { store.set("voice", el.voice.value); renderVoiceKind(); restartIfPlaying(); });
+  ["rate", "pitch", "volume"].forEach(function (k) {
+    el[k].addEventListener("input", function () { renderSliders(); if (k === "rate") renderStats(); });
+    el[k].addEventListener("change", function () { store.set(k, parseFloat(el[k].value)); restartIfPlaying(); });
+  });
+
+  var uiButtons = document.querySelectorAll("[data-ui]");
+  for (var b = 0; b < uiButtons.length; b++) {
+    uiButtons[b].addEventListener("click", function () {
+      ui = this.getAttribute("data-ui");
+      store.set("ui", ui);
+      applyUi();
+    });
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); togglePlay(); }
+    else if (e.key === "Escape" && state !== "idle") { stop(); }
+  });
+  window.addEventListener("pagehide", function () { if (hasTTS) synth.cancel(); });
+
+  /* ---------- Boot ---------- */
+  el.rate.value = store.get("rate", 1);
+  el.pitch.value = store.get("pitch", 1);
+  el.volume.value = store.get("volume", 1);
+  el.text.value = store.get("draft", null) || T[ui].sampleText;
+
+  if (!hasTTS) {
+    $("unsupported").hidden = false;
+    el.play.disabled = true;
+    $("btn-test").disabled = true;
+  }
+
+  applyUi();
+
+  if (hasTTS) {
+    loadVoices();
+    if (synth.addEventListener) synth.addEventListener("voiceschanged", loadVoices);
+    else synth.onvoiceschanged = loadVoices;
+    // Some browsers never fire voiceschanged; check again a few times.
+    [300, 1000, 2500].forEach(function (ms) {
+      setTimeout(function () {
+        if (!voices.length) loadVoices();
+        if (ms === 2500) { voicesSettled = true; if (!voices.length) renderLangs(); }
+      }, ms);
+    });
+  }
+})();
+</script>
+</body>
+</html>

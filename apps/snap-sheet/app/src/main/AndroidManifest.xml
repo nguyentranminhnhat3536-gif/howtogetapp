@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      Không xin quyền nào. Quét bằng ML Kit Document Scanner (giao diện do Google Play services cung cấp,
+      không cần quyền camera). Chọn ảnh bằng trình chọn ảnh của hệ thống. Quyền thanh toán (BILLING)
+      do thư viện Play Billing tự thêm. Quét mã QR dùng màn quét của Google Play services, không cần
+      quyền camera; mở PDF bằng trình chọn tệp hệ thống.
+    -->
+
+    <!-- Thư viện Credential Manager tự thêm quyền vân tay cho passkey; app không dùng nên gỡ ra. -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" tools:node="remove" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" tools:node="remove" />
+
+    <application
+        android:name=".SnapSheetApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.App">
+
+        <!-- Play tải sẵn mô-đun quét mã khi cài app, nhờ vậy quét mã dùng được khi không có mạng. -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode_ui" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.files"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+
+</manifest>
