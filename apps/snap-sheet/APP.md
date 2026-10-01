@@ -10,7 +10,7 @@
 | Link Google Play | (chưa có) |
 
 ## Trạng thái
-Bước 3 · Code MVP xong, CI xanh (build + unit test) ngày 2026-10-01. Chờ Ethan thử bản APK (DUYỆT-2). Chưa ai chạy trên máy thật; thanh toán chỉ thử được sau khi tạo sản phẩm trong Play Console.
+Bước 3 · Giao diện mới theo canvas "SnapSheet Redesign" (đã duyệt, bản tiếng Anh) + chọn ngôn ngữ trong app + sắp xếp/nhóm Files + xem từng trang. Dây chuyền /ship CHOT, CI #32 xanh ngày 2026-10-01. Chờ Ethan thử bản APK (DUYỆT-2, 28 bước). Thanh toán chỉ thử được sau khi tạo sản phẩm trong Play Console.
 
 ## Việc tiếp theo
 - [ ] Ethan duyệt kế hoạch bản iOS: `PLAN-ios.md` (DUYỆT-$)
@@ -19,7 +19,10 @@ Bước 3 · Code MVP xong, CI xanh (build + unit test) ngày 2026-10-01. Chờ 
 - [ ] Khi lên Play: thêm SHA-1/SHA-256 của khóa Play App Signing vào Firebase (không thì đăng nhập Google hỏng ở bản tải từ Play)
 - [ ] Dán link trang xóa tài khoản vào Play Console: https://nguyentranminhnhat3536-gif.github.io/howtogetapp/snap-sheet/delete-account.html
 - [x] CI xanh
+- [x] Làm lại giao diện theo thiết kế đã duyệt, thêm Account › Language (CI #32 xanh, /ship CHOT 2026-10-01)
 - [ ] Ethan thử APK trên điện thoại và góp ý (DUYỆT-2)
+- [ ] Vòng /ship gia cố lỗi: xóa tài liệu lỗi đang ném lại exception (DocViewModel.delete) → đổi thành thông báo; rà thêm hết bộ nhớ khi lưu scan
+- [ ] Gửi Ethan danh sách đề xuất tính năng mới để chọn
 - [ ] Ethan tạo sản phẩm trong Play Console (xem mục Kiếm tiền) và chốt giá (DUYỆT-$)
 - [ ] Điền studio.md (tên nhà phát triển, email hỗ trợ); đổi `support_email` trong strings.xml
 - [ ] Ảnh store, icon 512, bước play-listing và play-policy-check
