@@ -118,6 +118,21 @@ jobs:
             echo "Không có secret $name: build không có đăng nhập Firebase"
           fi
 
+      - name: Khóa ký cố định cho bản debug (nếu có secret)
+        if: env.RELEASE != 'true'
+        shell: bash
+        env:
+          DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+        run: |
+          # Đăng nhập Google cần mã SHA-1 cố định. Không có secret thì Gradle tự tạo khóa mới mỗi lần (SHA đổi liên tục).
+          if [ -n "$DEBUG_KEYSTORE_BASE64" ]; then
+            mkdir -p "$HOME/.android"
+            echo "$DEBUG_KEYSTORE_BASE64" | base64 -d > "$HOME/.android/debug.keystore"
+            echo "Dùng khóa debug cố định"
+          else
+            echo "Không có secret DEBUG_KEYSTORE_BASE64: khóa debug ngẫu nhiên"
+          fi
+
       - name: Build APK debug và chạy unit test
         if: env.RELEASE != 'true'
         shell: bash
