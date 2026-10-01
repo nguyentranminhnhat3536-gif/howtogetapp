@@ -155,5 +155,6 @@ private fun docSubtitle(doc: Doc, pdf: File): String {
     val size by produceState(0L, pdf) {
         value = withContext(Dispatchers.IO) { runCatching { pdf.length() }.getOrDefault(0L) }
     }
-    return if (size > 0) pages + " · " + Formatter.formatShortFileSize(context, size) else pages
+    val sizeText = if (size > 0) Formatter.formatShortFileSize(context, size) else null
+    return if (sizeText != null) stringResource(R.string.join_dot, pages, sizeText) else pages
 }

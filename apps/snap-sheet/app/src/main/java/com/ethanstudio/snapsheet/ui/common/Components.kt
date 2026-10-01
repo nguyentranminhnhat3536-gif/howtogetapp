@@ -50,6 +50,7 @@ import com.ethanstudio.snapsheet.data.Doc
 import com.ethanstudio.snapsheet.ui.theme.Accent
 import com.ethanstudio.snapsheet.ui.theme.Gradients
 import com.ethanstudio.snapsheet.util.decodeSampledCached
+import java.text.BreakIterator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -222,4 +223,14 @@ fun SettingsRow(@DrawableRes icon: Int, label: String, showDivider: Boolean, onC
         if (detail != null) Text(detail, Modifier.width(104.dp), fontSize = 12.sp, textAlign = TextAlign.End, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Icon(painterResource(R.drawable.ic_chevron), null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurface)
     }
+}
+
+/** Chữ cái đầu viết hoa của tên, lấy trọn một ký tự hiển thị (giữ dấu tiếng Việt, emoji, chữ ngoài BMP). Tên rỗng → "". */
+fun initialOf(name: String): String {
+    val text = name.trim()
+    if (text.isEmpty()) return ""
+    val graphemes = BreakIterator.getCharacterInstance()
+    graphemes.setText(text)
+    val end = graphemes.next().takeIf { it != BreakIterator.DONE } ?: text.length
+    return text.substring(0, end).uppercase()
 }

@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -107,6 +108,11 @@ private const val ROUTE_SIGN_UP = "signup"
 private const val ROUTE_CHECK_EMAIL = "check-email"
 private const val ROUTE_FORGOT = "forgot"
 
+/** Chỉ quay lại khi vẫn đang ở [route]: bấm Back 2 lần liền hoặc sự kiện tới muộn không làm rỗng ngăn màn hình. */
+private fun NavHostController.popIfOn(route: String) {
+    if (currentDestination?.route == route) popBackStack()
+}
+
 /** Khung chung của app: điều hướng giữa tab chính, màn tài liệu và màn mua Pro. */
 @Composable
 fun AppRoot() {
@@ -142,7 +148,7 @@ fun AppRoot() {
             when (event) {
                 is MainEvent.OpenDoc -> nav.navigate("doc/${event.id}")
                 is MainEvent.Message -> snackbar.showSnackbar(context.getString(event.res))
-                MainEvent.PurchaseDone -> if (nav.currentDestination?.route == ROUTE_PAYWALL) nav.popBackStack()
+                MainEvent.PurchaseDone -> nav.popIfOn(ROUTE_PAYWALL)
             }
         }
     }
@@ -153,7 +159,7 @@ fun AppRoot() {
                 AuthEvent.EnterApp -> nav.navigate(ROUTE_MAIN) { popUpTo(nav.graph.id) { inclusive = true } }
                 AuthEvent.VerificationSent -> nav.navigate(ROUTE_CHECK_EMAIL) { popUpTo(nav.graph.id) { inclusive = true } }
                 AuthEvent.ResetSent -> {
-                    nav.popBackStack()
+                    nav.popIfOn(ROUTE_FORGOT)
                     snackbar.showSnackbar(context.getString(R.string.auth_reset_sent))
                 }
                 AuthEvent.ResentVerification -> snackbar.showSnackbar(context.getString(R.string.auth_resent))
@@ -214,7 +220,7 @@ fun AppRoot() {
                 )
             }
             composable(ROUTE_FORGOT) {
-                ForgotPasswordScreen(authVm, onBack = { nav.popBackStack() })
+                ForgotPasswordScreen(authVm, onBack = { nav.popIfOn(ROUTE_FORGOT) })
             }
             composable(ROUTE_MAIN) {
                 MainTabs(
@@ -288,12 +294,12 @@ fun AppRoot() {
             }
             composable(ROUTE_DOC, arguments = listOf(navArgument("id") { type = NavType.LongType })) {
                 val docViewModel: DocViewModel = viewModel(factory = AppViewModels.Factory)
-                DocScreen(docViewModel, onBack = { nav.popBackStack() }, onNeedPro = { nav.navigate(ROUTE_PAYWALL) })
+                DocScreen(docViewModel, onBack = { nav.popIfOn(ROUTE_DOC) }, onNeedPro = { nav.navigate(ROUTE_PAYWALL) })
             }
             composable(ROUTE_PAYWALL) {
                 PaywallScreen(
                     billing = billing,
-                    onClose = { nav.popBackStack() },
+                    onClose = { nav.popIfOn(ROUTE_PAYWALL) },
                     onBuy = { plan -> context.findActivity()?.let { vm.buy(it, plan) } },
                     onRestore = vm::restore,
                     onPrivacy = { report(context.openUrl(privacyUrl)) },

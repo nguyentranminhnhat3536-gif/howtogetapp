@@ -253,7 +253,11 @@ private fun termsText(plan: Plan, offer: PlanOffer): String {
         } else {
             stringResource(R.string.paywall_terms_month, offer.price)
         }
-        Plan.YEARLY -> stringResource(R.string.paywall_terms_year, offer.price)
+        Plan.YEARLY -> if (days != null) {
+            stringResource(R.string.paywall_trial_terms, days, stringResource(R.string.plan_price_year, offer.price))
+        } else {
+            stringResource(R.string.paywall_terms_year, offer.price)
+        }
         Plan.LIFETIME -> stringResource(R.string.paywall_terms_lifetime, offer.price)
     }
 }

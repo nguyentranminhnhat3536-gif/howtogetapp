@@ -7,6 +7,7 @@ import com.ethanstudio.snapsheet.data.AppDatabase
 import com.ethanstudio.snapsheet.data.DocRepository
 import com.ethanstudio.snapsheet.data.ProStore
 import com.ethanstudio.snapsheet.data.SessionStore
+import com.ethanstudio.snapsheet.i18n.AppLocale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -25,6 +26,7 @@ class SnapSheetApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        AppLocale.migrateToSystem(this)
         billing.start()
     }
 }

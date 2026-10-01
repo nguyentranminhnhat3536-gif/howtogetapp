@@ -56,6 +56,7 @@ import com.ethanstudio.snapsheet.billing.ProKind
 import com.ethanstudio.snapsheet.data.FreeLimits
 import com.ethanstudio.snapsheet.ui.auth.messageRes
 import com.ethanstudio.snapsheet.ui.common.GradientButton
+import com.ethanstudio.snapsheet.ui.common.initialOf
 import com.ethanstudio.snapsheet.ui.theme.Gradients
 import com.ethanstudio.snapsheet.ui.main.MainUiState
 
@@ -142,7 +143,7 @@ private fun ProfileHeader(user: AuthUser?, isPro: Boolean, onSignIn: () -> Unit)
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
         Box(Modifier.size(80.dp).background(Gradients.Primary, CircleShape), contentAlignment = Alignment.Center) {
             if (user != null) {
-                Text(user.shownName.take(1).uppercase(), fontSize = 38.sp, fontWeight = FontWeight.Medium, color = Color.White)
+                Text(initialOf(user.shownName), fontSize = 38.sp, fontWeight = FontWeight.Medium, color = Color.White)
             } else {
                 Icon(painterResource(R.drawable.ic_person), null, Modifier.size(40.dp), tint = Color.White)
             }

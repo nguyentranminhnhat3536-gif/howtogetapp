@@ -44,6 +44,7 @@ import com.ethanstudio.snapsheet.ui.common.ScreenHeader
 import com.ethanstudio.snapsheet.ui.common.SectionTitle
 import com.ethanstudio.snapsheet.ui.common.ShortcutCircle
 import com.ethanstudio.snapsheet.ui.common.docDate
+import com.ethanstudio.snapsheet.ui.common.initialOf
 import com.ethanstudio.snapsheet.ui.main.MainUiState
 import com.ethanstudio.snapsheet.ui.theme.Accent
 import com.ethanstudio.snapsheet.ui.theme.Gradients
@@ -99,7 +100,7 @@ fun HomeScreen(
             item { EmptyState(stringResource(R.string.empty_title), stringResource(R.string.empty_body)) }
         } else {
             items(state.allDocs.take(RECENT_COUNT), key = { it.id }) { doc ->
-                val subtitle = docDate(doc) + " · " + pluralStringResource(R.plurals.pages, doc.pageCount, doc.pageCount)
+                val subtitle = stringResource(R.string.join_dot, docDate(doc), pluralStringResource(R.plurals.pages, doc.pageCount, doc.pageCount))
                 DocRow(doc, pageFile(doc.id), subtitle, onClick = { onOpenDoc(doc.id) })
             }
         }
@@ -137,7 +138,7 @@ private fun Greeting(userName: String?, onAccount: () -> Unit) {
             contentAlignment = Alignment.Center,
         ) {
             if (name != null) {
-                Text(name.take(1).uppercase(), fontSize = 19.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                Text(initialOf(name), fontSize = 19.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
             } else {
                 Icon(painterResource(R.drawable.ic_person), null, Modifier.size(22.dp), tint = Color.White)
             }

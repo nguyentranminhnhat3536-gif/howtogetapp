@@ -55,5 +55,21 @@ object AppLocale {
         return newBase.createConfigurationContext(config)
     }
 
+    /**
+     * Gọi một lần lúc mở app. Máy vừa lên Android 13+ mà còn mã đã lưu từ thời Android 8–12
+     * và hệ thống chưa có ngôn ngữ riêng cho app → chuyển mã đó sang LocaleManager rồi xóa bản cũ.
+     */
+    fun migrateToSystem(context: Context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        val prefs = prefs(context)
+        if (!prefs.contains(KEY_TAG)) return
+        val manager = context.getSystemService(LocaleManager::class.java) ?: return
+        val tag = AppLanguages.normalize(prefs.getString(KEY_TAG, "").orEmpty())
+        if (tag.isNotEmpty() && manager.applicationLocales.isEmpty) {
+            manager.applicationLocales = LocaleList.forLanguageTags(tag)
+        }
+        prefs.edit().remove(KEY_TAG).apply()
+    }
+
     private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 }

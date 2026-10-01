@@ -119,7 +119,7 @@ fun DocScreen(
     ) { padding ->
         val doc = state.doc
         when {
-            !state.loaded -> Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+            !state.loaded || state.deleted -> Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
             doc == null -> MissingDoc(onBack, Modifier.padding(padding))
             else -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).navigationBarsPadding()) {
                 DocHeader(doc.name, onBack, onRename = { renaming = true }, onDelete = { deleting = true })
@@ -228,6 +228,7 @@ private fun PagePager(doc: Doc, pages: List<File>) {
             contentScale = ContentScale.Fit,
         )
     }
+    if (pages.isEmpty()) return
     Text(
         stringResource(R.string.doc_page_of, minOf(pager.currentPage + 1, pages.size), pages.size, date),
         Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 18.dp),

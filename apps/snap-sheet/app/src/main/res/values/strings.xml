@@ -183,6 +183,7 @@
         <item quantity="one">%1$d page</item>
         <item quantity="other">%1$d pages</item>
     </plurals>
+    <string name="join_dot" translatable="false">%1$s · %2$s</string>
     <string name="paywall_kicker" translatable="false">SNAPSHEET PRO</string>
     <string name="lang_en" translatable="false">English</string>
     <string name="lang_vi" translatable="false">Tiếng Việt</string>

@@ -34,6 +34,8 @@ data class DocUiState(
     val ocrBusy: Boolean = false,
     /** Đã đọc xong từ cơ sở dữ liệu chưa (để phân biệt "đang tải" với "tài liệu không còn"). */
     val loaded: Boolean = false,
+    /** Người dùng vừa xóa tài liệu: đang quay về, không hiện thông báo "tài liệu không còn". */
+    val deleted: Boolean = false,
 ) {
     val exportsLeft: Int
         get() = FreeLimits.remaining(pro.isPro, pro.usage, LocalDate.now().toEpochDay())
@@ -55,11 +57,12 @@ class DocViewModel(
 ) : ViewModel() {
     private val id: Long = handle.get<Long>("id") ?: -1L
     private val ocr = MutableStateFlow<Pair<String?, Boolean>>(null to false)
+    private val deleted = MutableStateFlow(false)
     private val _events = Channel<DocEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
-    val uiState: StateFlow<DocUiState> = combine(repo.observe(id), proStore.state, ocr) { doc, pro, (text, busy) ->
-        DocUiState(doc = doc, pro = pro, ocrText = text, ocrBusy = busy, loaded = true)
+    val uiState: StateFlow<DocUiState> = combine(repo.observe(id), proStore.state, ocr, deleted) { doc, pro, (text, busy), gone ->
+        DocUiState(doc = doc, pro = pro, ocrText = text, ocrBusy = busy, loaded = true, deleted = gone)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DocUiState())
 
     fun pdfFile(): File = repo.pdfFile(id)
@@ -84,8 +87,14 @@ class DocViewModel(
     }
 
     fun delete() {
+        deleted.value = true
         viewModelScope.launch {
-            repo.delete(id)
+            try {
+                repo.delete(id)
+            } catch (e: Exception) {
+                deleted.value = false
+                throw e
+            }
             _events.send(DocEvent.Deleted)
         }
     }
