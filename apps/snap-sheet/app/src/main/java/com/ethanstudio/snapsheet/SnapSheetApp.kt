@@ -11,12 +11,14 @@ import com.ethanstudio.snapsheet.i18n.AppLocale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 /** Giữ các đối tượng dùng chung (thay cho thư viện DI vì app nhỏ). */
 class SnapSheetApp : Application() {
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    val docs: DocRepository by lazy { DocRepository(this, AppDatabase.create(this).docDao()) }
+    private val database: AppDatabase by lazy { AppDatabase.create(this) }
+    val docs: DocRepository by lazy { DocRepository(this, database.docDao(), database.folderDao()) }
     val proStore: ProStore by lazy { ProStore(this) }
     val session: SessionStore by lazy { SessionStore(this) }
     val auth: AuthRepository by lazy { AuthRepository(this) }
@@ -28,5 +30,7 @@ class SnapSheetApp : Application() {
         super.onCreate()
         AppLocale.migrateToSystem(this)
         billing.start()
+        // Hoàn tất hoặc dọn các lần sửa trang bị ngắt giữa chừng (tắt app, hết pin).
+        appScope.launch(Dispatchers.IO) { runCatching { docs.recoverPendingEdits() } }
     }
 }

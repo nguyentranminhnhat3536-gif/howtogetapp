@@ -21,4 +21,15 @@ object FreeLimits {
     /** Ghi nhận một lần xuất. Sang ngày mới thì đếm lại từ 1. */
     fun consume(usage: Usage, today: Long): Usage =
         if (usage.day == today) usage.copy(count = usage.count + 1) else Usage(today, 1)
+
+    /** Số trang còn được thêm vào một tài liệu đang có [current] trang; không âm. */
+    fun pagesCanAdd(isPro: Boolean, current: Int): Int = (pageLimit(isPro) - current).coerceAtLeast(0)
+
+    /** Còn đủ [count] lượt xuất hôm nay không. Pro: luôn đủ; count <= 0: luôn đủ. */
+    fun canConsume(isPro: Boolean, usage: Usage, today: Long, count: Int): Boolean =
+        isPro || count <= 0 || remaining(false, usage, today) >= count
+
+    /** Ghi nhận [count] lượt xuất. Sang ngày mới thì đếm lại từ [count]. */
+    fun consumeMany(usage: Usage, today: Long, count: Int): Usage =
+        if (usage.day == today) usage.copy(count = usage.count + count) else Usage(today, count)
 }

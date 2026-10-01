@@ -28,6 +28,12 @@ fun decodeSampledCached(file: File, target: Int): Bitmap? {
     return decodeSampled(file, target)?.also { bitmapCache.put(key, it) }
 }
 
+/** Xóa khỏi bộ nhớ đệm mọi ảnh nằm trong thư mục [dir] (sau khi trang được ghi lại). */
+fun evictThumbnails(dir: File) {
+    val prefix = dir.path + File.separator
+    bitmapCache.snapshot().keys.filter { it.startsWith(prefix) }.forEach { bitmapCache.remove(it) }
+}
+
 /** Đọc ảnh đã thu nhỏ để hiển thị nhẹ máy; cạnh dài nhất xấp xỉ [target] điểm ảnh. Null nếu đọc lỗi. */
 fun decodeSampled(file: File, target: Int): Bitmap? {
     val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }

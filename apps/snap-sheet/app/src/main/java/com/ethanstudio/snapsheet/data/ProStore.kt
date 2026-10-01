@@ -44,18 +44,24 @@ class ProStore(context: Context) {
     }
 
     /** Trả về true nếu được phép xuất (và đã ghi nhận một lần với bản miễn phí). */
-    suspend fun tryConsumeExport(today: Long): Boolean {
+    suspend fun tryConsumeExport(today: Long): Boolean = tryConsumeExports(1, today)
+
+    /**
+     * Xuất [count] file một lần: trả về true nếu còn đủ lượt (bản miễn phí thì ghi nhận cả [count] lượt).
+     * Không đủ thì không trừ lượt nào. Kiểm tra và ghi trong cùng một lần sửa nên không bị đếm sai khi bấm nhanh.
+     */
+    suspend fun tryConsumeExports(count: Int, today: Long): Boolean {
         var allowed = false
         store.edit { p ->
             val pro = p[IS_PRO] == true
             val usage = FreeLimits.Usage(p[DAY] ?: 0L, p[COUNT] ?: 0)
-            if (pro) {
+            if (FreeLimits.canConsume(pro, usage, today, count)) {
                 allowed = true
-            } else if (FreeLimits.remaining(false, usage, today) > 0) {
-                allowed = true
-                val next = FreeLimits.consume(usage, today)
-                p[DAY] = next.day
-                p[COUNT] = next.count
+                if (!pro && count > 0) {
+                    val next = FreeLimits.consumeMany(usage, today, count)
+                    p[DAY] = next.day
+                    p[COUNT] = next.count
+                }
             }
         }
         return allowed

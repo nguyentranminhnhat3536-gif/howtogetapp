@@ -1,10 +1,13 @@
 package com.ethanstudio.snapsheet.ui.common
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +24,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,11 +39,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -140,10 +147,16 @@ fun ToolTile(@DrawableRes icon: Int, title: String, desc: String, pro: Boolean, 
     }
 }
 
-/** Ảnh trang nhỏ, đọc ngoài luồng chính. */
+/** Ảnh trang nhỏ, đọc ngoài luồng chính. [stamp] đổi thì đọc lại (sau khi trang được ghi lại). */
 @Composable
-fun PageThumbnail(file: File, modifier: Modifier = Modifier, target: Int = 256, contentScale: ContentScale = ContentScale.Crop) {
-    val bitmap by produceState<ImageBitmap?>(null, file) {
+fun PageThumbnail(
+    file: File,
+    modifier: Modifier = Modifier,
+    target: Int = 256,
+    contentScale: ContentScale = ContentScale.Crop,
+    stamp: Long = 0L,
+) {
+    val bitmap by produceState<ImageBitmap?>(null, file, stamp) {
         value = withContext(Dispatchers.IO) { decodeSampledCached(file, target)?.asImageBitmap() }
     }
     Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant)) {
@@ -151,12 +164,31 @@ fun PageThumbnail(file: File, modifier: Modifier = Modifier, target: Int = 256, 
     }
 }
 
-/** Một hàng tài liệu: ảnh trang đầu, tên, dòng phụ dựng sẵn (ngày, số trang, dung lượng…). */
+/**
+ * Một hàng tài liệu: ảnh trang đầu, tên, dòng phụ dựng sẵn (ngày, số trang, dung lượng…).
+ * [onLongClick]: nhấn giữ (vào chế độ chọn). [selectMode]: thay mũi tên bằng vòng chọn;
+ * [selectedOrder] = thứ tự chọn (1, 2…) hoặc null nếu chưa chọn.
+ */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DocRow(doc: Doc, firstPage: File, subtitle: String, onClick: () -> Unit) {
+fun DocRow(
+    doc: Doc,
+    firstPage: File,
+    subtitle: String,
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
+    selectMode: Boolean = false,
+    selectedOrder: Int? = null,
+) {
     val colors = MaterialTheme.colorScheme
+    val click = if (onLongClick != null) {
+        Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)
+    } else {
+        Modifier.clickable(onClick = onClick)
+    }
+    val selection = if (selectMode) Modifier.semantics { selected = selectedOrder != null } else Modifier
     Row(
-        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 20.dp, vertical = 10.dp),
+        Modifier.fillMaxWidth().then(click).then(selection).padding(horizontal = 20.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
@@ -168,7 +200,36 @@ fun DocRow(doc: Doc, firstPage: File, subtitle: String, onClick: () -> Unit) {
             Text(doc.name, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(subtitle, fontSize = 13.sp, color = colors.onSurfaceVariant)
         }
-        Icon(painterResource(R.drawable.ic_chevron), null, tint = colors.outline)
+        if (selectMode) SelectCircle(selectedOrder) else Icon(painterResource(R.drawable.ic_chevron), null, tint = colors.outline)
+    }
+}
+
+/** Vòng chọn: đã chọn thì nền gradient kèm số thứ tự; chưa chọn thì vòng viền. */
+@Composable
+private fun SelectCircle(order: Int?) {
+    val shape = CircleShape
+    if (order != null) {
+        Box(Modifier.size(26.dp).background(Gradients.Primary, shape), contentAlignment = Alignment.Center) {
+            Text(order.toString(), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White, maxLines = 1)
+        }
+    } else {
+        Box(Modifier.size(26.dp).border(2.dp, MaterialTheme.colorScheme.outline, shape))
+    }
+}
+
+/** Lớp phủ tối kèm vòng quay và một dòng chữ, chặn thao tác khi đang lưu/ghi. */
+@Composable
+fun BusyOverlay(text: String) {
+    Box(
+        Modifier.fillMaxSize().background(Color(0x99000000)).pointerInput(Unit) { detectTapGestures { } },
+        contentAlignment = Alignment.Center,
+    ) {
+        Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
+            Row(Modifier.padding(24.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                CircularProgressIndicator()
+                Text(text, color = MaterialTheme.colorScheme.onSurface)
+            }
+        }
     }
 }
 
