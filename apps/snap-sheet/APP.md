@@ -15,7 +15,8 @@ Bước 3 · Code MVP xong, CI xanh (build + unit test) ngày 2026-10-01. Chờ 
 ## Việc tiếp theo
 - [ ] Ethan duyệt kế hoạch bản iOS: `PLAN-ios.md` (DUYỆT-$)
 - [x] Code đăng ký, đăng nhập (email + Google), quên mật khẩu, xóa tài khoản (CI xanh 2026-10-01)
-- [ ] Ethan tạo project Firebase và dán `google-services.json` vào GitHub Secret `GOOGLE_SERVICES_JSON_SNAP_SHEET` (xem `PLAN-account.md` mục 3). Chưa có thì app chạy được nhưng đăng nhập báo "chưa bật"
+- [x] Firebase đã cấu hình (project `snapsheet`, gói Spark). Ethan thử trên máy thật 2026-10-01: đăng ký email và đăng nhập Google chạy được
+- [ ] Khi lên Play: thêm SHA-1/SHA-256 của khóa Play App Signing vào Firebase (không thì đăng nhập Google hỏng ở bản tải từ Play)
 - [ ] Dán link trang xóa tài khoản vào Play Console: https://nguyentranminhnhat3536-gif.github.io/howtogetapp/snap-sheet/delete-account.html
 - [x] CI xanh
 - [ ] Ethan thử APK trên điện thoại và góp ý (DUYỆT-2)
@@ -112,3 +113,4 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 - 2026-10-01: Ethan chọn tối ưu bản Android trước rồi mới làm iOS. Đợt tối ưu 1: tắt sao lưu tự động của Android (đúng lời hứa tài liệu chỉ nằm trên máy, chính sách đã ghi); hỏi lại Google Play mỗi lần quay lại app (bắt kịp gia hạn, hủy, hoàn tiền, giao dịch chờ); bộ nhớ đệm ảnh thu nhỏ để cuộn mượt; không mở/chia sẻ file đã mất; màn tài liệu hiện số lượt xuất miễn phí còn lại; đổi chiều cao cố định thành tối thiểu để chữ to (cỡ chữ hệ thống 200%) không bị cắt.
 - 2026-10-01: Ethan yêu cầu có đăng ký và đăng nhập ở đầu app. Đã code: màn chào (Đăng nhập / Đăng ký / Dùng không cần tài khoản) hiện ở lần mở đầu tiên; đăng ký email + mật khẩu có email xác nhận; đăng nhập email và Google (Credential Manager); quên mật khẩu; tab Tài khoản có Đăng xuất và Xóa tài khoản. Dùng Firebase Authentication (BoM 34.17.0, plugin google-services 4.5.0; credentials 1.6.0; googleid 1.2.0). Cấu hình Firebase nằm trong GitHub Secret, không commit. Nút Google chưa có logo chính thức của Google (phải thêm đúng hướng dẫn thương hiệu trước khi phát hành).
 - 2026-10-01: Đăng nhập Google cần SHA cố định. Tạo khóa debug cố định (không commit; Ethan cất ở GitHub Secret `DEBUG_KEYSTORE_BASE64`, CI ghi vào ~/.android/debug.keystore). SHA-1 bản debug: 43:0A:7C:C9:B1:48:5A:0B:BC:F5:CF:54:AD:12:D4:3F:DB:58:46:C2. Khi lên Play phải thêm SHA-1/SHA-256 của khóa Play App Signing vào Firebase.
+- 2026-10-01: Lỗi đầu tiên khi đăng ký là do chưa bấm "Get started" và chưa bật Email/Password trong Firebase Authentication. App giờ báo rõ lỗi này và hiện mã lỗi cho các lỗi lạ. Ethan xác nhận đăng ký và đăng nhập (email + Google) chạy được trên máy thật.
