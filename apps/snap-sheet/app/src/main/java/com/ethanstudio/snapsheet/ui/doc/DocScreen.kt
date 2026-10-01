@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -96,6 +97,8 @@ fun DocScreen(
     onNeedPro: () -> Unit,
     onOpenOcr: (Long) -> Unit,
     onEditPages: (Long) -> Unit,
+    onSign: (Long) -> Unit,
+    onWatermark: (Long) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -198,6 +201,25 @@ fun DocScreen(
                         onEditPages = { onEditPages(doc.id) },
                         onPrint = { viewModel.export(ExportKind.PRINT) },
                         onCompress = { compressing = true },
+                    )
+                    ActionRow3(
+                        isPro = state.pro.isPro,
+                        onSign = {
+                            if (state.pro.isPro) {
+                                onSign(doc.id)
+                            } else {
+                                Toast.makeText(context, context.getString(R.string.sign_pro_only), Toast.LENGTH_LONG).show()
+                                onNeedPro()
+                            }
+                        },
+                        onWatermark = {
+                            if (state.pro.isPro) {
+                                onWatermark(doc.id)
+                            } else {
+                                Toast.makeText(context, context.getString(R.string.watermark_pro_only), Toast.LENGTH_LONG).show()
+                                onNeedPro()
+                            }
+                        },
                     )
                     if (!state.pro.isPro) ExportsBar(state.exportsLeft, onNeedPro)
                 }
@@ -382,6 +404,21 @@ private fun ActionRow2(
         ActionCircle(R.drawable.ic_pages, stringResource(R.string.doc_edit_pages), false, onEditPages, Modifier.weight(1f))
         ActionCircle(R.drawable.ic_print, stringResource(R.string.doc_print), false, onPrint, Modifier.weight(1f))
         ActionCircle(R.drawable.ic_compress, stringResource(R.string.doc_compress), false, onCompress, Modifier.weight(1f))
+    }
+}
+
+/** Hàng nút thứ ba: ký tên và chèn chữ mờ (Pro), tạo bản sao mới. Hai ô trống để thẳng cột với hàng trên. */
+@Composable
+private fun ActionRow3(
+    isPro: Boolean,
+    onSign: () -> Unit,
+    onWatermark: () -> Unit,
+) {
+    Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, top = 14.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        ActionCircle(R.drawable.ic_sign, stringResource(R.string.tool_sign_title), !isPro, onSign, Modifier.weight(1f))
+        ActionCircle(R.drawable.ic_watermark, stringResource(R.string.tool_watermark_title), !isPro, onWatermark, Modifier.weight(1f))
+        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.weight(1f))
     }
 }
 

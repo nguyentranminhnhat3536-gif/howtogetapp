@@ -11,6 +11,8 @@ import com.ethanstudio.snapsheet.ui.doc.DocViewModel
 import com.ethanstudio.snapsheet.ui.doc.PagesViewModel
 import com.ethanstudio.snapsheet.ui.main.MainViewModel
 import com.ethanstudio.snapsheet.ui.ocr.OcrViewModel
+import com.ethanstudio.snapsheet.ui.sign.SignViewModel
+import com.ethanstudio.snapsheet.ui.watermark.WatermarkViewModel
 
 /** Tạo ViewModel kèm các đối tượng dùng chung lấy từ Application. */
 object AppViewModels {
@@ -20,6 +22,8 @@ object AppViewModels {
         initializer { DocViewModel(app().docs, app().proStore, createSavedStateHandle()) }
         initializer { OcrViewModel(app(), app().docs, app().proStore, createSavedStateHandle()) }
         initializer { PagesViewModel(app().docs, createSavedStateHandle()) }
+        initializer { SignViewModel(app().docs, app().signatures, app().proStore, createSavedStateHandle()) }
+        initializer { WatermarkViewModel(app().docs, app().proStore, createSavedStateHandle()) }
     }
 
     private fun CreationExtras.app(): SnapSheetApp =

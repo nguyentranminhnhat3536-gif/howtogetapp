@@ -7,6 +7,7 @@ import com.ethanstudio.snapsheet.data.AppDatabase
 import com.ethanstudio.snapsheet.data.DocRepository
 import com.ethanstudio.snapsheet.data.ProStore
 import com.ethanstudio.snapsheet.data.SessionStore
+import com.ethanstudio.snapsheet.data.SignatureStore
 import com.ethanstudio.snapsheet.i18n.AppLocale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ class SnapSheetApp : Application() {
     val docs: DocRepository by lazy { DocRepository(this, database.docDao(), database.folderDao()) }
     val proStore: ProStore by lazy { ProStore(this) }
     val session: SessionStore by lazy { SessionStore(this) }
+    val signatures: SignatureStore by lazy { SignatureStore(this) }
     val auth: AuthRepository by lazy { AuthRepository(this) }
     val billing: BillingManager by lazy {
         BillingManager(this, appScope) { isPro, kind -> proStore.setPro(isPro, kind) }

@@ -1,6 +1,9 @@
 package com.ethanstudio.snapsheet.ui
 
+import android.content.ActivityNotFoundException
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -78,6 +81,7 @@ import com.ethanstudio.snapsheet.ui.auth.SignUpScreen
 import com.ethanstudio.snapsheet.ui.auth.WelcomeScreen
 import com.ethanstudio.snapsheet.ui.common.AppViewModels
 import com.ethanstudio.snapsheet.ui.common.BusyOverlay
+import com.ethanstudio.snapsheet.ui.common.DocPickSheet
 import com.ethanstudio.snapsheet.ui.common.ScanChoiceSheet
 import com.ethanstudio.snapsheet.ui.doc.DocScreen
 import com.ethanstudio.snapsheet.ui.doc.DocViewModel
@@ -92,10 +96,15 @@ import com.ethanstudio.snapsheet.ui.ocr.OcrPickSheet
 import com.ethanstudio.snapsheet.ui.ocr.OcrScreen
 import com.ethanstudio.snapsheet.ui.ocr.OcrViewModel
 import com.ethanstudio.snapsheet.ui.paywall.PaywallScreen
+import com.ethanstudio.snapsheet.ui.qr.QrResultSheet
+import com.ethanstudio.snapsheet.ui.sign.SignScreen
+import com.ethanstudio.snapsheet.ui.sign.SignViewModel
 import com.ethanstudio.snapsheet.ui.theme.Accent
 import com.ethanstudio.snapsheet.ui.theme.Gradients
 import com.ethanstudio.snapsheet.ui.theme.NavMuted
 import com.ethanstudio.snapsheet.ui.tools.ToolsScreen
+import com.ethanstudio.snapsheet.ui.watermark.WatermarkScreen
+import com.ethanstudio.snapsheet.ui.watermark.WatermarkViewModel
 import com.ethanstudio.snapsheet.util.findActivity
 import com.ethanstudio.snapsheet.util.openEmailApp
 import com.ethanstudio.snapsheet.util.openStoreListing
@@ -103,6 +112,7 @@ import com.ethanstudio.snapsheet.util.openUrl
 import com.ethanstudio.snapsheet.util.sendFeedbackEmail
 import com.ethanstudio.snapsheet.util.shareFiles
 import com.ethanstudio.snapsheet.util.shareText
+import com.ethanstudio.snapsheet.util.startQrScan
 import java.io.File
 
 private const val ROUTE_MAIN = "main"
@@ -116,6 +126,12 @@ private const val ROUTE_SIGN_IN = "signin"
 private const val ROUTE_SIGN_UP = "signup"
 private const val ROUTE_CHECK_EMAIL = "check-email"
 private const val ROUTE_FORGOT = "forgot"
+private const val ROUTE_SIGN = "sign/{id}"
+private const val ROUTE_WATERMARK = "watermark/{id}"
+
+/** Công cụ mở từ tab Công cụ cần chọn tài liệu trước (giá trị của bảng chọn tài liệu). */
+private const val TOOL_SIGN = "sign"
+private const val TOOL_WATERMARK = "watermark"
 
 /** Chỉ quay lại khi vẫn đang ở [route]: bấm Back 2 lần liền hoặc sự kiện tới muộn không làm rỗng ngăn màn hình. */
 private fun NavHostController.popIfOn(route: String) {
@@ -140,6 +156,10 @@ fun AppRoot() {
     var sheetOpen by rememberSaveable { mutableStateOf(false) }
     var languageOpen by rememberSaveable { mutableStateOf(false) }
     var ocrPickOpen by rememberSaveable { mutableStateOf(false) }
+    /** Nội dung mã vừa quét (null = bảng kết quả đang đóng). */
+    var qrRaw by rememberSaveable { mutableStateOf<String?>(null) }
+    /** Công cụ đang chờ chọn tài liệu: [TOOL_SIGN], [TOOL_WATERMARK] hoặc null. */
+    var pickTool by rememberSaveable { mutableStateOf<String?>(null) }
     // Đọc lại mỗi khi cấu hình đổi (Activity được tạo lại sau khi đổi ngôn ngữ).
     val configuration = LocalConfiguration.current
     val currentLanguage = remember(configuration) { AppLocale.current(context) }
@@ -157,6 +177,10 @@ fun AppRoot() {
         },
         onCanceled = vm::clearOcrAfterScan,
     )
+    // Nhập PDF bằng trình chọn tệp của hệ thống (không cần quyền, app chỉ thấy đúng file được chọn).
+    val pdfPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) vm.importPdf(uri, prefix)
+    }
 
     LaunchedEffect(vm) {
         vm.events.collect { event ->
@@ -202,6 +226,35 @@ fun AppRoot() {
 
     fun pageFile(id: Long): File = File(app.docs.dir(id), "page_1.jpg")
     fun report(ok: Boolean) { if (!ok) vm.message(R.string.error_no_app) }
+
+    fun importPdf() {
+        try {
+            pdfPicker.launch(arrayOf("application/pdf"))
+        } catch (e: ActivityNotFoundException) {
+            vm.message(R.string.error_no_app)
+        }
+    }
+
+    fun onQrResult(raw: String) {
+        if (raw.isBlank()) vm.message(R.string.qr_empty) else qrRaw = raw
+    }
+
+    fun scanQr() {
+        context.startQrScan(onResult = ::onQrResult, onCanceled = {}, onError = { vm.message(R.string.qr_error) })
+    }
+
+    /** Ký tên / Chèn chữ mờ mở từ tab Công cụ: cần Pro và ít nhất một tài liệu, rồi mới mở bảng chọn tài liệu. */
+    fun openDocTool(tool: String) {
+        when {
+            !state.pro.isPro -> {
+                val reason = if (tool == TOOL_SIGN) R.string.sign_pro_only else R.string.watermark_pro_only
+                Toast.makeText(context, context.getString(reason), Toast.LENGTH_LONG).show()
+                nav.navigate(ROUTE_PAYWALL)
+            }
+            state.allDocs.isEmpty() -> vm.message(R.string.tool_need_doc)
+            else -> pickTool = tool
+        }
+    }
     val appName = stringResource(R.string.app_name)
     val privacyUrl = stringResource(R.string.privacy_policy_url)
     val supportEmail = stringResource(R.string.support_email)
@@ -321,6 +374,10 @@ fun AppRoot() {
                                     }
                                 }
                             },
+                            onImportPdf = ::importPdf,
+                            onQr = ::scanQr,
+                            onSign = { openDocTool(TOOL_SIGN) },
+                            onWatermark = { openDocTool(TOOL_WATERMARK) },
                             modifier = padding,
                         )
                         else -> AccountScreen(
@@ -354,11 +411,37 @@ fun AppRoot() {
                     onNeedPro = { nav.navigate(ROUTE_PAYWALL) },
                     onOpenOcr = { nav.navigate("ocr/$it") },
                     onEditPages = { nav.navigate("pages/$it") },
+                    onSign = { nav.navigate("sign/$it") },
+                    onWatermark = { nav.navigate("watermark/$it") },
                 )
             }
             composable(ROUTE_PAGES, arguments = listOf(navArgument("id") { type = NavType.LongType })) {
                 val pagesViewModel: PagesViewModel = viewModel(factory = AppViewModels.Factory)
                 PagesScreen(pagesViewModel, onBack = { nav.popIfOn(ROUTE_PAGES) })
+            }
+            composable(ROUTE_SIGN, arguments = listOf(navArgument("id") { type = NavType.LongType })) {
+                val signViewModel: SignViewModel = viewModel(factory = AppViewModels.Factory)
+                SignScreen(
+                    signViewModel,
+                    onBack = { nav.popIfOn(ROUTE_SIGN) },
+                    onDone = { id ->
+                        nav.popIfOn(ROUTE_SIGN)
+                        nav.navigate("doc/$id")
+                    },
+                    onNeedPro = { nav.navigate(ROUTE_PAYWALL) },
+                )
+            }
+            composable(ROUTE_WATERMARK, arguments = listOf(navArgument("id") { type = NavType.LongType })) {
+                val watermarkViewModel: WatermarkViewModel = viewModel(factory = AppViewModels.Factory)
+                WatermarkScreen(
+                    watermarkViewModel,
+                    onBack = { nav.popIfOn(ROUTE_WATERMARK) },
+                    onDone = { id ->
+                        nav.popIfOn(ROUTE_WATERMARK)
+                        nav.navigate("doc/$id")
+                    },
+                    onNeedPro = { nav.navigate(ROUTE_PAYWALL) },
+                )
             }
             composable(ROUTE_OCR, arguments = listOf(navArgument("id") { type = NavType.LongType })) {
                 val ocrViewModel: OcrViewModel = viewModel(factory = AppViewModels.Factory)
@@ -425,6 +508,31 @@ fun AppRoot() {
                 nav.navigate("ocr/$it")
             },
             onDismiss = { ocrPickOpen = false },
+        )
+    }
+    qrRaw?.let { raw ->
+        QrResultSheet(
+            raw = raw,
+            onScanAgain = {
+                qrRaw = null
+                scanQr()
+            },
+            onDismiss = { qrRaw = null },
+        )
+    }
+    pickTool?.let { tool ->
+        val sign = tool == TOOL_SIGN
+        DocPickSheet(
+            title = stringResource(if (sign) R.string.tool_sign_title else R.string.tool_watermark_title),
+            subtitle = stringResource(if (sign) R.string.pick_sign_sub else R.string.pick_watermark_sub),
+            icon = if (sign) R.drawable.ic_sign else R.drawable.ic_watermark,
+            docs = state.allDocs,
+            pageFile = ::pageFile,
+            onPick = { id ->
+                pickTool = null
+                nav.navigate(if (sign) "sign/$id" else "watermark/$id")
+            },
+            onDismiss = { pickTool = null },
         )
     }
     if (languageOpen) {

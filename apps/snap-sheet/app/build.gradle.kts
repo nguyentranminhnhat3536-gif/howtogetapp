@@ -89,6 +89,7 @@ dependencies {
 
     implementation(libs.mlkit.docscanner)
     implementation(libs.mlkit.text)
+    implementation(libs.mlkit.codescanner)
     implementation(libs.billing.ktx)
 
     implementation(platform(libs.firebase.bom))

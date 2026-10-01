@@ -3,9 +3,14 @@ package com.ethanstudio.snapsheet.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Matrix
+import android.graphics.pdf.PdfRenderer
 import android.media.ExifInterface
 import android.net.Uri
+import android.os.ParcelFileDescriptor
+import android.provider.OpenableColumns
 import com.ethanstudio.snapsheet.util.evictThumbnails
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +23,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
+
+/** Kết quả nhập PDF: id tài liệu mới, số trang đã nhập, tổng số trang của file. */
+data class PdfImportResult(val id: Long, val imported: Int, val total: Int)
 
 /** Lưu và đọc tài liệu. Ảnh trang và PDF nằm trong filesDir/docs/<id>/, chỉ app này đọc được. */
 class DocRepository(private val context: Context, private val dao: DocDao, private val folderDao: FolderDao) {
@@ -62,6 +70,102 @@ class DocRepository(private val context: Context, private val dao: DocDao, priva
             uris.forEachIndexed { i, uri -> importImage(uri, File(dir, "page_${i + 1}.jpg")) }
             PdfBuilder.build((1..uris.size).map { File(dir, "page_$it.jpg") }, File(dir, "doc.pdf"))
         }
+
+    /**
+     * Nhập file PDF có sẵn: dựng [pageLimit] trang đầu thành ảnh JPEG (như một trang quét) rồi ghép lại PDF.
+     * File chép tạm vào cacheDir/import và luôn được xóa khi xong. Lỗi thì ném [PdfImportException] hoặc IOException.
+     */
+    suspend fun importPdf(uri: Uri, pageLimit: Int, fallbackName: String): PdfImportResult = withContext(Dispatchers.IO) {
+        val work = File(context.cacheDir, "import")
+        try {
+            work.deleteRecursively()
+            if (!work.mkdirs()) throw IOException("Cannot create ${work.name}")
+            val source = File(work, "source.pdf")
+            val input = context.contentResolver.openInputStream(uri)
+                ?: throw PdfImportException(PdfImportException.Reason.UNREADABLE)
+            val fits = input.use { src -> source.outputStream().use { dst -> copyAtMost(src, dst, IMPORT_MAX_BYTES) } }
+            if (!fits) throw PdfImportException(PdfImportException.Reason.TOO_LARGE)
+            val renderer = openRenderer(source)
+            try {
+                val plan = importPlan(renderer.pageCount, pageLimit)
+                if (plan.take == 0) throw PdfImportException(PdfImportException.Reason.UNREADABLE)
+                val name = docNameFromFileName(displayName(uri)) ?: fallbackName
+                val id = create(name, plan.take) { dir ->
+                    rethrowOutOfMemory {
+                        for (i in 0 until plan.take) renderPdfPage(renderer, i, File(dir, "page_${i + 1}.jpg"))
+                        writePdf((1..plan.take).map { File(dir, "page_$it.jpg") }, File(dir, "doc.pdf"))
+                    }
+                }
+                PdfImportResult(id, plan.take, plan.total)
+            } finally {
+                // PdfRenderer tự đóng file descriptor của nó.
+                renderer.close()
+            }
+        } catch (e: OutOfMemoryError) {
+            throw IOException("Out of memory", e)
+        } finally {
+            work.deleteRecursively()
+        }
+    }
+
+    /** Tạo bản sao có chữ mờ trên mọi trang. Bản gốc không bị đụng tới. Trả về id bản sao. */
+    suspend fun watermarkCopy(id: Long, spec: WatermarkSpec, name: String): Long {
+        val doc = dao.get(id) ?: throw IOException("Document $id not found")
+        val newId = create(name, doc.pageCount) { dir ->
+            rethrowOutOfMemory {
+                pageFiles(doc).forEachIndexed { i, page ->
+                    stampPage(page, File(dir, "page_${i + 1}.jpg")) { canvas, w, h -> drawWatermark(canvas, w, h, spec) }
+                }
+                writePdf((1..doc.pageCount).map { File(dir, "page_$it.jpg") }, File(dir, "doc.pdf"))
+            }
+        }
+        keepFolder(newId, doc.folderId)
+        return newId
+    }
+
+    /**
+     * Tạo bản sao có chữ ký trên các trang trong [placements] (khóa = trang, bắt đầu từ 0).
+     * Bản gốc không bị đụng tới. Trả về id bản sao.
+     */
+    suspend fun signCopy(id: Long, placements: Map<Int, SignaturePlacement>, signature: File, name: String): Long {
+        val doc = dao.get(id) ?: throw IOException("Document $id not found")
+        require(placements.isNotEmpty() && placements.keys.all { it in 0 until doc.pageCount }) { "Invalid placements" }
+        val newId = create(name, doc.pageCount) { dir ->
+            rethrowOutOfMemory {
+                val sig = decodeSafely(signature, SIGN_BITMAP_WIDTH)
+                try {
+                    val sigAspect = sig.height.toFloat() / sig.width
+                    pageFiles(doc).forEachIndexed { i, page ->
+                        val dest = File(dir, "page_${i + 1}.jpg")
+                        val placement = placements[i]
+                        if (placement == null) {
+                            page.copyTo(dest, overwrite = true)
+                            ensureSupportedJpeg(dest)
+                        } else {
+                            stampPage(page, dest) { canvas, w, h ->
+                                val fitted = clampPlacement(placement, sigAspect, h.toFloat() / w)
+                                drawSignature(canvas, sig, placementRect(fitted, sigAspect, w, h))
+                            }
+                        }
+                    }
+                } finally {
+                    sig.recycle()
+                }
+                writePdf((1..doc.pageCount).map { File(dir, "page_$it.jpg") }, File(dir, "doc.pdf"))
+            }
+        }
+        keepFolder(newId, doc.folderId)
+        return newId
+    }
+
+    /** Cao/rộng của từng trang (chỉ đọc kích thước ảnh). Không đọc được thì coi như khổ A4 dọc. */
+    suspend fun pageAspects(doc: Doc): List<Float> = withContext(Dispatchers.IO) {
+        pageFiles(doc).map { page ->
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            BitmapFactory.decodeFile(page.path, bounds)
+            if (bounds.outWidth > 0 && bounds.outHeight > 0) bounds.outHeight.toFloat() / bounds.outWidth else A4_ASPECT
+        }
+    }
 
     suspend fun rename(id: Long, doc: Doc, newName: String) {
         dao.update(doc.copy(id = id, name = newName))
@@ -181,6 +285,7 @@ class DocRepository(private val context: Context, private val dao: DocDao, priva
      */
     suspend fun recoverPendingEdits() = withContext(Dispatchers.IO) {
         runCatching { File(context.cacheDir, "compress").deleteRecursively() }
+        runCatching { File(context.cacheDir, "import").deleteRecursively() }
         val names = runCatching { docsRoot.list() }.getOrNull() ?: return@withContext
         val ids = names.mapNotNull { PENDING_DIR.matchEntire(it)?.groupValues?.get(1)?.toLongOrNull() }.toSet()
         ids.forEach { id ->
@@ -323,15 +428,21 @@ class DocRepository(private val context: Context, private val dao: DocDao, priva
         }
     }
 
-    /** Giải mã ảnh, cạnh dài xấp xỉ [maxSide]. Hết bộ nhớ thì giảm kích thước và thử lại (tối đa 3 lần). */
-    private fun decodeSafely(file: File, maxSide: Int): Bitmap {
+    /**
+     * Giải mã ảnh, cạnh dài xấp xỉ [maxSide]. Hết bộ nhớ thì giảm kích thước và thử lại (tối đa 3 lần).
+     * [mutable] = true khi cần vẽ thêm lên ảnh (chữ mờ, chữ ký).
+     */
+    private fun decodeSafely(file: File, maxSide: Int, mutable: Boolean = false): Bitmap {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeFile(file.path, bounds)
         if (bounds.outWidth <= 0 || bounds.outHeight <= 0) throw IOException("Cannot read ${file.name}")
         var sample = sampleSizeFor(maxOf(bounds.outWidth, bounds.outHeight), maxSide)
         repeat(DECODE_ATTEMPTS) {
             try {
-                val options = BitmapFactory.Options().apply { inSampleSize = sample }
+                val options = BitmapFactory.Options().apply {
+                    inSampleSize = sample
+                    inMutable = mutable
+                }
                 return BitmapFactory.decodeFile(file.path, options) ?: throw IOException("Cannot decode ${file.name}")
             } catch (e: OutOfMemoryError) {
                 sample *= 2
@@ -375,6 +486,78 @@ class DocRepository(private val context: Context, private val dao: DocDao, priva
             }
         }
 
+    /** Mở file PDF để dựng trang. Có mật khẩu → LOCKED; hỏng hoặc không phải PDF → UNREADABLE. */
+    private fun openRenderer(source: File): PdfRenderer {
+        val descriptor = ParcelFileDescriptor.open(source, ParcelFileDescriptor.MODE_READ_ONLY)
+        return try {
+            PdfRenderer(descriptor)
+        } catch (e: SecurityException) {
+            runCatching { descriptor.close() }
+            throw PdfImportException(PdfImportException.Reason.LOCKED)
+        } catch (e: Exception) {
+            runCatching { descriptor.close() }
+            throw PdfImportException(PdfImportException.Reason.UNREADABLE)
+        }
+    }
+
+    /** Dựng trang [index] của PDF thành ảnh JPEG nền trắng ở [dest]. Hết bộ nhớ thì giảm cỡ ảnh và thử lại. */
+    private fun renderPdfPage(renderer: PdfRenderer, index: Int, dest: File) {
+        val page = renderer.openPage(index)
+        try {
+            if (page.width <= 0 || page.height <= 0) throw PdfImportException(PdfImportException.Reason.UNREADABLE)
+            val (width, height) = renderSize(page.width, page.height)
+            val bitmap = createPageBitmap(width, height)
+            try {
+                // Trang trong suốt được tô trắng, không bị đen khi ghi JPEG.
+                bitmap.eraseColor(Color.WHITE)
+                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                dest.outputStream().use { if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 88, it)) throw IOException("Cannot encode ${dest.name}") }
+            } finally {
+                bitmap.recycle()
+            }
+        } finally {
+            page.close()
+        }
+    }
+
+    /** Tạo ảnh trống [width] × [height]; hết bộ nhớ thì chia đôi hai cạnh rồi thử lại (tối đa 4 lần). */
+    private fun createPageBitmap(width: Int, height: Int): Bitmap {
+        var w = width
+        var h = height
+        repeat(DECODE_ATTEMPTS) {
+            try {
+                return Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+            } catch (e: OutOfMemoryError) {
+                w = (w / 2).coerceAtLeast(1)
+                h = (h / 2).coerceAtLeast(1)
+            }
+        }
+        throw IOException("Out of memory rendering a page")
+    }
+
+    /** Tên file mà người dùng thấy (ví dụ "Hợp đồng.pdf"); không đọc được thì null. */
+    private fun displayName(uri: Uri): String? = runCatching {
+        context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst() && !cursor.isNull(0)) cursor.getString(0) else null
+        }
+    }.getOrNull()
+
+    /** Đọc ảnh trang [source], vẽ thêm bằng [draw] (canvas, rộng, cao), rồi ghi JPEG vào [dest]. [source] không đổi. */
+    private fun stampPage(source: File, dest: File, draw: (Canvas, Int, Int) -> Unit) {
+        val bitmap = decodeSafely(source, MAX_SIDE, mutable = true)
+        try {
+            draw(Canvas(bitmap), bitmap.width, bitmap.height)
+            dest.outputStream().use { if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)) throw IOException("Cannot encode ${dest.name}") }
+        } finally {
+            bitmap.recycle()
+        }
+    }
+
+    /** Bản sao nằm cùng thư mục với bản gốc. Lỗi ở đây không đáng để báo: bản sao vẫn dùng được. */
+    private suspend fun keepFolder(newId: Long, folderId: Long?) {
+        if (folderId != null) runCatching { dao.setFolder(listOf(newId), folderId) }
+    }
+
     private fun copy(from: Uri, to: File) {
         val input = context.contentResolver.openInputStream(from) ?: error("Cannot open $from")
         input.use { src -> to.outputStream().use { dst -> src.copyTo(dst) } }
@@ -408,6 +591,8 @@ class DocRepository(private val context: Context, private val dao: DocDao, priva
         const val MAX_SIDE = 2000
         /** Lần giải mã đầu + tối đa 3 lần thử lại với ảnh nhỏ hơn. */
         const val DECODE_ATTEMPTS = 4
+        /** Cao/rộng của khổ A4 dọc, dùng khi không đọc được kích thước trang. */
+        const val A4_ASPECT = 1.414f
         val PENDING_DIR = Regex("""(\d+)\.(new|old)""")
     }
 }

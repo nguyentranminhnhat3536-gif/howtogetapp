@@ -12,7 +12,9 @@ import com.ethanstudio.snapsheet.data.DocSort
 import com.ethanstudio.snapsheet.data.DocRepository
 import com.ethanstudio.snapsheet.data.Folder
 import com.ethanstudio.snapsheet.data.FreeLimits
+import com.ethanstudio.snapsheet.data.IMPORT_MAX_MB
 import com.ethanstudio.snapsheet.data.MergeCheck
+import com.ethanstudio.snapsheet.data.PdfImportException
 import com.ethanstudio.snapsheet.data.ProState
 import com.ethanstudio.snapsheet.data.ProStore
 import com.ethanstudio.snapsheet.data.checkMerge
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -284,6 +287,45 @@ class MainViewModel(
         ocrAfterScan = false
         save(extract = false) {
             repo.saveImages(uris, defaultDocName(namePrefix, System.currentTimeMillis()))
+        }
+    }
+
+    /**
+     * Nhập file PDF có sẵn thành tài liệu mới rồi mở nó (không tính lượt xuất). Chỉ nhập số trang theo gói;
+     * bị cắt bớt thì báo số trang đã nhập.
+     */
+    fun importPdf(uri: Uri, namePrefix: String) {
+        if (filesUi.value.saving) return
+        filesUi.update { it.copy(saving = true) }
+        viewModelScope.launch {
+            try {
+                val isPro = proStore.state.first().isPro
+                val result = repo.importPdf(uri, FreeLimits.pageLimit(isPro), defaultDocName(namePrefix, System.currentTimeMillis()))
+                _events.send(MainEvent.OpenDoc(result.id))
+                if (result.imported < result.total) {
+                    _events.send(
+                        if (isPro) {
+                            MainEvent.MessageArgs(R.string.import_pdf_partial, listOf(result.imported, result.total))
+                        } else {
+                            MainEvent.MessageArgs(R.string.import_pdf_partial_free, listOf(result.imported, result.total, FreeLimits.PRO_PAGES))
+                        },
+                    )
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: PdfImportException) {
+                _events.send(
+                    when (e.reason) {
+                        PdfImportException.Reason.LOCKED -> MainEvent.Message(R.string.import_pdf_locked)
+                        PdfImportException.Reason.TOO_LARGE -> MainEvent.MessageArgs(R.string.import_pdf_too_large, listOf(IMPORT_MAX_MB))
+                        PdfImportException.Reason.UNREADABLE -> MainEvent.Message(R.string.import_pdf_error)
+                    },
+                )
+            } catch (e: Exception) {
+                _events.send(MainEvent.Message(R.string.import_pdf_error))
+            } finally {
+                filesUi.update { it.copy(saving = false) }
+            }
         }
     }
 

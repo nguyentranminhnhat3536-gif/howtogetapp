@@ -23,7 +23,8 @@ Bước 3 · Nhóm A đợt 1 xong (chọn nhiều, gộp PDF cho Pro, sắp/xó
 - [x] Làm lại giao diện theo thiết kế đã duyệt, thêm Account › Language (CI #32 xanh, /ship CHOT 2026-10-01)
 - [ ] Ethan thử APK trên điện thoại và góp ý (DUYỆT-2)
 - [x] Nhóm A đợt 1: chọn nhiều, gộp PDF (Pro), sắp/xóa trang, thêm trang, in, thư mục, nén (CI #39 xanh, /ship CHOT 2026-10-01)
-- [ ] Nhóm A đợt 2 (kế hoạch ở `PLAN-features-A.md`): ký tên (Pro), đóng dấu chữ mờ (Pro), nhập file PDF có sẵn, quét mã QR/mã vạch
+- [ ] Nhóm A đợt 2: ký tên (Pro), chèn chữ mờ (Pro), nhập file PDF có sẵn, quét mã QR/mã vạch (đã code qua /ship 2026-10-01; đánh dấu xong khi CI xanh)
+- [ ] Đợt sau: khóa PDF bằng mật khẩu (Pro)
 - [ ] Gia cố sau đợt 1 (góp ý không bắt buộc của reviewer): PagesViewModel chỉ trả `saving = false` khi lỗi (chặn bấm Lưu 2 lần); luồng in trong Print.kt bắt mọi `Exception`; FilesScreen tắt các hộp thoại khi thoát chế độ chọn; báo rõ khi thêm trang bị cắt vì giới hạn; chữ `limit_pages_free` không ghi cứng "5 trang"; `rename` dùng `UPDATE docs SET name`; dấu tích cho "No folder"; dọn tài liệu gộp dở khi app bị tắt giữa chừng; dùng chung `Mutex` cho `recoverPendingEdits` và `rewritePages`
 - [x] Xóa tài liệu lỗi thì báo bằng snackbar, không crash (DocViewModel.delete, /ship 2026-10-01)
 - [ ] Vòng gia cố: rà hết bộ nhớ khi lưu scan và khi OCR (OutOfMemoryError trong TextOcr); OcrViewModel.retry() kiểm lại isPro; ocr-locked chỉ mở bảng chọn khi đang đứng ở ROUTE_OCR_LOCKED
@@ -50,19 +51,22 @@ Bước 3 · Nhóm A đợt 1 xong (chọn nhiều, gộp PDF cho Pro, sắp/xó
 4. Hai bậc: miễn phí (5 trang/tài liệu, 3 lượt xuất/ngày) và Pro (30 trang, xuất không giới hạn, OCR)
 5. Ba gói mua: tháng, năm, vĩnh viễn (Play Billing), có Khôi phục giao dịch
 
-**Để sau:** ký tên và đóng dấu lên PDF, sao lưu, chỉnh sửa trang (xoay, cắt lại, kéo thả), xuất Word.
+**Để sau:** sao lưu, chỉnh sửa trang (xoay, cắt lại, kéo thả), xuất Word.
 
 ## Màn hình
 | Màn hình | Làm gì |
 |---|---|
 | Home | Lời chào + ảnh đại diện, thẻ lớn "Scan document", 4 lối tắt tròn (một trang, nhiều trang, thẻ căn cước, nhập ảnh), danh sách gần đây + "See all" |
 | Files | Tìm kiếm, sắp xếp (mới nhất / tên), nhóm "Hôm nay" / "Trước đó", dòng phụ có số trang và dung lượng. Hàng chip thư mục ("All", từng thư mục, "New folder"); đang lọc một thư mục thì có Đổi tên / Xóa thư mục (xóa thư mục không xóa tài liệu). Chọn nhiều (nút Select hoặc nhấn giữ): vòng chọn có số thứ tự, thanh hành động Chia sẻ / Chuyển / Gộp (PRO) / Xóa |
-| Tools | Lưới thẻ công cụ: một trang, nhiều trang, thẻ căn cước, ảnh sang PDF, lấy chữ (PRO), gộp PDF (PRO, chuyển sang Files ở chế độ chọn), chia sẻ nhanh |
+| Tools | Lưới 11 thẻ công cụ: một trang, nhiều trang, thẻ căn cước, ảnh sang PDF, nhập file PDF, quét mã QR, lấy chữ (PRO), gộp PDF (PRO, chuyển sang Files ở chế độ chọn), ký tên (PRO, bảng chọn tài liệu), chèn chữ mờ (PRO, bảng chọn tài liệu), chia sẻ nhanh |
 | Account | Thẻ Pro, nâng cấp, khôi phục giao dịch, Language (chọn ngôn ngữ của app), đánh giá, chia sẻ, liên hệ, chính sách |
 | Lấy chữ (OCR, Pro) | Chọn tài liệu (bảng dưới từ Tools), đọc từng trang có tiến độ và nút Hủy, kết quả: chọn trang, tìm có tô vàng, đếm từ/ký tự, nối dòng, Copy/Share/Lưu .txt; không thấy chữ: 3 mẹo; bản miễn phí: bảng PRO |
-| Tài liệu | Vuốt xem từng trang ("Page x of y"), 4 nút tròn (mở PDF, chia sẻ PDF, chia sẻ ảnh, lấy chữ), hàng nút thứ hai (thêm trang, sửa trang, in, nén), thanh lượt xuất miễn phí, chuyển vào thư mục, đổi tên, xóa |
+| Tài liệu | Vuốt xem từng trang ("Page x of y"), 4 nút tròn (mở PDF, chia sẻ PDF, chia sẻ ảnh, lấy chữ), hàng nút thứ hai (thêm trang, sửa trang, in, nén), hàng nút thứ ba: Ký tên, Chèn chữ mờ (PRO), thanh lượt xuất miễn phí, chuyển vào thư mục, đổi tên, xóa |
 | Sửa trang | Mỗi hàng một trang: ảnh nhỏ, nút Lên / Xuống / Xóa; bấm Lưu mới ghi vào tài liệu; quay lại khi chưa lưu thì hỏi bỏ thay đổi |
 | Bảng Nén | Chọn mức Nhỏ / Vừa / Gốc rồi chia sẻ bản nén (tài liệu đã lưu không đổi) |
+| Ký tên (Pro) | Khung vẽ chữ ký 2:1 (xóa nét, xóa chữ ký đã lưu, dùng chữ ký này); đặt chữ ký lên một hoặc nhiều trang: chuyển trang, kéo để đổi chỗ, thanh trượt đổi cỡ, bỏ khỏi trang; Lưu tạo bản sao "(signed)", bản gốc giữ nguyên |
+| Chèn chữ mờ (Pro) | Xem trước trang đầu, nhập chữ (tối đa 40 ký tự) hoặc chọn gợi ý, 3 màu, 3 độ đậm; Lưu tạo bản sao "(watermark)" có chữ chéo trên mọi trang, bản gốc giữ nguyên |
+| Kết quả quét mã | Bảng dưới hiện nội dung mã (chọn được), Sao chép, Chia sẻ; link http/https có thêm nút Mở liên kết; Quét lại, Đóng. Không lưu kết quả |
 | Màn mua | Nền "bầu trời", tiêu đề chữ có chân, ba gói (năm, tháng, vĩnh viễn) có nhãn góc, giá năm quy ra mỗi tháng, dòng điều khoản theo gói, Restore, link chính sách |
 | Bảng Scan | Bấm nút + ở giữa: quét bằng camera hoặc nhập ảnh |
 
@@ -71,6 +75,8 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 ## Dữ liệu
 - Room `snapsheet.db`, **schema v2**: bảng `docs` (tên, ngày, số trang, `folderId` cho phép null) và bảng `folders` (tên, ngày tạo). Nâng từ v1 bằng `MIGRATION_1_2` (chỉ `CREATE TABLE` + `ADD COLUMN`, không xóa gì): tài liệu cũ còn nguyên, `folderId = NULL` (nằm ở "All"). Không dùng `fallbackToDestructiveMigration`.
 - File ảnh và PDF trong `filesDir/docs/<id>/`, chỉ app đọc được; chia sẻ qua FileProvider. Bản nén để chia sẻ ghi đè vào `docs/<id>/compressed.pdf`. Sửa/thêm trang dựng bản mới trong `docs/<id>.new` rồi mới thay bản cũ; mở app thì tự dọn hoặc hoàn tất lần ghi bị ngắt.
+- Chữ ký: một file PNG nền trong suốt ở `filesDir/signature/signature.png` (chỉ app đọc được, sao lưu Android đang tắt). Xóa được trong màn Ký tên. Ký tên và chèn chữ mờ tạo tài liệu mới (bản sao), không sửa bản gốc.
+- Nhập PDF: file được chép tạm vào `cacheDir/import` rồi xóa ngay sau khi dựng xong (và mỗi lần mở app).
 - DataStore `pro`: đã mua Pro chưa (lưu để dùng khi mất mạng; mỗi lần mở app hỏi lại Google Play) và số lượt xuất trong ngày.
 - Không có mạng của riêng app, không có tài khoản.
 
@@ -93,7 +99,7 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 ## Quyền (permissions) và lý do
 | Quyền | Lý do |
 |---|---|
-| (không có) | Quét dùng màn hình của Google Play services (không cần CAMERA), ảnh chọn bằng trình chọn ảnh hệ thống (không cần đọc thư viện). BILLING, INTERNET, ACCESS_NETWORK_STATE, READ_GSERVICES do thư viện Play Billing, ML Kit và Firebase tự thêm. Mạng chỉ dùng khi đăng nhập. USE_BIOMETRIC và USE_FINGERPRINT (Credential Manager tự thêm) đã gỡ vì app không dùng. |
+| (không có) | Quét dùng màn hình của Google Play services (không cần CAMERA), ảnh chọn bằng trình chọn ảnh hệ thống (không cần đọc thư viện). BILLING, INTERNET, ACCESS_NETWORK_STATE, READ_GSERVICES do thư viện Play Billing, ML Kit và Firebase tự thêm. Mạng chỉ dùng khi đăng nhập. USE_BIOMETRIC và USE_FINGERPRINT (Credential Manager tự thêm) đã gỡ vì app không dùng. Quét mã dùng màn quét của Google Play services, không cần CAMERA. Nhập PDF dùng trình chọn tệp của hệ thống, không cần quyền đọc bộ nhớ. |
 
 ## Tài nguyên bên thứ ba và giấy phép
 | Tài nguyên (hình, font, âm thanh, dữ liệu…) | Nguồn | Giấy phép |
@@ -103,6 +109,7 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 | Font tiêu đề DM Serif Display (`res/font/dm_serif_display.ttf`, chỉ dùng cho en/es/pt/fr/de/id/tr; ngôn ngữ khác dùng font có chân của hệ thống) | https://github.com/google/fonts/tree/main/ofl/dmserifdisplay | SIL OFL 1.1 (văn bản kèm theo ở `assets/licenses/DMSerifDisplay-OFL.txt`) |
 | ML Kit Document Scanner, ML Kit Text Recognition | Google | Điều khoản ML Kit |
 | Play Billing Library 9.1.0 | Google | Apache 2.0 |
+| Google code scanner (play-services-code-scanner 16.1.0) | Google | Điều khoản ML Kit |
 
 ## Soạn sẵn cho Play Console
 - **Data safety:** Personal info › Email address và User IDs: có thu thập (chỉ khi người dùng tự tạo tài khoản, không bắt buộc), mục đích App functionality + Account management, không chia sẻ, không bán, mã hóa khi truyền, có cho yêu cầu xóa (link trang xóa tài khoản). Tài liệu quét không thu thập. Khai: lịch sử mua hàng được Google Play xử lý (Purchase history, không dùng cho quảng cáo). ML Kit và Google Play services có thể thu thập chẩn đoán (Diagnostics) theo chính sách Google; kiểm tra lại mục "SDK thu thập" trong Play Console trước khi nộp.
@@ -149,3 +156,11 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 - 2026-10-01: Nhóm A đợt 1 (chọn nhiều, gộp PDF, sắp/xóa/thêm trang, in, thư mục, nén). Gộp là Pro, còn lại miễn phí, giới hạn bản miễn phí giữ nguyên. Lượt xuất: In = 1 lượt; chia sẻ bản nén (kể cả mức Gốc) = 1 lượt; chia sẻ nhiều tài liệu cùng lúc = mỗi tài liệu 1 lượt, không đủ thì chặn cả lần (để không lách được giới hạn 3 lượt/ngày). Gộp, sắp/xóa/thêm trang, chuyển thư mục không tính lượt.
 - 2026-10-01: Nén và dựng lại PDF không dùng `PdfDocument` của Android (nhúng ảnh không nén nên file to hơn ảnh JPEG gốc nhiều lần). Viết bộ ghi PDF nhỏ bằng Kotlin (`JpegPdfWriter`) nhúng thẳng byte JPEG, không thêm thư viện. `PdfBuilder` cũ giữ cho luồng quét/nhập ảnh.
 - 2026-10-01: Sắp trang bằng nút Lên/Xuống, không kéo thả (kéo thả dễ lỗi, khó dùng với chữ to và TalkBack). Thư mục chỉ một cấp; mỗi tài liệu thuộc 0 hoặc 1 thư mục.
+- 2026-10-01: Nhóm A đợt 2 (Ethan muốn thêm công cụ để Pro đáng tiền hơn). Làm 4 công cụ: Ký tên (Pro), Chèn chữ mờ (Pro), Nhập file PDF (miễn phí), Quét mã QR/mã vạch (miễn phí). Cả bốn chạy offline, không xin quyền mới. Khóa PDF bằng mật khẩu để đợt sau: phải tự viết phần mã hóa PDF, không kiểm được trên JVM, sai thì người nhận không mở được file.
+- 2026-10-01: Ký tên là Pro (giá trị cao nhất: hợp đồng, đơn từ; app cùng loại cũng thu phí). Chèn chữ mờ là Pro (bảo vệ bản sao CCCD/giấy tờ). Nhập PDF miễn phí (cửa đưa file vào app; giới hạn 5/30 trang có sẵn tự gợi ý nâng cấp). Quét mã miễn phí (tiện ích nhỏ, giúp mở app thường hơn). Ô Pro có nhãn PRO; người miễn phí bấm thì báo rồi mở màn mua. Giới hạn bản miễn phí giữ nguyên.
+- 2026-10-01: Bốn công cụ mới không tính lượt xuất. Lượt chỉ tính khi file rời khỏi app (mở, chia sẻ, in, chia sẻ bản nén); chia sẻ tài liệu đã ký hoặc có chữ mờ vẫn tính lượt như thường.
+- 2026-10-01: Ký tên và chèn chữ mờ tạo BẢN SAO mới ("<tên> (signed)" / "<tên> (watermark)" theo ngôn ngữ, tối đa 80 ký tự, cùng thư mục với bản gốc), không sửa bản gốc: chữ ký đã in vào ảnh thì không gỡ được, và người dùng thường cần giữ bản chưa ký.
+- 2026-10-01: Ký tên: chỉ lưu một chữ ký (PNG trong suốt, mực xanh đen #0B1A3A), vẽ bằng ngón tay trong khung 2:1. Một lần ký đặt được lên nhiều trang. Kéo để đổi chỗ, đổi cỡ bằng thanh trượt (dễ dùng hơn chụm 2 ngón, TalkBack đọc được). Vị trí mặc định góc dưới phải, rộng 35% trang.
+- 2026-10-01: Chữ mờ: một dòng chữ chéo giữa trang (dưới trái lên trên phải) trên mọi trang; 3 màu (Xám, Đỏ, Xanh), 3 độ đậm (15%, 30%, 45%), tối đa 40 ký tự; font đậm của hệ thống nên tiếng Việt có dấu, Hindi, Nhật hiện đúng. Ảnh xem trước dùng đúng hàm vẽ của bản lưu.
+- 2026-10-01: Nhập PDF: chọn file bằng trình chọn tệp hệ thống (không cần quyền). Mỗi trang dựng thành ảnh JPEG 200 dpi (cạnh dài ≤ 2000 px) như một trang quét, rồi ghép lại PDF bằng `JpegPdfWriter`, nên chữ trong PDF gốc không còn bôi chọn được. Chỉ nhập 5 (miễn phí) / 30 (Pro) trang đầu và báo số trang nếu bị cắt. File trên 100 MB thì từ chối; PDF có mật khẩu thì báo rõ.
+- 2026-10-01: Quét mã dùng Google code scanner `play-services-code-scanner` 16.1.0 (màn quét do Google Play services cung cấp, không cần quyền CAMERA); meta-data `barcode_ui` để Play tải sẵn mô-đun khi cài, dùng được offline. Kết quả không lưu; chỉ link http/https mới có nút Mở, và luôn hiện địa chỉ trước khi mở.

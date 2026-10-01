@@ -1,6 +1,6 @@
-# Kế hoạch nhóm A (đợt 1 xong, đợt 2 chưa làm)
+# Kế hoạch nhóm A (đợt 1 xong, đợt 2 đã làm)
 
-Trạng thái 2026-10-01: **Đợt 1 xong** (chọn nhiều, gộp PDF, sắp/xóa trang, thêm trang, in, thư mục, nén): commit 087c61a + 61a50bd + ae28492, CI #39 xanh, /ship CHOT. **Đợt 2 chưa làm** (5 ký tên, 6 đóng dấu chữ mờ, 7 nhập PDF, 9 quét QR/mã vạch): chạy /ship mới, planner viết kế hoạch riêng cho đợt 2 dựa trên bảng và ràng buộc dưới đây.
+Trạng thái 2026-10-01: **Đợt 1 xong** (chọn nhiều, gộp PDF, sắp/xóa trang, thêm trang, in, thư mục, nén): commit 087c61a + 61a50bd + ae28492, CI #39 xanh, /ship CHOT. **Đợt 2 đã làm qua /ship 2026-10-01 (kế hoạch trong .bangiao/ke-hoach.md của lần đó)** (5 ký tên, 6 chèn chữ mờ, 7 nhập PDF, 9 quét QR/mã vạch).
 
 ---
 # Yêu cầu

@@ -28,6 +28,9 @@ billing = "9.1.0"
 # Quét tài liệu và nhận dạng chữ trên máy (ML Kit)
 mlkitDocScanner = "16.0.0"
 mlkitText = "16.0.1"
+# Quét mã QR/mã vạch bằng màn quét của Google Play services (không cần quyền CAMERA).
+# Nguồn: developers.google.com/ml-kit/vision/barcode-scanning/code-scanner và ML Kit release notes (bản mới nhất, có enableAutoZoom).
+mlkitCodeScanner = "16.1.0"
 
 # Đăng nhập tài khoản (Firebase Authentication + Đăng nhập bằng Google qua Credential Manager)
 firebaseBom = "34.17.0"
@@ -61,6 +64,7 @@ gma-nextgen = { module = "com.google.android.libraries.ads.mobile.sdk:ads-mobile
 ump = { module = "com.google.android.ump:user-messaging-platform", version.ref = "ump" }
 mlkit-docscanner = { module = "com.google.android.gms:play-services-mlkit-document-scanner", version.ref = "mlkitDocScanner" }
 mlkit-text = { module = "com.google.mlkit:text-recognition", version.ref = "mlkitText" }
+mlkit-codescanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "mlkitCodeScanner" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }

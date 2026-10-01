@@ -5,7 +5,8 @@
     <!--
       Không xin quyền nào. Quét bằng ML Kit Document Scanner (giao diện do Google Play services cung cấp,
       không cần quyền camera). Chọn ảnh bằng trình chọn ảnh của hệ thống. Quyền thanh toán (BILLING)
-      do thư viện Play Billing tự thêm.
+      do thư viện Play Billing tự thêm. Quét mã QR dùng màn quét của Google Play services, không cần
+      quyền camera; mở PDF bằng trình chọn tệp hệ thống.
     -->
 
     <!-- Thư viện Credential Manager tự thêm quyền vân tay cho passkey; app không dùng nên gỡ ra. -->
@@ -20,6 +21,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App">
+
+        <!-- Play tải sẵn mô-đun quét mã khi cài app, nhờ vậy quét mã dùng được khi không có mạng. -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode_ui" />
 
         <activity
             android:name=".MainActivity"

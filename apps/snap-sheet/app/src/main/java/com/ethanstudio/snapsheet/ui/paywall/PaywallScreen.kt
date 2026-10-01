@@ -203,6 +203,7 @@ private fun Benefits() {
         BenefitChip(R.drawable.ic_infinity, stringResource(R.string.pro_benefit_1))
         BenefitChip(R.drawable.ic_text, stringResource(R.string.pro_benefit_2))
         BenefitChip(R.drawable.ic_pages, stringResource(R.string.pro_benefit_3, FreeLimits.PRO_PAGES))
+        BenefitChip(R.drawable.ic_sign, stringResource(R.string.pro_benefit_5))
     }
 }
 

@@ -30,6 +30,10 @@ fun ToolsScreen(
     onOcr: () -> Unit,
     onShare: () -> Unit,
     onMerge: () -> Unit,
+    onImportPdf: () -> Unit,
+    onQr: () -> Unit,
+    onSign: () -> Unit,
+    onWatermark: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
@@ -49,8 +53,12 @@ fun ToolsScreen(
         item { ToolTile(R.drawable.ic_pages, stringResource(R.string.shortcut_multi), stringResource(R.string.tool_multi_desc), false, { actions.scan(ScanMode.BATCH) }) }
         item { ToolTile(R.drawable.ic_id, stringResource(R.string.shortcut_id), stringResource(R.string.tool_id_desc), false, { actions.scan(ScanMode.ID_CARD) }) }
         item { ToolTile(R.drawable.ic_photo, stringResource(R.string.tool_import), stringResource(R.string.tool_import_desc), false, actions.importPhotos) }
+        item { ToolTile(R.drawable.ic_doc_pdf, stringResource(R.string.tool_import_pdf_title), stringResource(R.string.tool_import_pdf_desc), false, onImportPdf) }
+        item { ToolTile(R.drawable.ic_qr, stringResource(R.string.tool_qr_title), stringResource(R.string.tool_qr_desc), false, onQr) }
         item { ToolTile(R.drawable.ic_text, stringResource(R.string.doc_text), stringResource(R.string.tool_ocr_desc), !isPro, onOcr) }
         item { ToolTile(R.drawable.ic_merge, stringResource(R.string.tool_merge_title), stringResource(R.string.tool_merge_desc), !isPro, onMerge) }
+        item { ToolTile(R.drawable.ic_sign, stringResource(R.string.tool_sign_title), stringResource(R.string.tool_sign_desc), !isPro, onSign) }
+        item { ToolTile(R.drawable.ic_watermark, stringResource(R.string.tool_watermark_title), stringResource(R.string.tool_watermark_desc), !isPro, onWatermark) }
         item { ToolTile(R.drawable.ic_share, stringResource(R.string.tool_share_title), stringResource(R.string.tool_share_desc), false, onShare) }
     }
 }
