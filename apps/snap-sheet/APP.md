@@ -7,6 +7,7 @@
 | Tạo ngày | 2026-10-01 |
 | Chính sách quyền riêng tư | https://nguyentranminhnhat3536-gif.github.io/howtogetapp/snap-sheet/privacy-policy.html |
 | Bản chạy thử | https://github.com/nguyentranminhnhat3536-gif/howtogetapp/releases/tag/preview-snap-sheet |
+| Bản bấm thử trên web | https://claude.ai/artifact/WdSXixveS1F2cq67mptcnP (toàn bộ app sau nhóm A đợt 1, tiếng Việt, 25 khung từng màn; dựng từ code 2026-10-01) |
 | Link Google Play | (chưa có) |
 
 ## Trạng thái
@@ -144,6 +145,7 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 - 2026-10-01: Extract text thành màn riêng theo thiết kế đã duyệt. Bản miễn phí không chạy OCR mà chỉ thấy bảng PRO. Không lưu kết quả OCR (không đổi dữ liệu). Lưu .txt qua trình chọn nơi lưu của hệ thống (không cần quyền).
 - 2026-10-01: Gói vĩnh viễn đọc offer qua `getOneTimePurchaseOfferDetailsList` (Billing 8+) và mua đúng offerToken.
 - 2026-10-01: Xóa tài liệu lỗi thì báo, không crash.
+- 2026-10-01: Dựng lại toàn bộ app thành bản bấm thử trên web để Ethan kiểm tra. Màu lấy từ code (`Color.kt`, `Gradients.kt`), không lấy từ artifact Scan Design System vì token ở đó là bản cũ (#3880F8) khác màu app đang dùng (#2A6FE8).
 - 2026-10-01: Nhóm A đợt 1 (chọn nhiều, gộp PDF, sắp/xóa/thêm trang, in, thư mục, nén). Gộp là Pro, còn lại miễn phí, giới hạn bản miễn phí giữ nguyên. Lượt xuất: In = 1 lượt; chia sẻ bản nén (kể cả mức Gốc) = 1 lượt; chia sẻ nhiều tài liệu cùng lúc = mỗi tài liệu 1 lượt, không đủ thì chặn cả lần (để không lách được giới hạn 3 lượt/ngày). Gộp, sắp/xóa/thêm trang, chuyển thư mục không tính lượt.
 - 2026-10-01: Nén và dựng lại PDF không dùng `PdfDocument` của Android (nhúng ảnh không nén nên file to hơn ảnh JPEG gốc nhiều lần). Viết bộ ghi PDF nhỏ bằng Kotlin (`JpegPdfWriter`) nhúng thẳng byte JPEG, không thêm thư viện. `PdfBuilder` cũ giữ cho luồng quét/nhập ảnh.
 - 2026-10-01: Sắp trang bằng nút Lên/Xuống, không kéo thả (kéo thả dễ lỗi, khó dùng với chữ to và TalkBack). Thư mục chỉ một cấp; mỗi tài liệu thuộc 0 hoặc 1 thư mục.
