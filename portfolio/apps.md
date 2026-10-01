@@ -7,3 +7,4 @@ AI cập nhật bảng này cuối mỗi phiên. `scripts/new_app.py` tự thêm
 | App | Slug | Package | Giai đoạn | Version | Kiếm tiền | Link Play | Ghi chú |
 |---|---|---|---|---|---|---|---|
 | Lịch Trình Của Bạn (Your Schedule) | `lunar-tasks` | `com.ethanstudio.lunartasks` | 3 · Tạm dừng | 1.0.0 (1) | — | — | Tạo 2026-09-29 |
+| SnapSheet: Document Scanner | `snap-sheet` | `com.ethanstudio.snapsheet` | 2 · Đang code (chờ CI xanh) | 1.0.0 (1) | Freemium: gói tháng, năm, vĩnh viễn (chưa tạo trong Play Console) | — | Quét tài liệu, OCR trên máy. Giao diện theo Scan Design System |

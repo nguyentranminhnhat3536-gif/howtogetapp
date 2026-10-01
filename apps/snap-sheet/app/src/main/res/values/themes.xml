@@ -1,0 +1,4 @@
+<resources>
+    <!-- Giao diện thật do Compose (ui/theme) vẽ; theme này chỉ cho nền cửa sổ lúc mở app. -->
+    <style name="Theme.App" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
