@@ -29,6 +29,7 @@ fun ToolsScreen(
     actions: ScanActions,
     onOcr: () -> Unit,
     onShare: () -> Unit,
+    onMerge: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
@@ -49,6 +50,7 @@ fun ToolsScreen(
         item { ToolTile(R.drawable.ic_id, stringResource(R.string.shortcut_id), stringResource(R.string.tool_id_desc), false, { actions.scan(ScanMode.ID_CARD) }) }
         item { ToolTile(R.drawable.ic_photo, stringResource(R.string.tool_import), stringResource(R.string.tool_import_desc), false, actions.importPhotos) }
         item { ToolTile(R.drawable.ic_text, stringResource(R.string.doc_text), stringResource(R.string.tool_ocr_desc), !isPro, onOcr) }
+        item { ToolTile(R.drawable.ic_merge, stringResource(R.string.tool_merge_title), stringResource(R.string.tool_merge_desc), !isPro, onMerge) }
         item { ToolTile(R.drawable.ic_share, stringResource(R.string.tool_share_title), stringResource(R.string.tool_share_desc), false, onShare) }
     }
 }

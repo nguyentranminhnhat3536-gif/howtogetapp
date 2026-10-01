@@ -46,24 +46,27 @@ Bước 3 · Giao diện mới + chọn ngôn ngữ (CI #32) và màn Extract te
 4. Hai bậc: miễn phí (5 trang/tài liệu, 3 lượt xuất/ngày) và Pro (30 trang, xuất không giới hạn, OCR)
 5. Ba gói mua: tháng, năm, vĩnh viễn (Play Billing), có Khôi phục giao dịch
 
-**Để sau:** ký tên và đóng dấu lên PDF, thư mục, sao lưu, chỉnh sửa trang, xuất Word.
+**Để sau:** ký tên và đóng dấu lên PDF, sao lưu, chỉnh sửa trang (xoay, cắt lại, kéo thả), xuất Word.
 
 ## Màn hình
 | Màn hình | Làm gì |
 |---|---|
 | Home | Lời chào + ảnh đại diện, thẻ lớn "Scan document", 4 lối tắt tròn (một trang, nhiều trang, thẻ căn cước, nhập ảnh), danh sách gần đây + "See all" |
-| Files | Tìm kiếm, sắp xếp (mới nhất / tên), nhóm "Hôm nay" / "Trước đó", dòng phụ có số trang và dung lượng |
-| Tools | Lưới thẻ công cụ: một trang, nhiều trang, thẻ căn cước, ảnh sang PDF, lấy chữ (PRO), chia sẻ nhanh |
+| Files | Tìm kiếm, sắp xếp (mới nhất / tên), nhóm "Hôm nay" / "Trước đó", dòng phụ có số trang và dung lượng. Hàng chip thư mục ("All", từng thư mục, "New folder"); đang lọc một thư mục thì có Đổi tên / Xóa thư mục (xóa thư mục không xóa tài liệu). Chọn nhiều (nút Select hoặc nhấn giữ): vòng chọn có số thứ tự, thanh hành động Chia sẻ / Chuyển / Gộp (PRO) / Xóa |
+| Tools | Lưới thẻ công cụ: một trang, nhiều trang, thẻ căn cước, ảnh sang PDF, lấy chữ (PRO), gộp PDF (PRO, chuyển sang Files ở chế độ chọn), chia sẻ nhanh |
 | Account | Thẻ Pro, nâng cấp, khôi phục giao dịch, Language (chọn ngôn ngữ của app), đánh giá, chia sẻ, liên hệ, chính sách |
 | Lấy chữ (OCR, Pro) | Chọn tài liệu (bảng dưới từ Tools), đọc từng trang có tiến độ và nút Hủy, kết quả: chọn trang, tìm có tô vàng, đếm từ/ký tự, nối dòng, Copy/Share/Lưu .txt; không thấy chữ: 3 mẹo; bản miễn phí: bảng PRO |
-| Tài liệu | Vuốt xem từng trang ("Page x of y"), 4 nút tròn (mở PDF, chia sẻ PDF, chia sẻ ảnh, lấy chữ), thanh lượt xuất miễn phí, đổi tên, xóa |
+| Tài liệu | Vuốt xem từng trang ("Page x of y"), 4 nút tròn (mở PDF, chia sẻ PDF, chia sẻ ảnh, lấy chữ), hàng nút thứ hai (thêm trang, sửa trang, in, nén), thanh lượt xuất miễn phí, chuyển vào thư mục, đổi tên, xóa |
+| Sửa trang | Mỗi hàng một trang: ảnh nhỏ, nút Lên / Xuống / Xóa; bấm Lưu mới ghi vào tài liệu; quay lại khi chưa lưu thì hỏi bỏ thay đổi |
+| Bảng Nén | Chọn mức Nhỏ / Vừa / Gốc rồi chia sẻ bản nén (tài liệu đã lưu không đổi) |
 | Màn mua | Nền "bầu trời", tiêu đề chữ có chân, ba gói (năm, tháng, vĩnh viễn) có nhãn góc, giá năm quy ra mỗi tháng, dòng điều khoản theo gói, Restore, link chính sách |
 | Bảng Scan | Bấm nút + ở giữa: quét bằng camera hoặc nhập ảnh |
 
 Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHrdgpB6w).
 
 ## Dữ liệu
-- Room `snapsheet.db`, bảng `docs` (tên, ngày, số trang). File ảnh và PDF trong `filesDir/docs/<id>/`, chỉ app đọc được; chia sẻ qua FileProvider.
+- Room `snapsheet.db`, **schema v2**: bảng `docs` (tên, ngày, số trang, `folderId` cho phép null) và bảng `folders` (tên, ngày tạo). Nâng từ v1 bằng `MIGRATION_1_2` (chỉ `CREATE TABLE` + `ADD COLUMN`, không xóa gì): tài liệu cũ còn nguyên, `folderId = NULL` (nằm ở "All"). Không dùng `fallbackToDestructiveMigration`.
+- File ảnh và PDF trong `filesDir/docs/<id>/`, chỉ app đọc được; chia sẻ qua FileProvider. Bản nén để chia sẻ ghi đè vào `docs/<id>/compressed.pdf`. Sửa/thêm trang dựng bản mới trong `docs/<id>.new` rồi mới thay bản cũ; mở app thì tự dọn hoặc hoàn tất lần ghi bị ngắt.
 - DataStore `pro`: đã mua Pro chưa (lưu để dùng khi mất mạng; mỗi lần mở app hỏi lại Google Play) và số lượt xuất trong ngày.
 - Không có mạng của riêng app, không có tài khoản.
 
@@ -138,3 +141,6 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 - 2026-10-01: Extract text thành màn riêng theo thiết kế đã duyệt. Bản miễn phí không chạy OCR mà chỉ thấy bảng PRO. Không lưu kết quả OCR (không đổi dữ liệu). Lưu .txt qua trình chọn nơi lưu của hệ thống (không cần quyền).
 - 2026-10-01: Gói vĩnh viễn đọc offer qua `getOneTimePurchaseOfferDetailsList` (Billing 8+) và mua đúng offerToken.
 - 2026-10-01: Xóa tài liệu lỗi thì báo, không crash.
+- 2026-10-01: Nhóm A đợt 1 (chọn nhiều, gộp PDF, sắp/xóa/thêm trang, in, thư mục, nén). Gộp là Pro, còn lại miễn phí, giới hạn bản miễn phí giữ nguyên. Lượt xuất: In = 1 lượt; chia sẻ bản nén (kể cả mức Gốc) = 1 lượt; chia sẻ nhiều tài liệu cùng lúc = mỗi tài liệu 1 lượt, không đủ thì chặn cả lần (để không lách được giới hạn 3 lượt/ngày). Gộp, sắp/xóa/thêm trang, chuyển thư mục không tính lượt.
+- 2026-10-01: Nén và dựng lại PDF không dùng `PdfDocument` của Android (nhúng ảnh không nén nên file to hơn ảnh JPEG gốc nhiều lần). Viết bộ ghi PDF nhỏ bằng Kotlin (`JpegPdfWriter`) nhúng thẳng byte JPEG, không thêm thư viện. `PdfBuilder` cũ giữ cho luồng quét/nhập ảnh.
+- 2026-10-01: Sắp trang bằng nút Lên/Xuống, không kéo thả (kéo thả dễ lỗi, khó dùng với chữ to và TalkBack). Thư mục chỉ một cấp; mỗi tài liệu thuộc 0 hoặc 1 thư mục.

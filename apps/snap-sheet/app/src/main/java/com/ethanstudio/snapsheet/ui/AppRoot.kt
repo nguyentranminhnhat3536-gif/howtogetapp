@@ -1,7 +1,7 @@
 package com.ethanstudio.snapsheet.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,21 +21,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -83,8 +77,12 @@ import com.ethanstudio.snapsheet.ui.auth.SignInScreen
 import com.ethanstudio.snapsheet.ui.auth.SignUpScreen
 import com.ethanstudio.snapsheet.ui.auth.WelcomeScreen
 import com.ethanstudio.snapsheet.ui.common.AppViewModels
+import com.ethanstudio.snapsheet.ui.common.BusyOverlay
+import com.ethanstudio.snapsheet.ui.common.ScanChoiceSheet
 import com.ethanstudio.snapsheet.ui.doc.DocScreen
 import com.ethanstudio.snapsheet.ui.doc.DocViewModel
+import com.ethanstudio.snapsheet.ui.doc.PagesScreen
+import com.ethanstudio.snapsheet.ui.doc.PagesViewModel
 import com.ethanstudio.snapsheet.ui.files.FilesScreen
 import com.ethanstudio.snapsheet.ui.home.HomeScreen
 import com.ethanstudio.snapsheet.ui.main.MainEvent
@@ -103,11 +101,13 @@ import com.ethanstudio.snapsheet.util.openEmailApp
 import com.ethanstudio.snapsheet.util.openStoreListing
 import com.ethanstudio.snapsheet.util.openUrl
 import com.ethanstudio.snapsheet.util.sendFeedbackEmail
+import com.ethanstudio.snapsheet.util.shareFiles
 import com.ethanstudio.snapsheet.util.shareText
 import java.io.File
 
 private const val ROUTE_MAIN = "main"
 private const val ROUTE_DOC = "doc/{id}"
+private const val ROUTE_PAGES = "pages/{id}"
 private const val ROUTE_PAYWALL = "paywall"
 private const val ROUTE_OCR = "ocr/{id}"
 private const val ROUTE_OCR_LOCKED = "ocr-locked"
@@ -146,6 +146,7 @@ fun AppRoot() {
     val languageLabel = languageNameRes(currentLanguage)?.let { stringResource(it) } ?: stringResource(R.string.language_system)
 
     val prefix = stringResource(R.string.scan_default_name)
+    val mergePrefix = stringResource(R.string.merge_default_name)
     val actions = rememberScanActions(
         pageLimit = FreeLimits.pageLimit(state.pro.isPro),
         onScanned = { pages, pdf -> vm.saveScan(pages, pdf, prefix) },
@@ -165,7 +166,20 @@ fun AppRoot() {
                     if (event.extract) nav.navigate("ocr/${event.id}")
                 }
                 is MainEvent.Message -> snackbar.showSnackbar(context.getString(event.res))
+                is MainEvent.MessageArgs -> snackbar.showSnackbar(context.getString(event.res, *event.args.toTypedArray()))
                 MainEvent.PurchaseDone -> nav.popIfOn(ROUTE_PAYWALL)
+                is MainEvent.ShareFiles -> {
+                    if (!context.shareFiles(event.files, "application/pdf", context.getString(R.string.share_chooser))) {
+                        snackbar.showSnackbar(context.getString(R.string.error_open))
+                    }
+                }
+                is MainEvent.NeedPro -> {
+                    event.reason?.let { Toast.makeText(context, context.getString(it), Toast.LENGTH_LONG).show() }
+                    nav.navigate(ROUTE_PAYWALL)
+                }
+                is MainEvent.Moved -> snackbar.showSnackbar(
+                    event.folderName?.let { context.getString(R.string.move_done, it) } ?: context.getString(R.string.move_removed),
+                )
             }
         }
     }
@@ -242,7 +256,11 @@ fun AppRoot() {
             composable(ROUTE_MAIN) {
                 MainTabs(
                     tab = tab,
-                    onTab = { tab = it },
+                    onTab = {
+                        // Rời tab Files thì thoát chế độ chọn nhiều.
+                        if (it != 1) vm.clearSelection()
+                        tab = it
+                    },
                     onScanButton = { sheetOpen = true },
                 ) { padding ->
                     when (tab) {
@@ -264,6 +282,18 @@ fun AppRoot() {
                             pageFile = ::pageFile,
                             pdfFile = { app.docs.pdfFile(it) },
                             onOpenDoc = { nav.navigate("doc/$it") },
+                            onFolder = vm::setFolderFilter,
+                            onToggle = vm::toggleSelect,
+                            onStartSelect = vm::startSelection,
+                            onClearSelect = vm::clearSelection,
+                            onShareSel = vm::shareSelected,
+                            onDeleteSel = vm::deleteSelected,
+                            onMoveSel = vm::moveSelected,
+                            onCreateFolderAndMove = vm::createFolderAndMoveSelected,
+                            onMergeSel = { vm.mergeSelected(mergePrefix) },
+                            onCreateFolder = vm::createFolder,
+                            onRenameFolder = vm::renameFolder,
+                            onDeleteFolder = vm::deleteFolder,
                             modifier = padding,
                         )
                         2 -> ToolsScreen(
@@ -278,6 +308,17 @@ fun AppRoot() {
                                 } else {
                                     tab = 1
                                     vm.message(R.string.tool_pick_share)
+                                }
+                            },
+                            onMerge = {
+                                when {
+                                    !state.pro.isPro -> nav.navigate(ROUTE_PAYWALL)
+                                    state.allDocs.size < 2 -> vm.message(R.string.merge_need_two)
+                                    else -> {
+                                        tab = 1
+                                        vm.startSelection()
+                                        vm.message(R.string.tool_merge_pick)
+                                    }
                                 }
                             },
                             modifier = padding,
@@ -312,7 +353,12 @@ fun AppRoot() {
                     onBack = { nav.popIfOn(ROUTE_DOC) },
                     onNeedPro = { nav.navigate(ROUTE_PAYWALL) },
                     onOpenOcr = { nav.navigate("ocr/$it") },
+                    onEditPages = { nav.navigate("pages/$it") },
                 )
+            }
+            composable(ROUTE_PAGES, arguments = listOf(navArgument("id") { type = NavType.LongType })) {
+                val pagesViewModel: PagesViewModel = viewModel(factory = AppViewModels.Factory)
+                PagesScreen(pagesViewModel, onBack = { nav.popIfOn(ROUTE_PAGES) })
             }
             composable(ROUTE_OCR, arguments = listOf(navArgument("id") { type = NavType.LongType })) {
                 val ocrViewModel: OcrViewModel = viewModel(factory = AppViewModels.Factory)
@@ -349,12 +395,17 @@ fun AppRoot() {
                 )
             }
         }
-        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 88.dp))
-        if (state.saving) SavingOverlay()
+        // Đang chọn nhiều ở tab Files: đẩy thông báo lên trên thanh hành động.
+        val snackbarBottom = if (tab == 1 && state.selecting) 270.dp else 88.dp
+        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = snackbarBottom))
+        if (state.saving) BusyOverlay(stringResource(R.string.saving))
     }
 
     if (sheetOpen) {
-        ScanSheet(
+        ScanChoiceSheet(
+            title = stringResource(R.string.sheet_start),
+            cameraSub = stringResource(R.string.sheet_camera_sub),
+            photosSub = stringResource(R.string.sheet_photos_sub),
             onCamera = { sheetOpen = false; actions.scan(ScanMode.BATCH) },
             onPhotos = { sheetOpen = false; actions.importPhotos() },
             onDismiss = { sheetOpen = false },
@@ -422,18 +473,6 @@ private fun OcrLockedScreen(onBack: () -> Unit, onSeePlans: () -> Unit) {
 }
 
 @Composable
-private fun SavingOverlay() {
-    Box(Modifier.fillMaxSize().background(Color(0x99000000)), contentAlignment = Alignment.Center) {
-        Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
-            Row(Modifier.padding(24.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                CircularProgressIndicator()
-                Text(stringResource(R.string.saving), color = MaterialTheme.colorScheme.onSurface)
-            }
-        }
-    }
-}
-
-@Composable
 private fun MainTabs(
     tab: Int,
     onTab: (Int) -> Unit,
@@ -495,78 +534,5 @@ private fun RowScope.NavItem(icon: Int, label: Int, selected: Boolean, onClick: 
             color = tint,
             maxLines = 1,
         )
-    }
-}
-
-/** Bảng chọn nguồn khi bấm nút + hoặc thẻ "Scan document": quét bằng camera hoặc nhập ảnh. */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ScanSheet(onCamera: () -> Unit, onPhotos: () -> Unit, onDismiss: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(),
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        containerColor = colors.surface,
-    ) {
-        Column(
-            Modifier.navigationBarsPadding().padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-        ) {
-            Text(stringResource(R.string.sheet_start), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = colors.onSurface)
-            SheetCard(
-                icon = R.drawable.ic_scan,
-                title = R.string.sheet_camera,
-                sub = R.string.sheet_camera_sub,
-                primary = true,
-                onClick = onCamera,
-            )
-            SheetCard(
-                icon = R.drawable.ic_photo,
-                title = R.string.sheet_photos,
-                sub = R.string.sheet_photos_sub,
-                primary = false,
-                onClick = onPhotos,
-            )
-            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
-                Text(stringResource(R.string.cancel), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.onSurfaceVariant)
-            }
-        }
-    }
-}
-
-/** Một lựa chọn trong bảng Scan. [primary]: thẻ nền gradient xanh chữ trắng; không thì thẻ trắng viền mảnh. */
-@Composable
-private fun SheetCard(icon: Int, title: Int, sub: Int, primary: Boolean, onClick: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    val shape = RoundedCornerShape(20.dp)
-    val base = Modifier.fillMaxWidth().clip(shape)
-    val background = if (primary) base.background(Gradients.Primary) else base.background(colors.surface).border(1.dp, colors.outlineVariant, shape)
-    Row(
-        background.clickable(role = Role.Button, onClick = onClick).padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
-    ) {
-        val iconBox = Modifier.size(50.dp)
-        Box(
-            if (primary) iconBox.background(Color.White.copy(alpha = 0.18f), RoundedCornerShape(16.dp)) else iconBox.background(Gradients.soft(), RoundedCornerShape(16.dp)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(painterResource(icon), null, Modifier.size(26.dp), tint = if (primary) Color.White else Accent)
-        }
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(
-                stringResource(title),
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
-                color = if (primary) Color.White else colors.onSurface,
-            )
-            Text(
-                stringResource(sub),
-                fontSize = 13.5.sp,
-                lineHeight = 18.sp,
-                color = if (primary) Color.White.copy(alpha = 0.9f) else colors.onSurfaceVariant,
-            )
-        }
     }
 }
