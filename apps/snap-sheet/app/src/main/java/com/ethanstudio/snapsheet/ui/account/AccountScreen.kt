@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.ethanstudio.snapsheet.ui.theme.LocalDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,10 +61,10 @@ import com.ethanstudio.snapsheet.ui.main.MainUiState
 
 /** Màu nền nhạt của đầu trang và thẻ Pro (tím lavender sang xanh), có bản cho chế độ tối. */
 private object ProfileColors {
-    @Composable fun headerTop() = if (isSystemInDarkTheme()) Color(0xFF13233F) else Color(0xFFCFE2FF)
-    @Composable fun headerMid() = if (isSystemInDarkTheme()) Color(0xFF111A2B) else Color(0xFFEAF2FF)
-    @Composable fun cardStart() = if (isSystemInDarkTheme()) Color(0xFF1A2E52) else Color(0xFFDDEAFF)
-    @Composable fun cardEnd() = if (isSystemInDarkTheme()) Color(0xFF151C2A) else Color(0xFFF4F8FF)
+    @Composable fun headerTop() = if (LocalDarkTheme.current) Color(0xFF13233F) else Color(0xFFCFE2FF)
+    @Composable fun headerMid() = if (LocalDarkTheme.current) Color(0xFF111A2B) else Color(0xFFEAF2FF)
+    @Composable fun cardStart() = if (LocalDarkTheme.current) Color(0xFF1A2E52) else Color(0xFFDDEAFF)
+    @Composable fun cardEnd() = if (LocalDarkTheme.current) Color(0xFF151C2A) else Color(0xFFF4F8FF)
 }
 
 @Composable

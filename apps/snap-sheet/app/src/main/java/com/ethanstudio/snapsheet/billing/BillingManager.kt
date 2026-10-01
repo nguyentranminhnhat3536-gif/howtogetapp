@@ -15,6 +15,7 @@ import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.acknowledgePurchase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -84,6 +85,15 @@ class BillingManager(
 
             override fun onBillingServiceDisconnected() = Unit
         })
+        // Google Play không trả lời (máy không có Play, mạng chậm): sau 10 giây thôi chờ để màn mua báo rõ.
+        scope.launch {
+            delay(LOAD_TIMEOUT_MS)
+            _state.update { if (it.loading) it.copy(loading = false) else it }
+        }
+    }
+
+    private companion object {
+        const val LOAD_TIMEOUT_MS = 10_000L
     }
 
     /** Hỏi lại Google Play các lần mua (gọi khi app quay lại màn hình). Bỏ qua nếu chưa kết nối. */

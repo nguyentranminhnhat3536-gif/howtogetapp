@@ -175,6 +175,7 @@
     <string name="plan_trial_days">Бесплатно %1$d дн.</string>
     <string name="paywall_start_trial">Начать бесплатный период (%1$d дн.)</string>
     <string name="paywall_trial_terms">Бесплатно %1$d дн., затем %2$s. Отмените в Google Play до конца пробного периода, и оплата не будет списана.</string>
+    <string name="plan_loading">Загружаем цены…</string>
     <plurals name="pages">
         <item quantity="one">%1$d страница</item>
         <item quantity="few">%1$d страницы</item>

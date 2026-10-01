@@ -175,6 +175,7 @@
     <string name="plan_trial_days">%1$d दिन का मुफ़्त ट्रायल</string>
     <string name="paywall_start_trial">%1$d दिन का मुफ़्त ट्रायल शुरू करें</string>
     <string name="paywall_trial_terms">%1$d दिन मुफ़्त, फिर %2$s। ट्रायल खत्म होने से पहले Google Play में रद्द करें तो पैसे नहीं कटेंगे।</string>
+    <string name="plan_loading">कीमतें लोड हो रही हैं…</string>
     <plurals name="pages">
         <item quantity="one">%1$d पेज</item>
         <item quantity="other">%1$d पेज</item>

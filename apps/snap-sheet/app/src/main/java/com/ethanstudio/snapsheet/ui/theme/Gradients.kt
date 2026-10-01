@@ -1,6 +1,5 @@
 package com.ethanstudio.snapsheet.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -18,7 +17,7 @@ object Gradients {
 
     /** Dải nền đầu màn hình: xanh rất nhạt chuyển dần về nền. */
     @Composable
-    fun header(): Brush = if (isSystemInDarkTheme()) {
+    fun header(): Brush = if (LocalDarkTheme.current) {
         Brush.verticalGradient(listOf(Color(0xFF13233F), Color(0xFF0F1114)))
     } else {
         Brush.verticalGradient(listOf(Color(0xFFD6E6FF), Color(0xFFFFFFFF)))
@@ -26,7 +25,7 @@ object Gradients {
 
     /** Nền nhẹ cho thẻ, vòng tròn icon, thẻ Pro. */
     @Composable
-    fun soft(): Brush = if (isSystemInDarkTheme()) {
+    fun soft(): Brush = if (LocalDarkTheme.current) {
         Brush.linearGradient(listOf(Color(0xFF1A2A48), Color(0xFF151C2A)))
     } else {
         Brush.linearGradient(listOf(Color(0xFFE3EEFF), Color(0xFFF5F9FF)))

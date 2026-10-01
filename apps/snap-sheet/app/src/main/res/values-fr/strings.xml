@@ -175,6 +175,7 @@
     <string name="plan_trial_days">Essai gratuit de %1$d jours</string>
     <string name="paywall_start_trial">Commencer l’essai gratuit de %1$d jours</string>
     <string name="paywall_trial_terms">Gratuit pendant %1$d jours, puis %2$s. Annulez dans Google Play avant la fin de l’essai pour ne pas être facturé.</string>
+    <string name="plan_loading">Chargement des prix…</string>
     <plurals name="pages">
         <item quantity="one">%1$d page</item>
         <item quantity="other">%1$d pages</item>

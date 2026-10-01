@@ -175,6 +175,7 @@
     <string name="plan_trial_days">%1$d日間無料体験</string>
     <string name="paywall_start_trial">%1$d日間の無料体験を始める</string>
     <string name="paywall_trial_terms">%1$d日間無料、その後%2$s。無料期間が終わる前にGoogle Playで解約すれば料金はかかりません。</string>
+    <string name="plan_loading">価格を読み込み中…</string>
     <plurals name="pages">
         <item quantity="other">%1$dページ</item>
     </plurals>

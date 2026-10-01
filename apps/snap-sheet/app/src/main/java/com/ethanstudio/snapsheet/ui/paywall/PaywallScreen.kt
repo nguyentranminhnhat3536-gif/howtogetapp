@@ -17,6 +17,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -95,6 +96,13 @@ fun PaywallScreen(
                 Feature(R.drawable.ic_text, stringResource(R.string.pro_benefit_2))
                 Feature(R.drawable.ic_doc, stringResource(R.string.pro_benefit_3, FreeLimits.PRO_PAGES))
                 Feature(R.drawable.ic_star, stringResource(R.string.pro_benefit_4))
+            }
+            if (billing.loading && offers.isEmpty()) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+                    Spacer(Modifier.size(10.dp))
+                    Text(stringResource(R.string.plan_loading), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
             if (!billing.loading && offers.isEmpty()) {
                 Text(

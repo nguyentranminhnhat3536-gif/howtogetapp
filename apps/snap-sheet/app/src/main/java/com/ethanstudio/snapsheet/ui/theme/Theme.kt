@@ -1,12 +1,13 @@
 package com.ethanstudio.snapsheet.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.dp
 
 private val LightColors = lightColorScheme(
@@ -55,14 +56,23 @@ private val AppShapes = Shapes(
     extraLarge = RoundedCornerShape(28.dp),
 )
 
+/** App đang dùng giao diện tối hay không (theo AppTheme, không theo cài đặt máy). */
+val LocalDarkTheme = staticCompositionLocalOf { false }
+
+/**
+ * Giao diện chủ đạo trắng, xanh là màu phụ (theo yêu cầu của Ethan, 2026-10-01): app luôn dùng bản sáng,
+ * kể cả khi máy bật chế độ tối. Bộ màu tối vẫn giữ để bật lại sau này (truyền darkTheme = true).
+ */
 @Composable
 fun AppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    MaterialTheme(
-        colorScheme = if (darkTheme) DarkColors else LightColors,
-        shapes = AppShapes,
-        content = content,
-    )
+    CompositionLocalProvider(LocalDarkTheme provides darkTheme) {
+        MaterialTheme(
+            colorScheme = if (darkTheme) DarkColors else LightColors,
+            shapes = AppShapes,
+            content = content,
+        )
+    }
 }

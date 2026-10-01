@@ -175,6 +175,7 @@
     <string name="plan_trial_days">%1$d gün ücretsiz deneme</string>
     <string name="paywall_start_trial">%1$d günlük ücretsiz denemeyi başlat</string>
     <string name="paywall_trial_terms">%1$d gün ücretsiz, sonra %2$s. Deneme bitmeden Google Play’de iptal ederseniz ücret alınmaz.</string>
+    <string name="plan_loading">Fiyatlar yükleniyor…</string>
     <plurals name="pages">
         <item quantity="one">%1$d sayfa</item>
         <item quantity="other">%1$d sayfa</item>

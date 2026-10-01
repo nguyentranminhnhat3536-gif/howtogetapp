@@ -175,6 +175,7 @@
     <string name="plan_trial_days">Uji coba gratis %1$d hari</string>
     <string name="paywall_start_trial">Mulai uji coba gratis %1$d hari</string>
     <string name="paywall_trial_terms">Gratis selama %1$d hari, lalu %2$s. Batalkan di Google Play sebelum uji coba berakhir agar tidak ditagih.</string>
+    <string name="plan_loading">Memuat harga…</string>
     <plurals name="pages">
         <item quantity="other">%1$d halaman</item>
     </plurals>
