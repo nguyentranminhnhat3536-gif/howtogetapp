@@ -65,7 +65,15 @@ import com.ethanstudio.snapsheet.data.FreeLimits
 import com.ethanstudio.snapsheet.scan.ScanActions
 import com.ethanstudio.snapsheet.scan.ScanMode
 import com.ethanstudio.snapsheet.scan.rememberScanActions
+import com.ethanstudio.snapsheet.ui.account.AccountAuthCard
 import com.ethanstudio.snapsheet.ui.account.AccountScreen
+import com.ethanstudio.snapsheet.ui.auth.AuthEvent
+import com.ethanstudio.snapsheet.ui.auth.AuthViewModel
+import com.ethanstudio.snapsheet.ui.auth.CheckEmailScreen
+import com.ethanstudio.snapsheet.ui.auth.ForgotPasswordScreen
+import com.ethanstudio.snapsheet.ui.auth.SignInScreen
+import com.ethanstudio.snapsheet.ui.auth.SignUpScreen
+import com.ethanstudio.snapsheet.ui.auth.WelcomeScreen
 import com.ethanstudio.snapsheet.ui.common.AppViewModels
 import com.ethanstudio.snapsheet.ui.doc.DocScreen
 import com.ethanstudio.snapsheet.ui.doc.DocViewModel
@@ -76,6 +84,7 @@ import com.ethanstudio.snapsheet.ui.main.MainViewModel
 import com.ethanstudio.snapsheet.ui.paywall.PaywallScreen
 import com.ethanstudio.snapsheet.ui.tools.ToolsScreen
 import com.ethanstudio.snapsheet.util.findActivity
+import com.ethanstudio.snapsheet.util.openEmailApp
 import com.ethanstudio.snapsheet.util.openStoreListing
 import com.ethanstudio.snapsheet.util.openUrl
 import com.ethanstudio.snapsheet.util.sendFeedbackEmail
@@ -85,6 +94,11 @@ import java.io.File
 private const val ROUTE_MAIN = "main"
 private const val ROUTE_DOC = "doc/{id}"
 private const val ROUTE_PAYWALL = "paywall"
+private const val ROUTE_WELCOME = "welcome"
+private const val ROUTE_SIGN_IN = "signin"
+private const val ROUTE_SIGN_UP = "signup"
+private const val ROUTE_CHECK_EMAIL = "check-email"
+private const val ROUTE_FORGOT = "forgot"
 
 /** Khung chung của app: điều hướng giữa tab chính, màn tài liệu và màn mua Pro. */
 @Composable
@@ -94,6 +108,10 @@ fun AppRoot() {
     val vm: MainViewModel = viewModel(factory = AppViewModels.Factory)
     val state by vm.uiState.collectAsStateWithLifecycle()
     val billing by vm.billingState.collectAsStateWithLifecycle()
+    val authVm: AuthViewModel = viewModel(factory = AppViewModels.Factory)
+    val authState by authVm.state.collectAsStateWithLifecycle()
+    val user by authVm.user.collectAsStateWithLifecycle()
+    val onboarded by authVm.onboarded.collectAsStateWithLifecycle(initialValue = null)
     val nav = rememberNavController()
     val snackbar = remember { SnackbarHostState() }
     var tab by rememberSaveable { mutableIntStateOf(0) }
@@ -117,6 +135,22 @@ fun AppRoot() {
         }
     }
 
+    LaunchedEffect(authVm) {
+        authVm.events.collect { event ->
+            when (event) {
+                AuthEvent.EnterApp -> nav.navigate(ROUTE_MAIN) { popUpTo(nav.graph.id) { inclusive = true } }
+                AuthEvent.VerificationSent -> nav.navigate(ROUTE_CHECK_EMAIL) { popUpTo(nav.graph.id) { inclusive = true } }
+                AuthEvent.ResetSent -> {
+                    nav.popBackStack()
+                    snackbar.showSnackbar(context.getString(R.string.auth_reset_sent))
+                }
+                AuthEvent.ResentVerification -> snackbar.showSnackbar(context.getString(R.string.auth_resent))
+                AuthEvent.SignedOut -> snackbar.showSnackbar(context.getString(R.string.account_signed_out))
+                AuthEvent.Deleted -> snackbar.showSnackbar(context.getString(R.string.account_deleted))
+            }
+        }
+    }
+
     fun pageFile(id: Long): File = File(app.docs.dir(id), "page_1.jpg")
     fun report(ok: Boolean) { if (!ok) vm.message(R.string.error_no_app) }
     val appName = stringResource(R.string.app_name)
@@ -127,8 +161,45 @@ fun AppRoot() {
     val shareBody = stringResource(R.string.share_app_text, "https://play.google.com/store/apps/details?id=${context.packageName}")
     val version = remember { runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull().orEmpty() }
 
+    // Chờ đọc xong "đã qua màn chào chưa" rồi mới chọn màn đầu tiên.
+    val wasOnboarded = onboarded ?: run {
+        Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+        return
+    }
+    val start = remember { if (wasOnboarded || user != null) ROUTE_MAIN else ROUTE_WELCOME }
+
     Box(Modifier.fillMaxSize()) {
-        NavHost(nav, startDestination = ROUTE_MAIN) {
+        NavHost(nav, startDestination = start) {
+            composable(ROUTE_WELCOME) {
+                WelcomeScreen(
+                    onSignIn = { nav.navigate(ROUTE_SIGN_IN) },
+                    onSignUp = { nav.navigate(ROUTE_SIGN_UP) },
+                    onSkip = authVm::continueWithoutAccount,
+                )
+            }
+            composable(ROUTE_SIGN_IN) {
+                SignInScreen(authVm, onForgot = { nav.navigate(ROUTE_FORGOT) }, onSignUp = { nav.navigate(ROUTE_SIGN_UP) { popUpTo(ROUTE_SIGN_IN) { inclusive = true } } })
+            }
+            composable(ROUTE_SIGN_UP) {
+                SignUpScreen(
+                    authVm,
+                    onSignIn = { nav.navigate(ROUTE_SIGN_IN) { popUpTo(ROUTE_SIGN_UP) { inclusive = true } } },
+                    onPrivacy = { report(context.openUrl(privacyUrl)) },
+                )
+            }
+            composable(ROUTE_CHECK_EMAIL) {
+                CheckEmailScreen(
+                    authVm,
+                    onOpenEmail = { report(context.openEmailApp()) },
+                    onContinue = {
+                        authVm.refreshUser()
+                        nav.navigate(ROUTE_MAIN) { popUpTo(nav.graph.id) { inclusive = true } }
+                    },
+                )
+            }
+            composable(ROUTE_FORGOT) {
+                ForgotPasswordScreen(authVm, onBack = { nav.popBackStack() })
+            }
             composable(ROUTE_MAIN) {
                 MainTabs(
                     tab = tab,
@@ -149,6 +220,17 @@ fun AppRoot() {
                             onContact = { report(context.sendFeedbackEmail(supportEmail, feedbackSubject)) },
                             onPrivacy = { report(context.openUrl(privacyUrl)) },
                             modifier = padding,
+                            accountCard = {
+                                AccountAuthCard(
+                                    user = user,
+                                    busy = authState.busy,
+                                    error = authState.error,
+                                    onSignIn = { nav.navigate(ROUTE_SIGN_IN) },
+                                    onResend = authVm::resendVerification,
+                                    onSignOut = authVm::signOut,
+                                    onDelete = authVm::deleteAccount,
+                                )
+                            },
                         )
                     }
                 }

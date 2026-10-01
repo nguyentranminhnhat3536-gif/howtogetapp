@@ -47,6 +47,7 @@ fun AccountScreen(
     onContact: () -> Unit,
     onPrivacy: () -> Unit,
     modifier: Modifier = Modifier,
+    accountCard: @Composable () -> Unit = {},
 ) {
     Column(modifier.fillMaxSize()) {
         TabHeader(stringResource(R.string.account_title), state.pro.isPro)
@@ -54,6 +55,7 @@ fun AccountScreen(
             Modifier.verticalScroll(rememberScrollState()).padding(vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            accountCard()
             PremiumCard(state, onGetPro)
             SettingsGroup {
                 SettingsRow(R.drawable.ic_star, stringResource(R.string.account_get_pro), false, onGetPro)

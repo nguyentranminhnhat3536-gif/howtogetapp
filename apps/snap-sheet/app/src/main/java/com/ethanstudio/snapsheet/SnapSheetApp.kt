@@ -1,10 +1,12 @@
 package com.ethanstudio.snapsheet
 
 import android.app.Application
+import com.ethanstudio.snapsheet.auth.AuthRepository
 import com.ethanstudio.snapsheet.billing.BillingManager
 import com.ethanstudio.snapsheet.data.AppDatabase
 import com.ethanstudio.snapsheet.data.DocRepository
 import com.ethanstudio.snapsheet.data.ProStore
+import com.ethanstudio.snapsheet.data.SessionStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -15,6 +17,8 @@ class SnapSheetApp : Application() {
 
     val docs: DocRepository by lazy { DocRepository(this, AppDatabase.create(this).docDao()) }
     val proStore: ProStore by lazy { ProStore(this) }
+    val session: SessionStore by lazy { SessionStore(this) }
+    val auth: AuthRepository by lazy { AuthRepository(this) }
     val billing: BillingManager by lazy {
         BillingManager(this, appScope) { isPro, kind -> proStore.setPro(isPro, kind) }
     }

@@ -102,6 +102,22 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      - name: Ghi cấu hình Firebase (nếu app có secret)
+        shell: bash
+        env:
+          SLUG: ${{ matrix.project }}
+          GOOGLE_SERVICES_JSON_SNAP_SHEET: ${{ secrets.GOOGLE_SERVICES_JSON_SNAP_SHEET }}
+        run: |
+          # Tên secret: GOOGLE_SERVICES_JSON_<SLUG viết hoa, '-' thành '_'>. Thêm app mới thì thêm một dòng env ở trên.
+          name="GOOGLE_SERVICES_JSON_$(echo "$SLUG" | tr 'a-z-' 'A-Z_')"
+          value="${!name:-}"
+          if [ -n "$value" ]; then
+            printf '%s' "$value" > "$PROJECT_DIR/app/google-services.json"
+            echo "Đã ghi google-services.json cho $SLUG"
+          else
+            echo "Không có secret $name: build không có đăng nhập Firebase"
+          fi
+
       - name: Build APK debug và chạy unit test
         if: env.RELEASE != 'true'
         shell: bash

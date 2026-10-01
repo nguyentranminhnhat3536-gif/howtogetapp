@@ -14,6 +14,10 @@ fun Context.openStoreListing(): Boolean =
     startSafely(Intent(Intent.ACTION_VIEW, "market://details?id=$packageName".toUri())) ||
         openUrl("https://play.google.com/store/apps/details?id=$packageName")
 
+/** Mở hộp thư của app email trên máy (để bấm link xác nhận). */
+fun Context.openEmailApp(): Boolean =
+    startSafely(Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_EMAIL))
+
 /** Mở app email, điền sẵn người nhận và tiêu đề. */
 fun Context.sendFeedbackEmail(email: String, subject: String): Boolean {
     val intent = Intent(Intent.ACTION_SENDTO, "mailto:".toUri()).apply {

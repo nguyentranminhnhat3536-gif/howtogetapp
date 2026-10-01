@@ -86,6 +86,12 @@ dependencies {
     implementation(libs.mlkit.text)
     implementation(libs.billing.ktx)
 
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services)
+    implementation(libs.googleid)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
@@ -94,4 +100,10 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)
+}
+
+// Cấu hình Firebase (google-services.json) KHÔNG nằm trong git: CI ghi file từ GitHub Secret
+// GOOGLE_SERVICES_JSON_SNAP_SHEET trước khi build. Thiếu file thì app vẫn build và chạy, chỉ là chưa đăng nhập được.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
 }

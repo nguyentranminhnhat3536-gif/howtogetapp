@@ -11,6 +11,8 @@ captures/
 *.jks
 *.keystore
 keystore.properties
+google-services.json
+GoogleService-Info.plist
 
 # Sổ bàn giao của dây chuyền /ship (chỉ dùng trong phiên, không lên GitHub)
 .bangiao/
