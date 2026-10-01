@@ -224,4 +224,55 @@
     <string name="account_language">भाषा</string>
     <string name="language_title">ऐप की भाषा</string>
     <string name="language_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="ocr_pick_sub">स्कैन को ऐसे टेक्स्ट में बदलें जिसे कॉपी और एडिट कर सकें</string>
+    <string name="ocr_scan_new">नया पेज स्कैन करें</string>
+    <string name="ocr_pick_doc">या कोई दस्तावेज़ चुनें</string>
+    <string name="ocr_no_docs">अभी कोई दस्तावेज़ नहीं है।</string>
+    <string name="ocr_on_device">आपके फ़ोन पर चलता है। कुछ भी अपलोड नहीं होता।</string>
+    <string name="ocr_reading">आपका पेज पढ़ा जा रहा है</string>
+    <string name="ocr_page_of">पेज %1$d / %2$d</string>
+    <string name="ocr_result_title">निकाला गया टेक्स्ट</string>
+    <string name="ocr_all_pages">सभी पेज</string>
+    <string name="ocr_find_hint">टेक्स्ट में खोजें</string>
+    <string name="ocr_join_lines">लाइनें जोड़ें</string>
+    <string name="ocr_keep_breaks">लाइन ब्रेक रखें</string>
+    <string name="ocr_copy">टेक्स्ट कॉपी करें</string>
+    <string name="ocr_copied_short">कॉपी हो गया</string>
+    <string name="ocr_save_txt">.txt के रूप में सेव करें</string>
+    <string name="ocr_saved">टेक्स्ट फ़ाइल सेव हो गई।</string>
+    <string name="ocr_save_failed">फ़ाइल सेव नहीं हो सकी।</string>
+    <string name="ocr_read_again">फिर से पढ़ें</string>
+    <string name="ocr_page_blank">इस पेज पर कोई टेक्स्ट नहीं है।</string>
+    <string name="ocr_none_title">कोई टेक्स्ट नहीं मिला</string>
+    <string name="ocr_none_body">इस पेज पर कोई शब्द नहीं पढ़ा जा सका। साफ़ स्कैन से आमतौर पर ठीक हो जाता है।</string>
+    <string name="ocr_tip_light_title">अच्छी रोशनी रखें</string>
+    <string name="ocr_tip_light_body">कागज़ पर छाया और चमक से बचें।</string>
+    <string name="ocr_tip_flat_title">पेज सीधा रखें</string>
+    <string name="ocr_tip_flat_body">फ़्रेम भरें और फ़ोन स्थिर रखें।</string>
+    <string name="ocr_tip_script_title">लैटिन लिपि का टेक्स्ट</string>
+    <string name="ocr_tip_script_body">अंग्रेज़ी, वियतनामी, स्पेनिश, फ़्रेंच और कई भाषाओं के साथ काम करता है। हिंदी जैसी अन्य लिपियाँ अभी समर्थित नहीं हैं।</string>
+    <string name="ocr_scan_again">फिर से स्कैन करें</string>
+    <string name="ocr_back_to_doc">दस्तावेज़ पर वापस जाएँ</string>
+    <string name="ocr_try_again">फिर कोशिश करें</string>
+    <string name="ocr_locked_title">अपने स्कैन का हर शब्द कॉपी करें</string>
+    <string name="ocr_locked_1">हर पेज से टेक्स्ट निकालें</string>
+    <string name="ocr_locked_2">खोजें, कॉपी करें, शेयर करें या .txt में सेव करें</string>
+    <string name="ocr_locked_3">असीमित एक्सपोर्ट, हर दस्तावेज़ में %1$d पेज</string>
+    <string name="ocr_see_plans">Pro प्लान देखें</string>
+    <string name="ocr_not_now">अभी नहीं</string>
+    <string name="error_delete">यह दस्तावेज़ हटाया नहीं जा सका। फिर कोशिश करें।</string>
+    <string name="plan_off">%1$d%% छूट</string>
+    <string name="plan_regular_price">सामान्य कीमत %1$s</string>
+    <plurals name="ocr_matches">
+        <item quantity="one">%1$d मिलान</item>
+        <item quantity="other">%1$d मिलान</item>
+    </plurals>
+    <plurals name="ocr_words">
+        <item quantity="one">%1$d शब्द</item>
+        <item quantity="other">%1$d शब्द</item>
+    </plurals>
+    <plurals name="ocr_chars">
+        <item quantity="one">%1$d अक्षर</item>
+        <item quantity="other">%1$d अक्षर</item>
+    </plurals>
 </resources>

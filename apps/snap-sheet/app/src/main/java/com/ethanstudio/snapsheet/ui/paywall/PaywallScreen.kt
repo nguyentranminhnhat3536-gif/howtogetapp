@@ -42,8 +42,11 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -51,6 +54,7 @@ import com.ethanstudio.snapsheet.R
 import com.ethanstudio.snapsheet.billing.BillingUiState
 import com.ethanstudio.snapsheet.billing.Plan
 import com.ethanstudio.snapsheet.billing.PlanOffer
+import com.ethanstudio.snapsheet.billing.formatMicros
 import com.ethanstudio.snapsheet.billing.formatPerMonth
 import com.ethanstudio.snapsheet.billing.yearlySavingPercent
 import com.ethanstudio.snapsheet.data.FreeLimits
@@ -67,7 +71,14 @@ import com.ethanstudio.snapsheet.ui.theme.displaySerif
 private val SelectedBorder = Color(0xFF2A6FE8)
 
 /** Nội dung hiện trên một thẻ gói. */
-private class PlanCardText(val name: String, val badge: String?, val sub: String?, val price: String)
+private class PlanCardText(
+    val name: String,
+    val badge: String?,
+    val sub: String?,
+    val price: String,
+    /** Giá gốc gạch ngang (chỉ khi Google Play có giảm giá thật). */
+    val strikePrice: String? = null,
+)
 
 /**
  * Màn mua Pro kiểu "bầu trời": ba gói Yearly, Monthly, Lifetime. Giá lấy từ Google Play, không gõ cứng.
@@ -239,7 +250,13 @@ private fun planText(plan: Plan, offer: PlanOffer?, saving: Int?): PlanCardText 
             sub = stringResource(if (offer.trialDays != null) R.string.plan_sub_month_trial else R.string.plan_sub_month),
             price = stringResource(R.string.plan_per_month, offer.price),
         )
-        Plan.LIFETIME -> PlanCardText(name, null, stringResource(R.string.plan_sub_lifetime), offer.price)
+        Plan.LIFETIME -> PlanCardText(
+            name = name,
+            badge = offer.discountPercent?.let { stringResource(R.string.plan_off, it) },
+            sub = stringResource(R.string.plan_sub_lifetime),
+            price = offer.price,
+            strikePrice = offer.fullPriceMicros?.let { formatMicros(it, offer.currencyCode, locale) },
+        )
     }
 }
 
@@ -283,7 +300,20 @@ private fun PlanCard(text: PlanCardText, enabled: Boolean, isSelected: Boolean, 
                 Text(text.name, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Ink)
                 text.sub?.let { Text(it, fontSize = 14.sp, lineHeight = 19.sp, color = InkSoft) }
             }
-            Text(text.price, Modifier.weight(0.8f, fill = false), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Ink, textAlign = TextAlign.End)
+            Column(Modifier.weight(0.8f, fill = false), horizontalAlignment = Alignment.End) {
+                text.strikePrice?.let { strike ->
+                    val regular = stringResource(R.string.plan_regular_price, strike)
+                    Text(
+                        strike,
+                        Modifier.semantics { contentDescription = regular },
+                        fontSize = 13.sp,
+                        color = InkSoft,
+                        textDecoration = TextDecoration.LineThrough,
+                        textAlign = TextAlign.End,
+                    )
+                }
+                Text(text.price, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Ink, textAlign = TextAlign.End)
+            }
         }
         text.badge?.let {
             Text(

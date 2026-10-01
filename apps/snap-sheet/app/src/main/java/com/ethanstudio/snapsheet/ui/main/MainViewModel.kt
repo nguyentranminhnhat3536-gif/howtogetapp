@@ -40,7 +40,8 @@ data class MainUiState(
 }
 
 sealed interface MainEvent {
-    data class OpenDoc(val id: Long) : MainEvent
+    /** Mở tài liệu vừa lưu; [extract] = mở tiếp màn lấy chữ (quét từ "Scan a new page"). */
+    data class OpenDoc(val id: Long, val extract: Boolean = false) : MainEvent
     data class Message(@StringRes val res: Int) : MainEvent
     data object PurchaseDone : MainEvent
 }
@@ -54,6 +55,8 @@ class MainViewModel(
     private val query = MutableStateFlow("")
     private val sort = MutableStateFlow(DocSort.NEWEST)
     private val saving = MutableStateFlow(false)
+    /** Lần quét tới là để lấy chữ: lưu xong thì mở luôn màn Extract text. */
+    private var ocrAfterScan = false
     private val _events = Channel<MainEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
@@ -93,20 +96,37 @@ class MainViewModel(
     }
 
     /** Lưu kết quả của trình quét rồi mở tài liệu vừa tạo. */
-    fun saveScan(pages: List<Uri>, pdf: Uri?, namePrefix: String) = save {
-        repo.saveScan(pages, pdf, defaultDocName(namePrefix, System.currentTimeMillis()))
+    fun saveScan(pages: List<Uri>, pdf: Uri?, namePrefix: String) {
+        val extract = ocrAfterScan
+        ocrAfterScan = false
+        save(extract) {
+            repo.saveScan(pages, pdf, defaultDocName(namePrefix, System.currentTimeMillis()))
+        }
     }
 
     /** Lưu các ảnh chọn từ thư viện thành một PDF. */
-    fun savePhotos(uris: List<Uri>, namePrefix: String) = save {
-        repo.saveImages(uris, defaultDocName(namePrefix, System.currentTimeMillis()))
+    fun savePhotos(uris: List<Uri>, namePrefix: String) {
+        ocrAfterScan = false
+        save(extract = false) {
+            repo.saveImages(uris, defaultDocName(namePrefix, System.currentTimeMillis()))
+        }
     }
 
-    private fun save(block: suspend () -> Long) {
+    /** Đánh dấu lần quét tới là để lấy chữ. */
+    fun scanForOcr() {
+        ocrAfterScan = true
+    }
+
+    /** Bỏ đánh dấu (người dùng hủy quét hoặc quét lỗi). */
+    fun clearOcrAfterScan() {
+        ocrAfterScan = false
+    }
+
+    private fun save(extract: Boolean, block: suspend () -> Long) {
         viewModelScope.launch {
             saving.value = true
             try {
-                _events.send(MainEvent.OpenDoc(block()))
+                _events.send(MainEvent.OpenDoc(block(), extract))
             } catch (e: Exception) {
                 _events.send(MainEvent.Message(R.string.error_save))
             } finally {

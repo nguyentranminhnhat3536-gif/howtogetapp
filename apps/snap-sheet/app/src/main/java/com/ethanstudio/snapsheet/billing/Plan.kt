@@ -82,20 +82,63 @@ fun yearlySavingPercent(monthlyMicros: Long, yearlyMicros: Long): Int? {
  * Giá gói năm chia 12, định dạng theo tiền tệ và [locale] (ví dụ "$0.83").
  * Null nếu giá <= 0 hoặc mã tiền tệ không hợp lệ.
  */
-fun formatPerMonth(yearlyMicros: Long, currencyCode: String, locale: Locale): String? {
-    if (yearlyMicros <= 0) return null
+fun formatPerMonth(yearlyMicros: Long, currencyCode: String, locale: Locale): String? =
+    formatAmount(yearlyMicros, 12_000_000L, currencyCode, locale)
+
+/** Định dạng [micros] theo tiền tệ và [locale] (ví dụ 100_000_000 USD → "$100.00"). Null nếu <= 0 hoặc mã tiền tệ sai. */
+fun formatMicros(micros: Long, currencyCode: String, locale: Locale): String? =
+    formatAmount(micros, 1_000_000L, currencyCode, locale)
+
+/** Chia [micros] cho [divisor], làm tròn theo số lẻ của tiền tệ rồi định dạng. */
+private fun formatAmount(micros: Long, divisor: Long, currencyCode: String, locale: Locale): String? {
+    if (micros <= 0) return null
     val money = try {
         Currency.getInstance(currencyCode)
     } catch (e: IllegalArgumentException) {
         return null
     }
     val digits = money.defaultFractionDigits.coerceAtLeast(0)
-    val perMonth = BigDecimal.valueOf(yearlyMicros)
-        .divide(BigDecimal.valueOf(12_000_000L), digits, RoundingMode.HALF_UP)
+    val amount = BigDecimal.valueOf(micros)
+        .divide(BigDecimal.valueOf(divisor), digits, RoundingMode.HALF_UP)
     val format = NumberFormat.getCurrencyInstance(locale).apply {
         currency = money
         minimumFractionDigits = digits
         maximumFractionDigits = digits
     }
-    return format.format(perMonth)
+    return format.format(amount)
 }
+
+/** Một ưu đãi (offer) của sản phẩm mua một lần, rút gọn để kiểm tra trên JVM. */
+data class OneTimeOfferInfo(
+    val token: String,
+    val priceMicros: Long,
+    val formattedPrice: String,
+    val currencyCode: String,
+    /** Giá gốc trước giảm, null nếu Google Play không báo giảm giá. */
+    val fullPriceMicros: Long? = null,
+    /** Phần trăm giảm do Google Play trả về, null nếu giảm theo số tiền. */
+    val percentDiscount: Int? = null,
+)
+
+/** Giảm giá thật do Google Play trả về: giá gốc và phần trăm giảm. */
+data class Sale(val fullPriceMicros: Long, val percent: Int)
+
+/**
+ * Giảm giá của [offer], null nếu không có giảm giá thật (không có giá gốc, giá gốc không cao hơn giá bán,
+ * giá bán <= 0, hoặc phần trăm < 1). Phần trăm lấy của Google Play nếu nằm trong 1..99,
+ * không thì tự tính và làm tròn xuống để không phóng đại mức giảm.
+ */
+fun saleOf(offer: OneTimeOfferInfo): Sale? {
+    val full = offer.fullPriceMicros ?: return null
+    val price = offer.priceMicros
+    if (price <= 0 || full <= price) return null
+    val percent = offer.percentDiscount?.takeIf { it in 1..99 }
+        ?: ((full - price) * 100 / full).toInt()
+    if (percent < 1) return null
+    return Sale(full, percent)
+}
+
+/** Chọn offer rẻ nhất (bỏ offer giá <= 0); bằng giá thì ưu tiên offer có giảm giá. Không có thì null. */
+fun pickOneTimeOffer(offers: List<OneTimeOfferInfo>): OneTimeOfferInfo? =
+    offers.filter { it.priceMicros > 0 }
+        .minWithOrNull(compareBy<OneTimeOfferInfo> { it.priceMicros }.thenBy { if (saleOf(it) != null) 0 else 1 })

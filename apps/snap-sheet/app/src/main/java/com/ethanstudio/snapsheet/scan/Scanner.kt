@@ -31,18 +31,22 @@ fun rememberScanActions(
     onScanned: (pages: List<Uri>, pdf: Uri?) -> Unit,
     onPhotos: (List<Uri>) -> Unit,
     onError: () -> Unit,
+    onCanceled: () -> Unit = {},
 ): ScanActions {
     val context = LocalContext.current
     val limit by rememberUpdatedState(pageLimit)
     val scanned by rememberUpdatedState(onScanned)
     val photos by rememberUpdatedState(onPhotos)
     val failed by rememberUpdatedState(onError)
+    val canceled by rememberUpdatedState(onCanceled)
 
     val scanLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val parsed = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
             val pages = parsed?.pages.orEmpty().map { it.imageUri }
-            if (pages.isNotEmpty()) scanned(pages, parsed?.pdf?.uri)
+            if (pages.isNotEmpty()) scanned(pages, parsed?.pdf?.uri) else canceled()
+        } else {
+            canceled()
         }
     }
     val pickLauncher = rememberLauncherForActivityResult(

@@ -39,6 +39,10 @@ data class PlanOffer(
     val trialDays: Int? = null,
     /** Mã tiền tệ ISO 4217 của giá (ví dụ "USD"), dùng để quy giá năm ra mỗi tháng. */
     val currencyCode: String = "",
+    /** Giá gốc trước giảm (chỉ có khi Google Play đang có ưu đãi giảm giá thật). */
+    val fullPriceMicros: Long? = null,
+    /** Phần trăm giảm của ưu đãi đang hiện, null nếu không giảm. */
+    val discountPercent: Int? = null,
 )
 
 data class BillingUiState(
@@ -161,8 +165,23 @@ class BillingManager(
             }
         }
         queryDetails(BillingClient.ProductType.INAPP, LIFETIME_ID).firstOrNull()?.let { details ->
-            details.oneTimePurchaseOfferDetails?.let { o ->
-                offers[Plan.LIFETIME] = PlanOffer(Plan.LIFETIME, o.formattedPrice, o.priceAmountMicros, false, details, null, currencyCode = o.priceCurrencyCode)
+            // Billing 8+: một sản phẩm có thể có nhiều ưu đãi (giá thường, giảm giá…). Bản cũ chỉ trả một ưu đãi.
+            @Suppress("DEPRECATION")
+            val raw = details.oneTimePurchaseOfferDetailsList?.takeIf { it.isNotEmpty() }
+                ?: listOfNotNull(details.oneTimePurchaseOfferDetails)
+            val infos = raw.filter { it.rentalDetails == null && it.preorderDetails == null }.map {
+                OneTimeOfferInfo(
+                    it.offerToken, it.priceAmountMicros, it.formattedPrice, it.priceCurrencyCode,
+                    it.fullPriceMicros, it.discountDisplayInfo?.percentageDiscount,
+                )
+            }
+            pickOneTimeOffer(infos)?.let { o ->
+                val sale = saleOf(o)
+                offers[Plan.LIFETIME] = PlanOffer(
+                    Plan.LIFETIME, o.formattedPrice, o.priceMicros, false, details,
+                    offerToken = o.token, currencyCode = o.currencyCode,
+                    fullPriceMicros = sale?.fullPriceMicros, discountPercent = sale?.percent,
+                )
             }
         }
         _state.update { BillingUiState(offers = offers, loading = false) }

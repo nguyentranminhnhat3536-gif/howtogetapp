@@ -241,4 +241,55 @@
     <string name="account_language">Language</string>
     <string name="language_title">App language</string>
     <string name="language_system">System default</string>
+    <string name="ocr_pick_sub">Turn a scan into text you can copy and edit</string>
+    <string name="ocr_scan_new">Scan a new page</string>
+    <string name="ocr_pick_doc">OR PICK A DOCUMENT</string>
+    <string name="ocr_no_docs">No documents yet.</string>
+    <string name="ocr_on_device">Runs on your phone. Nothing is uploaded.</string>
+    <string name="ocr_reading">Reading your page</string>
+    <string name="ocr_page_of">Page %1$d of %2$d</string>
+    <string name="ocr_result_title">Extracted text</string>
+    <string name="ocr_all_pages">All pages</string>
+    <string name="ocr_find_hint">Find in text</string>
+    <string name="ocr_join_lines">Join lines</string>
+    <string name="ocr_keep_breaks">Keep line breaks</string>
+    <string name="ocr_copy">Copy text</string>
+    <string name="ocr_copied_short">Copied</string>
+    <string name="ocr_save_txt">Save as .txt</string>
+    <string name="ocr_saved">Text file saved.</string>
+    <string name="ocr_save_failed">Could not save the file.</string>
+    <string name="ocr_read_again">Read again</string>
+    <string name="ocr_page_blank">No text on this page.</string>
+    <string name="ocr_none_title">No text found</string>
+    <string name="ocr_none_body">We couldn\'t read any words on this page. A clearer scan usually fixes it.</string>
+    <string name="ocr_tip_light_title">Use good light</string>
+    <string name="ocr_tip_light_body">Avoid shadows and glare on the paper.</string>
+    <string name="ocr_tip_flat_title">Keep the page flat</string>
+    <string name="ocr_tip_flat_body">Fill the frame and hold the phone steady.</string>
+    <string name="ocr_tip_script_title">Latin-script text</string>
+    <string name="ocr_tip_script_body">Works with English, Vietnamese, Spanish, French and more. Other scripts aren\'t supported yet.</string>
+    <string name="ocr_scan_again">Scan again</string>
+    <string name="ocr_back_to_doc">Back to document</string>
+    <string name="ocr_try_again">Try again</string>
+    <string name="ocr_locked_title">Copy every word from your scans</string>
+    <string name="ocr_locked_1">Extract text from every page</string>
+    <string name="ocr_locked_2">Find, copy, share or save as .txt</string>
+    <string name="ocr_locked_3">Unlimited exports, %1$d pages per document</string>
+    <string name="ocr_see_plans">See Pro plans</string>
+    <string name="ocr_not_now">Not now</string>
+    <string name="error_delete">Could not delete this document. Please try again.</string>
+    <string name="plan_off">%1$d%% OFF</string>
+    <string name="plan_regular_price">Regular price %1$s</string>
+    <plurals name="ocr_matches">
+        <item quantity="one">%1$d match</item>
+        <item quantity="other">%1$d matches</item>
+    </plurals>
+    <plurals name="ocr_words">
+        <item quantity="one">%1$d word</item>
+        <item quantity="other">%1$d words</item>
+    </plurals>
+    <plurals name="ocr_chars">
+        <item quantity="one">%1$d character</item>
+        <item quantity="other">%1$d characters</item>
+    </plurals>
 </resources>

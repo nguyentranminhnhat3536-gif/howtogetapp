@@ -223,4 +223,52 @@
     <string name="account_language">言語</string>
     <string name="language_title">アプリの言語</string>
     <string name="language_system">システムのデフォルト</string>
+    <string name="ocr_pick_sub">スキャンをコピー・編集できるテキストに変換</string>
+    <string name="ocr_scan_new">新しいページをスキャン</string>
+    <string name="ocr_pick_doc">または書類を選択</string>
+    <string name="ocr_no_docs">まだ書類がありません。</string>
+    <string name="ocr_on_device">スマホ上で処理。何もアップロードされません。</string>
+    <string name="ocr_reading">ページを読み取り中</string>
+    <string name="ocr_page_of">%2$dページ中%1$dページ目</string>
+    <string name="ocr_result_title">抽出した文字</string>
+    <string name="ocr_all_pages">すべてのページ</string>
+    <string name="ocr_find_hint">テキスト内を検索</string>
+    <string name="ocr_join_lines">改行をつなげる</string>
+    <string name="ocr_keep_breaks">改行を保持</string>
+    <string name="ocr_copy">文字をコピー</string>
+    <string name="ocr_copied_short">コピーしました</string>
+    <string name="ocr_save_txt">.txtで保存</string>
+    <string name="ocr_saved">テキストファイルを保存しました。</string>
+    <string name="ocr_save_failed">ファイルを保存できませんでした。</string>
+    <string name="ocr_read_again">もう一度読み取る</string>
+    <string name="ocr_page_blank">このページには文字がありません。</string>
+    <string name="ocr_none_title">文字が見つかりません</string>
+    <string name="ocr_none_body">このページの文字を読み取れませんでした。より鮮明にスキャンすると多くの場合解決します。</string>
+    <string name="ocr_tip_light_title">明るい場所で</string>
+    <string name="ocr_tip_light_body">紙に影や反射が入らないようにします。</string>
+    <string name="ocr_tip_flat_title">ページを平らに</string>
+    <string name="ocr_tip_flat_body">枠いっぱいに写し、スマホを動かさないでください。</string>
+    <string name="ocr_tip_script_title">ラテン文字のテキスト</string>
+    <string name="ocr_tip_script_body">英語、ベトナム語、スペイン語、フランス語などに対応。日本語などその他の文字にはまだ対応していません。</string>
+    <string name="ocr_scan_again">もう一度スキャン</string>
+    <string name="ocr_back_to_doc">書類に戻る</string>
+    <string name="ocr_try_again">再試行</string>
+    <string name="ocr_locked_title">スキャンの文字をすべてコピー</string>
+    <string name="ocr_locked_1">すべてのページから文字を抽出</string>
+    <string name="ocr_locked_2">検索、コピー、共有、.txtで保存</string>
+    <string name="ocr_locked_3">書き出し無制限、1書類あたり%1$dページ</string>
+    <string name="ocr_see_plans">Proプランを見る</string>
+    <string name="ocr_not_now">今はしない</string>
+    <string name="error_delete">書類を削除できませんでした。もう一度お試しください。</string>
+    <string name="plan_off">%1$d%%オフ</string>
+    <string name="plan_regular_price">通常価格 %1$s</string>
+    <plurals name="ocr_matches">
+        <item quantity="other">%1$d件</item>
+    </plurals>
+    <plurals name="ocr_words">
+        <item quantity="other">%1$d語</item>
+    </plurals>
+    <plurals name="ocr_chars">
+        <item quantity="other">%1$d文字</item>
+    </plurals>
 </resources>

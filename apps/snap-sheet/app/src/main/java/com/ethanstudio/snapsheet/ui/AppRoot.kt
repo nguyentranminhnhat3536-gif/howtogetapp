@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +26,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -52,6 +54,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -86,6 +89,10 @@ import com.ethanstudio.snapsheet.ui.files.FilesScreen
 import com.ethanstudio.snapsheet.ui.home.HomeScreen
 import com.ethanstudio.snapsheet.ui.main.MainEvent
 import com.ethanstudio.snapsheet.ui.main.MainViewModel
+import com.ethanstudio.snapsheet.ui.ocr.OcrLockedContent
+import com.ethanstudio.snapsheet.ui.ocr.OcrPickSheet
+import com.ethanstudio.snapsheet.ui.ocr.OcrScreen
+import com.ethanstudio.snapsheet.ui.ocr.OcrViewModel
 import com.ethanstudio.snapsheet.ui.paywall.PaywallScreen
 import com.ethanstudio.snapsheet.ui.theme.Accent
 import com.ethanstudio.snapsheet.ui.theme.Gradients
@@ -102,6 +109,8 @@ import java.io.File
 private const val ROUTE_MAIN = "main"
 private const val ROUTE_DOC = "doc/{id}"
 private const val ROUTE_PAYWALL = "paywall"
+private const val ROUTE_OCR = "ocr/{id}"
+private const val ROUTE_OCR_LOCKED = "ocr-locked"
 private const val ROUTE_WELCOME = "welcome"
 private const val ROUTE_SIGN_IN = "signin"
 private const val ROUTE_SIGN_UP = "signup"
@@ -130,6 +139,7 @@ fun AppRoot() {
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var sheetOpen by rememberSaveable { mutableStateOf(false) }
     var languageOpen by rememberSaveable { mutableStateOf(false) }
+    var ocrPickOpen by rememberSaveable { mutableStateOf(false) }
     // Đọc lại mỗi khi cấu hình đổi (Activity được tạo lại sau khi đổi ngôn ngữ).
     val configuration = LocalConfiguration.current
     val currentLanguage = remember(configuration) { AppLocale.current(context) }
@@ -140,13 +150,20 @@ fun AppRoot() {
         pageLimit = FreeLimits.pageLimit(state.pro.isPro),
         onScanned = { pages, pdf -> vm.saveScan(pages, pdf, prefix) },
         onPhotos = { vm.savePhotos(it, prefix) },
-        onError = { vm.message(R.string.error_scan) },
+        onError = {
+            vm.clearOcrAfterScan()
+            vm.message(R.string.error_scan)
+        },
+        onCanceled = vm::clearOcrAfterScan,
     )
 
     LaunchedEffect(vm) {
         vm.events.collect { event ->
             when (event) {
-                is MainEvent.OpenDoc -> nav.navigate("doc/${event.id}")
+                is MainEvent.OpenDoc -> {
+                    nav.navigate("doc/${event.id}")
+                    if (event.extract) nav.navigate("ocr/${event.id}")
+                }
                 is MainEvent.Message -> snackbar.showSnackbar(context.getString(event.res))
                 MainEvent.PurchaseDone -> nav.popIfOn(ROUTE_PAYWALL)
             }
@@ -253,11 +270,7 @@ fun AppRoot() {
                             isPro = state.pro.isPro,
                             actions = actions,
                             onOcr = {
-                                when {
-                                    !state.pro.isPro -> nav.navigate(ROUTE_PAYWALL)
-                                    state.allDocs.isEmpty() -> vm.message(R.string.tool_need_doc)
-                                    else -> { tab = 1; vm.message(R.string.tool_pick_ocr) }
-                                }
+                                if (state.pro.isPro) ocrPickOpen = true else nav.navigate(ROUTE_OCR_LOCKED)
                             },
                             onShare = {
                                 if (state.allDocs.isEmpty()) {
@@ -294,7 +307,37 @@ fun AppRoot() {
             }
             composable(ROUTE_DOC, arguments = listOf(navArgument("id") { type = NavType.LongType })) {
                 val docViewModel: DocViewModel = viewModel(factory = AppViewModels.Factory)
-                DocScreen(docViewModel, onBack = { nav.popIfOn(ROUTE_DOC) }, onNeedPro = { nav.navigate(ROUTE_PAYWALL) })
+                DocScreen(
+                    docViewModel,
+                    onBack = { nav.popIfOn(ROUTE_DOC) },
+                    onNeedPro = { nav.navigate(ROUTE_PAYWALL) },
+                    onOpenOcr = { nav.navigate("ocr/$it") },
+                )
+            }
+            composable(ROUTE_OCR, arguments = listOf(navArgument("id") { type = NavType.LongType })) {
+                val ocrViewModel: OcrViewModel = viewModel(factory = AppViewModels.Factory)
+                OcrScreen(
+                    ocrViewModel,
+                    onBack = { nav.popIfOn(ROUTE_OCR) },
+                    onSeePlans = { nav.navigate(ROUTE_PAYWALL) },
+                    onScanAgain = {
+                        nav.popIfOn(ROUTE_OCR)
+                        vm.scanForOcr()
+                        actions.scan(ScanMode.BATCH)
+                    },
+                )
+            }
+            composable(ROUTE_OCR_LOCKED) {
+                LaunchedEffect(state.pro.isPro) {
+                    if (state.pro.isPro) {
+                        nav.popIfOn(ROUTE_OCR_LOCKED)
+                        ocrPickOpen = true
+                    }
+                }
+                OcrLockedScreen(
+                    onBack = { nav.popIfOn(ROUTE_OCR_LOCKED) },
+                    onSeePlans = { nav.navigate(ROUTE_PAYWALL) },
+                )
             }
             composable(ROUTE_PAYWALL) {
                 PaywallScreen(
@@ -317,6 +360,22 @@ fun AppRoot() {
             onDismiss = { sheetOpen = false },
         )
     }
+    if (ocrPickOpen) {
+        OcrPickSheet(
+            docs = state.allDocs,
+            pageFile = ::pageFile,
+            onScanNew = {
+                ocrPickOpen = false
+                vm.scanForOcr()
+                actions.scan(ScanMode.BATCH)
+            },
+            onPick = {
+                ocrPickOpen = false
+                nav.navigate("ocr/$it")
+            },
+            onDismiss = { ocrPickOpen = false },
+        )
+    }
     if (languageOpen) {
         LanguageDialog(
             current = currentLanguage,
@@ -326,6 +385,39 @@ fun AppRoot() {
             },
             onDismiss = { languageOpen = false },
         )
+    }
+}
+
+/** Extract text mở từ Tools khi chưa có Pro: đầu trang có nút quay lại, bên dưới là bảng PRO. */
+@Composable
+private fun OcrLockedScreen(onBack: () -> Unit, onSeePlans: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Scaffold(
+        containerColor = colors.background,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
+            Row(
+                Modifier.fillMaxWidth().background(colors.background).statusBarsPadding().padding(horizontal = 4.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                IconButton(onClick = onBack) {
+                    Icon(painterResource(R.drawable.ic_back), stringResource(R.string.doc_back), tint = colors.onSurface)
+                }
+                Text(
+                    stringResource(R.string.doc_extract),
+                    Modifier.weight(1f).padding(horizontal = 4.dp),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        },
+    ) { padding ->
+        Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
+            OcrLockedContent(onSeePlans = onSeePlans, onNotNow = onBack, modifier = Modifier.fillMaxSize())
+        }
     }
 }
 

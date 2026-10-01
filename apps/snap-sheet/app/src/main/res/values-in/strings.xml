@@ -223,4 +223,52 @@
     <string name="account_language">Bahasa</string>
     <string name="language_title">Bahasa aplikasi</string>
     <string name="language_system">Default sistem</string>
+    <string name="ocr_pick_sub">Ubah hasil pindaian jadi teks yang bisa disalin dan diedit</string>
+    <string name="ocr_scan_new">Pindai halaman baru</string>
+    <string name="ocr_pick_doc">ATAU PILIH DOKUMEN</string>
+    <string name="ocr_no_docs">Belum ada dokumen.</string>
+    <string name="ocr_on_device">Berjalan di ponsel Anda. Tidak ada yang diunggah.</string>
+    <string name="ocr_reading">Membaca halaman Anda</string>
+    <string name="ocr_page_of">Halaman %1$d dari %2$d</string>
+    <string name="ocr_result_title">Teks yang diambil</string>
+    <string name="ocr_all_pages">Semua halaman</string>
+    <string name="ocr_find_hint">Cari di teks</string>
+    <string name="ocr_join_lines">Gabung baris</string>
+    <string name="ocr_keep_breaks">Pertahankan baris baru</string>
+    <string name="ocr_copy">Salin teks</string>
+    <string name="ocr_copied_short">Disalin</string>
+    <string name="ocr_save_txt">Simpan sebagai .txt</string>
+    <string name="ocr_saved">File teks disimpan.</string>
+    <string name="ocr_save_failed">Tidak dapat menyimpan file.</string>
+    <string name="ocr_read_again">Baca ulang</string>
+    <string name="ocr_page_blank">Tidak ada teks di halaman ini.</string>
+    <string name="ocr_none_title">Teks tidak ditemukan</string>
+    <string name="ocr_none_body">Kami tidak bisa membaca kata apa pun di halaman ini. Pindaian yang lebih jelas biasanya mengatasinya.</string>
+    <string name="ocr_tip_light_title">Gunakan cahaya yang cukup</string>
+    <string name="ocr_tip_light_body">Hindari bayangan dan pantulan di kertas.</string>
+    <string name="ocr_tip_flat_title">Jaga halaman tetap rata</string>
+    <string name="ocr_tip_flat_body">Isi bingkai dan pegang ponsel dengan stabil.</string>
+    <string name="ocr_tip_script_title">Teks huruf Latin</string>
+    <string name="ocr_tip_script_body">Mendukung Inggris, Vietnam, Spanyol, Prancis, dan lainnya. Aksara lain belum didukung.</string>
+    <string name="ocr_scan_again">Pindai lagi</string>
+    <string name="ocr_back_to_doc">Kembali ke dokumen</string>
+    <string name="ocr_try_again">Coba lagi</string>
+    <string name="ocr_locked_title">Salin setiap kata dari hasil pindaian</string>
+    <string name="ocr_locked_1">Ambil teks dari setiap halaman</string>
+    <string name="ocr_locked_2">Cari, salin, bagikan, atau simpan sebagai .txt</string>
+    <string name="ocr_locked_3">Ekspor tanpa batas, %1$d halaman per dokumen</string>
+    <string name="ocr_see_plans">Lihat paket Pro</string>
+    <string name="ocr_not_now">Nanti saja</string>
+    <string name="error_delete">Tidak dapat menghapus dokumen ini. Coba lagi.</string>
+    <string name="plan_off">Diskon %1$d%%</string>
+    <string name="plan_regular_price">Harga normal %1$s</string>
+    <plurals name="ocr_matches">
+        <item quantity="other">%1$d hasil</item>
+    </plurals>
+    <plurals name="ocr_words">
+        <item quantity="other">%1$d kata</item>
+    </plurals>
+    <plurals name="ocr_chars">
+        <item quantity="other">%1$d karakter</item>
+    </plurals>
 </resources>

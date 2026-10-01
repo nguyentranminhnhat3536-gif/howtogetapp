@@ -222,4 +222,52 @@
     <string name="account_language">Ngôn ngữ</string>
     <string name="language_title">Ngôn ngữ của ứng dụng</string>
     <string name="language_system">Theo hệ thống</string>
+    <string name="ocr_pick_sub">Biến bản quét thành chữ để chép và sửa</string>
+    <string name="ocr_scan_new">Quét trang mới</string>
+    <string name="ocr_pick_doc">HOẶC CHỌN TÀI LIỆU</string>
+    <string name="ocr_no_docs">Chưa có tài liệu nào.</string>
+    <string name="ocr_on_device">Chạy trên điện thoại. Không tải gì lên mạng.</string>
+    <string name="ocr_reading">Đang đọc trang</string>
+    <string name="ocr_page_of">Trang %1$d / %2$d</string>
+    <string name="ocr_result_title">Chữ đã lấy</string>
+    <string name="ocr_all_pages">Tất cả trang</string>
+    <string name="ocr_find_hint">Tìm trong văn bản</string>
+    <string name="ocr_join_lines">Nối dòng</string>
+    <string name="ocr_keep_breaks">Giữ xuống dòng</string>
+    <string name="ocr_copy">Chép chữ</string>
+    <string name="ocr_copied_short">Đã chép</string>
+    <string name="ocr_save_txt">Lưu thành .txt</string>
+    <string name="ocr_saved">Đã lưu file văn bản.</string>
+    <string name="ocr_save_failed">Không lưu được file.</string>
+    <string name="ocr_read_again">Đọc lại</string>
+    <string name="ocr_page_blank">Trang này không có chữ.</string>
+    <string name="ocr_none_title">Không thấy chữ</string>
+    <string name="ocr_none_body">Không đọc được chữ nào trên trang này. Quét rõ hơn thường sẽ được.</string>
+    <string name="ocr_tip_light_title">Đủ ánh sáng</string>
+    <string name="ocr_tip_light_body">Tránh bóng đổ và lóa trên giấy.</string>
+    <string name="ocr_tip_flat_title">Giữ trang phẳng</string>
+    <string name="ocr_tip_flat_body">Cho trang lấp đầy khung và cầm máy thật chắc.</string>
+    <string name="ocr_tip_script_title">Chữ Latin</string>
+    <string name="ocr_tip_script_body">Đọc được tiếng Anh, tiếng Việt, Tây Ban Nha, Pháp và nhiều thứ tiếng khác. Chưa hỗ trợ các hệ chữ khác.</string>
+    <string name="ocr_scan_again">Quét lại</string>
+    <string name="ocr_back_to_doc">Quay lại tài liệu</string>
+    <string name="ocr_try_again">Thử lại</string>
+    <string name="ocr_locked_title">Chép mọi chữ từ bản quét</string>
+    <string name="ocr_locked_1">Lấy chữ từ mọi trang</string>
+    <string name="ocr_locked_2">Tìm, chép, chia sẻ hoặc lưu thành .txt</string>
+    <string name="ocr_locked_3">Xuất không giới hạn, %1$d trang mỗi tài liệu</string>
+    <string name="ocr_see_plans">Xem các gói Pro</string>
+    <string name="ocr_not_now">Để sau</string>
+    <string name="error_delete">Không xóa được tài liệu. Vui lòng thử lại.</string>
+    <string name="plan_off">Giảm %1$d%%</string>
+    <string name="plan_regular_price">Giá gốc %1$s</string>
+    <plurals name="ocr_matches">
+        <item quantity="other">%1$d kết quả</item>
+    </plurals>
+    <plurals name="ocr_words">
+        <item quantity="other">%1$d từ</item>
+    </plurals>
+    <plurals name="ocr_chars">
+        <item quantity="other">%1$d ký tự</item>
+    </plurals>
 </resources>

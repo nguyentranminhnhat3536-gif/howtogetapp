@@ -224,4 +224,55 @@
     <string name="account_language">Dil</string>
     <string name="language_title">Uygulama dili</string>
     <string name="language_system">Sistem varsayılanı</string>
+    <string name="ocr_pick_sub">Taramayı kopyalayıp düzenleyebileceğiniz metne dönüştürün</string>
+    <string name="ocr_scan_new">Yeni sayfa tara</string>
+    <string name="ocr_pick_doc">VEYA BİR BELGE SEÇİN</string>
+    <string name="ocr_no_docs">Henüz belge yok.</string>
+    <string name="ocr_on_device">Telefonunuzda çalışır. Hiçbir şey yüklenmez.</string>
+    <string name="ocr_reading">Sayfanız okunuyor</string>
+    <string name="ocr_page_of">Sayfa %1$d / %2$d</string>
+    <string name="ocr_result_title">Çıkarılan metin</string>
+    <string name="ocr_all_pages">Tüm sayfalar</string>
+    <string name="ocr_find_hint">Metinde ara</string>
+    <string name="ocr_join_lines">Satırları birleştir</string>
+    <string name="ocr_keep_breaks">Satır sonlarını koru</string>
+    <string name="ocr_copy">Metni kopyala</string>
+    <string name="ocr_copied_short">Kopyalandı</string>
+    <string name="ocr_save_txt">.txt olarak kaydet</string>
+    <string name="ocr_saved">Metin dosyası kaydedildi.</string>
+    <string name="ocr_save_failed">Dosya kaydedilemedi.</string>
+    <string name="ocr_read_again">Yeniden oku</string>
+    <string name="ocr_page_blank">Bu sayfada metin yok.</string>
+    <string name="ocr_none_title">Metin bulunamadı</string>
+    <string name="ocr_none_body">Bu sayfada hiçbir kelime okunamadı. Daha net bir tarama genellikle sorunu çözer.</string>
+    <string name="ocr_tip_light_title">İyi ışık kullanın</string>
+    <string name="ocr_tip_light_body">Kâğıtta gölge ve parlamadan kaçının.</string>
+    <string name="ocr_tip_flat_title">Sayfayı düz tutun</string>
+    <string name="ocr_tip_flat_body">Çerçeveyi doldurun ve telefonu sabit tutun.</string>
+    <string name="ocr_tip_script_title">Latin alfabesiyle yazılmış metin</string>
+    <string name="ocr_tip_script_body">İngilizce, Vietnamca, İspanyolca, Fransızca ve daha fazlasıyla çalışır. Diğer alfabeler henüz desteklenmiyor.</string>
+    <string name="ocr_scan_again">Yeniden tara</string>
+    <string name="ocr_back_to_doc">Belgeye dön</string>
+    <string name="ocr_try_again">Tekrar dene</string>
+    <string name="ocr_locked_title">Taramalarınızdaki her kelimeyi kopyalayın</string>
+    <string name="ocr_locked_1">Her sayfadan metin çıkarın</string>
+    <string name="ocr_locked_2">Arayın, kopyalayın, paylaşın veya .txt olarak kaydedin</string>
+    <string name="ocr_locked_3">Sınırsız dışa aktarma, belge başına %1$d sayfa</string>
+    <string name="ocr_see_plans">Pro planlarını gör</string>
+    <string name="ocr_not_now">Şimdi değil</string>
+    <string name="error_delete">Bu belge silinemedi. Lütfen tekrar deneyin.</string>
+    <string name="plan_off">%%%1$d indirim</string>
+    <string name="plan_regular_price">Normal fiyat %1$s</string>
+    <plurals name="ocr_matches">
+        <item quantity="one">%1$d eşleşme</item>
+        <item quantity="other">%1$d eşleşme</item>
+    </plurals>
+    <plurals name="ocr_words">
+        <item quantity="one">%1$d kelime</item>
+        <item quantity="other">%1$d kelime</item>
+    </plurals>
+    <plurals name="ocr_chars">
+        <item quantity="one">%1$d karakter</item>
+        <item quantity="other">%1$d karakter</item>
+    </plurals>
 </resources>

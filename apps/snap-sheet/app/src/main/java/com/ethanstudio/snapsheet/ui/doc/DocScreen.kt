@@ -1,8 +1,5 @@
 package com.ethanstudio.snapsheet.ui.doc
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
@@ -71,7 +68,6 @@ import com.ethanstudio.snapsheet.ui.common.ProTag
 import com.ethanstudio.snapsheet.ui.theme.Accent
 import com.ethanstudio.snapsheet.ui.theme.Gradients
 import com.ethanstudio.snapsheet.util.shareFiles
-import com.ethanstudio.snapsheet.util.shareText
 import com.ethanstudio.snapsheet.util.viewPdf
 import java.io.File
 import java.text.DateFormat
@@ -82,6 +78,7 @@ fun DocScreen(
     viewModel: DocViewModel,
     onBack: () -> Unit,
     onNeedPro: () -> Unit,
+    onOpenOcr: (Long) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -129,7 +126,7 @@ fun DocScreen(
                     onOpen = { viewModel.export(ExportKind.OPEN_PDF) },
                     onSharePdf = { viewModel.export(ExportKind.SHARE_PDF) },
                     onShareImages = { viewModel.export(ExportKind.SHARE_IMAGES) },
-                    onExtract = viewModel::recognizeText,
+                    onExtract = { onOpenOcr(doc.id) },
                 )
                 if (!state.pro.isPro) ExportsBar(state.exportsLeft, onNeedPro)
             }
@@ -155,21 +152,6 @@ fun DocScreen(
             },
             dismissButton = { TextButton({ deleting = false }) { Text(stringResource(R.string.cancel)) } },
         )
-    }
-    if (state.ocrBusy) {
-        AlertDialog(
-            onDismissRequest = {},
-            confirmButton = {},
-            text = {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    CircularProgressIndicator()
-                    Text(stringResource(R.string.ocr_busy))
-                }
-            },
-        )
-    }
-    state.ocrText?.let { text ->
-        OcrDialog(text, onDismiss = viewModel::dismissText)
     }
 }
 
@@ -324,34 +306,5 @@ private fun RenameDialog(initial: String, onDismiss: () -> Unit, onSave: (String
             TextButton({ onSave(value) }, enabled = cleanDocName(value) != null) { Text(stringResource(R.string.save)) }
         },
         dismissButton = { TextButton(onDismiss) { Text(stringResource(R.string.cancel)) } },
-    )
-}
-
-@Composable
-private fun OcrDialog(text: String, onDismiss: () -> Unit) {
-    val context = LocalContext.current
-    val copied = stringResource(R.string.copied)
-    val chooser = stringResource(R.string.share_chooser)
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.ocr_title)) },
-        text = {
-            Column(Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
-                Text(text.ifBlank { stringResource(R.string.ocr_empty) })
-            }
-        },
-        confirmButton = {
-            Row {
-                if (text.isNotBlank()) {
-                    TextButton({
-                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        clipboard.setPrimaryClip(ClipData.newPlainText("text", text))
-                        Toast.makeText(context, copied, Toast.LENGTH_SHORT).show()
-                    }) { Text(stringResource(R.string.copy)) }
-                    TextButton({ context.shareText(text, chooser) }) { Text(stringResource(R.string.share_text)) }
-                }
-                TextButton(onDismiss) { Text(stringResource(R.string.close)) }
-            }
-        },
     )
 }

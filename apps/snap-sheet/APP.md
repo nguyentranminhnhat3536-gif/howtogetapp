@@ -21,7 +21,9 @@ Bước 3 · Giao diện mới theo canvas "SnapSheet Redesign" (đã duyệt, b
 - [x] CI xanh
 - [x] Làm lại giao diện theo thiết kế đã duyệt, thêm Account › Language (CI #32 xanh, /ship CHOT 2026-10-01)
 - [ ] Ethan thử APK trên điện thoại và góp ý (DUYỆT-2)
-- [ ] Vòng /ship gia cố lỗi: xóa tài liệu lỗi đang ném lại exception (DocViewModel.delete) → đổi thành thông báo; rà thêm hết bộ nhớ khi lưu scan
+- [x] Xóa tài liệu lỗi thì báo bằng snackbar, không crash (DocViewModel.delete, /ship 2026-10-01)
+- [ ] Rà hết bộ nhớ khi lưu scan
+- [ ] Ethan tạo offer giảm 10% cho `snapsheet_lifetime` trong Play Console (DUYỆT-$)
 - [ ] Gửi Ethan danh sách đề xuất tính năng mới để chọn
 - [ ] Ethan tạo sản phẩm trong Play Console (xem mục Kiếm tiền) và chốt giá (DUYỆT-$)
 - [ ] Điền studio.md (tên nhà phát triển, email hỗ trợ); đổi `support_email` trong strings.xml
@@ -53,6 +55,7 @@ Bước 3 · Giao diện mới theo canvas "SnapSheet Redesign" (đã duyệt, b
 | Files | Tìm kiếm, sắp xếp (mới nhất / tên), nhóm "Hôm nay" / "Trước đó", dòng phụ có số trang và dung lượng |
 | Tools | Lưới thẻ công cụ: một trang, nhiều trang, thẻ căn cước, ảnh sang PDF, lấy chữ (PRO), chia sẻ nhanh |
 | Account | Thẻ Pro, nâng cấp, khôi phục giao dịch, Language (chọn ngôn ngữ của app), đánh giá, chia sẻ, liên hệ, chính sách |
+| Lấy chữ (OCR, Pro) | Chọn tài liệu (bảng dưới từ Tools), đọc từng trang có tiến độ và nút Hủy, kết quả: chọn trang, tìm có tô vàng, đếm từ/ký tự, nối dòng, Copy/Share/Lưu .txt; không thấy chữ: 3 mẹo; bản miễn phí: bảng PRO |
 | Tài liệu | Vuốt xem từng trang ("Page x of y"), 4 nút tròn (mở PDF, chia sẻ PDF, chia sẻ ảnh, lấy chữ), thanh lượt xuất miễn phí, đổi tên, xóa |
 | Màn mua | Nền "bầu trời", tiêu đề chữ có chân, ba gói (năm, tháng, vĩnh viễn) có nhãn góc, giá năm quy ra mỗi tháng, dòng điều khoản theo gói, Restore, link chính sách |
 | Bảng Scan | Bấm nút + ở giữa: quét bằng camera hoặc nhập ảnh |
@@ -71,7 +74,13 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 - Sản phẩm Play Billing (ID phải khớp từng chữ):
   - Đăng ký (Subscription) `snapsheet_pro`, hai base plan: `monthly` (gia hạn mỗi tháng) và `yearly` (mỗi năm). Có thể thêm ưu đãi dùng thử miễn phí; app tự nhận và hiện.
   - Sản phẩm trong app (One-time product) `snapsheet_lifetime`: mua một lần, không hoàn trả tự động.
-- Giá Ethan chốt ngày 2026-10-01: tháng **0,99 USD**, năm **9,99 USD** (rẻ hơn 12 tháng lẻ 16%, màn mua tự hiện "Save 15%"), vĩnh viễn **19,97 USD** (Ethan chốt lại). Đặt trong Play Console bằng USD, Play tự quy đổi giá từng nước. App lấy giá thật từ Google Play, không gõ cứng.
+- Giá Ethan chốt ngày 2026-10-01: tháng **0,99 USD**, năm **9,99 USD** (rẻ hơn 12 tháng lẻ 16%, màn mua tự hiện "Save 15%"), vĩnh viễn **100 USD**, đang ưu đãi **giảm 10% còn 90 USD** (Ethan chốt 2026-10-01). Đặt trong Play Console bằng USD, Play tự quy đổi giá từng nước. App lấy giá thật từ Google Play, không gõ cứng.
+- Gói vĩnh viễn: app lấy giá gốc, giá giảm và % từ Google Play. Chỉ hiện giá gạch và nhãn khi Play trả về ưu đãi thật; hết ưu đãi thì tự về 100 USD. Các bước Ethan làm trong Play Console:
+  1. Monetize with Play › Products › One-time products › `snapsheet_lifetime`.
+  2. Ở purchase option "Buy" đặt giá 100 USD (Set prices › USD 100.00 › Update exchange rates nếu muốn tự quy đổi).
+  3. Trong purchase option đó › Add offer › **Discounted offer** › giảm **10%** (giá 90 USD), chọn thời gian bắt đầu và kết thúc, chọn nước áp dụng › Activate.
+  4. Mở app (bản tải từ Play hoặc tài khoản tester) › Account › Get Pro: thẻ Lifetime phải hiện ~~$100.00~~ $90.00 kèm nhãn "10% OFF".
+- Giá gốc 100 USD nên là giá thật; ở EU giá trước giảm phải là giá thấp nhất trong 30 ngày, nên đặt thời hạn cho đợt giảm.
 - Mua xong: acknowledge trong vòng 3 ngày (app tự làm), nếu không Google hoàn tiền.
 
 ## Quyền (permissions) và lý do
@@ -126,3 +135,6 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 - 2026-10-01: Làm lại giao diện theo bản thiết kế "SnapSheet Redesign" Ethan đã duyệt (Home, Files, Tools, Tài liệu, bảng Scan, màn mua kiểu bầu trời, Account, màn chào) và vẽ lại bộ icon nét 2px. Màn mua bỏ dòng "Terms" vì app chưa có trang điều khoản (chỉ giữ link chính sách); không hiện số sao hay đánh giá. Màn chào vẫn cho dùng không cần tài khoản, thêm nút "Continue with Google" (chỉ chữ, chưa có logo Google).
 - 2026-10-01: Thêm Account › Language: chọn "System default" hoặc 1 trong 12 ngôn ngữ, đổi ngay. Không thêm thư viện appcompat: Android 13+ dùng LocaleManager của hệ thống (khớp với Cài đặt › Ứng dụng › Ngôn ngữ), Android 8–12 lưu mã ngôn ngữ trong SharedPreferences `app_locale` (chỉ trên máy) rồi tạo lại màn hình.
 - 2026-10-01: Nhúng font DM Serif Display (SIL OFL 1.1) cho tiêu đề lớn. Font chỉ có chữ Latin nên tiếng Việt, Nga, Nhật, Hàn, Hindi dùng font có chân của hệ thống để không vỡ dấu.
+- 2026-10-01: Extract text thành màn riêng theo thiết kế đã duyệt. Bản miễn phí không chạy OCR mà chỉ thấy bảng PRO. Không lưu kết quả OCR (không đổi dữ liệu). Lưu .txt qua trình chọn nơi lưu của hệ thống (không cần quyền).
+- 2026-10-01: Gói vĩnh viễn đọc offer qua `getOneTimePurchaseOfferDetailsList` (Billing 8+) và mua đúng offerToken.
+- 2026-10-01: Xóa tài liệu lỗi thì báo, không crash.

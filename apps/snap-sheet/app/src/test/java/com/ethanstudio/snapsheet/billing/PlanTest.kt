@@ -127,4 +127,127 @@ class PlanTest {
     fun phaseInfoCurrencyDefaultsToEmpty() {
         assertEquals("", PhaseInfo(990_000, "$0.99", "P1M").currencyCode)
     }
+
+    // --- saleOf (giảm giá gói Vĩnh viễn) ---
+
+    private fun lifetime(
+        price: Long,
+        full: Long? = null,
+        percent: Int? = null,
+        token: String = "tok",
+    ) = OneTimeOfferInfo(token, price, "price", "USD", full, percent)
+
+    @Test
+    fun saleOfComputesPercentWhenPlayGivesNone() {
+        // (100 - 90) * 100 / 100 = 10
+        assertEquals(Sale(100_000_000, 10), saleOf(lifetime(90_000_000, 100_000_000)))
+    }
+
+    @Test
+    fun saleOfComputedPercentRoundsDown() {
+        // (100 - 89.99) * 100 / 100 = 10.01 → 10; (100 - 80.01) → 19.99 → 19
+        assertEquals(10, saleOf(lifetime(89_990_000, 100_000_000))!!.percent)
+        assertEquals(19, saleOf(lifetime(80_010_000, 100_000_000))!!.percent)
+    }
+
+    @Test
+    fun saleOfPrefersPercentFromPlay() {
+        // Tự tính ra 15, nhưng Play báo 10 thì dùng 10
+        assertEquals(Sale(100_000_000, 10), saleOf(lifetime(85_000_000, 100_000_000, percent = 10)))
+        assertEquals(10, saleOf(lifetime(89_990_000, 100_000_000, percent = 10))!!.percent)
+    }
+
+    @Test
+    fun saleOfIgnoresPlayPercentOutsideRange() {
+        // 0 hoặc 150 là số vô lý → tự tính lại = 10
+        assertEquals(10, saleOf(lifetime(90_000_000, 100_000_000, percent = 0))!!.percent)
+        assertEquals(10, saleOf(lifetime(90_000_000, 100_000_000, percent = 150))!!.percent)
+    }
+
+    @Test
+    fun noFullPriceMeansNoSale() {
+        assertNull(saleOf(lifetime(90_000_000)))
+        assertNull(saleOf(lifetime(90_000_000, percent = 10)))
+    }
+
+    @Test
+    fun fullPriceEqualToPriceIsNotASale() {
+        assertNull(saleOf(lifetime(100_000_000, 100_000_000)))
+        assertNull(saleOf(lifetime(100_000_000, 100_000_000, percent = 10)))
+    }
+
+    @Test
+    fun fullPriceBelowPriceIsNotASale() {
+        assertNull(saleOf(lifetime(100_000_000, 90_000_000)))
+    }
+
+    @Test
+    fun zeroPriceIsNotASale() {
+        assertNull(saleOf(lifetime(0, 100_000_000)))
+    }
+
+    @Test
+    fun tinyDiscountUnderOnePercentIsNotASale() {
+        // (100 - 99.5) * 100 / 100 = 0.5 → 0 → không tính là giảm giá
+        assertNull(saleOf(lifetime(99_500_000, 100_000_000)))
+    }
+
+    // --- pickOneTimeOffer ---
+
+    @Test
+    fun pickOneTimeOfferTakesCheapest() {
+        val regular = lifetime(100_000_000, token = "regular")
+        val sale = lifetime(90_000_000, 100_000_000, 10, token = "sale")
+        assertEquals("sale", pickOneTimeOffer(listOf(regular, sale))!!.token)
+        assertEquals("sale", pickOneTimeOffer(listOf(sale, regular))!!.token)
+    }
+
+    @Test
+    fun pickOneTimeOfferPrefersSaleOnTie() {
+        val plain = lifetime(90_000_000, token = "plain")
+        val sale = lifetime(90_000_000, 100_000_000, 10, token = "sale")
+        assertEquals("sale", pickOneTimeOffer(listOf(plain, sale))!!.token)
+        assertEquals("sale", pickOneTimeOffer(listOf(sale, plain))!!.token)
+    }
+
+    @Test
+    fun pickOneTimeOfferSkipsFreeOrBrokenOffers() {
+        val free = lifetime(0, token = "free")
+        val real = lifetime(100_000_000, token = "real")
+        assertEquals("real", pickOneTimeOffer(listOf(free, real))!!.token)
+        assertNull(pickOneTimeOffer(listOf(free)))
+        assertNull(pickOneTimeOffer(listOf(lifetime(-1, token = "neg"))))
+    }
+
+    @Test
+    fun pickOneTimeOfferOfEmptyListIsNull() {
+        assertNull(pickOneTimeOffer(emptyList()))
+    }
+
+    // --- formatMicros (giá gạch ngang) ---
+
+    @Test
+    fun formatMicrosInDollars() {
+        assertEquals("$100.00", formatMicros(100_000_000, "USD", Locale.US))
+        assertEquals("$90.00", formatMicros(90_000_000, "USD", Locale.US))
+    }
+
+    @Test
+    fun formatMicrosForCurrencyWithoutDecimals() {
+        val text = formatMicros(1_000_000_000, "JPY", Locale.US)
+        assertTrue(text, text!!.contains("1,000"))
+        assertFalse(text, text.contains("."))
+    }
+
+    @Test
+    fun formatMicrosIsNullForUnknownCurrency() {
+        assertNull(formatMicros(100_000_000, "ZZZ", Locale.US))
+        assertNull(formatMicros(100_000_000, "", Locale.US))
+    }
+
+    @Test
+    fun formatMicrosIsNullForZeroOrNegative() {
+        assertNull(formatMicros(0, "USD", Locale.US))
+        assertNull(formatMicros(-100_000_000, "USD", Locale.US))
+    }
 }

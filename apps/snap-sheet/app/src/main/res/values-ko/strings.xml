@@ -223,4 +223,52 @@
     <string name="account_language">언어</string>
     <string name="language_title">앱 언어</string>
     <string name="language_system">시스템 기본값</string>
+    <string name="ocr_pick_sub">스캔을 복사하고 편집할 수 있는 텍스트로 바꿔요</string>
+    <string name="ocr_scan_new">새 페이지 스캔</string>
+    <string name="ocr_pick_doc">또는 문서 선택</string>
+    <string name="ocr_no_docs">아직 문서가 없습니다.</string>
+    <string name="ocr_on_device">휴대폰에서 처리됩니다. 아무것도 업로드되지 않아요.</string>
+    <string name="ocr_reading">페이지를 읽는 중</string>
+    <string name="ocr_page_of">%2$d페이지 중 %1$d페이지</string>
+    <string name="ocr_result_title">추출한 텍스트</string>
+    <string name="ocr_all_pages">모든 페이지</string>
+    <string name="ocr_find_hint">텍스트에서 찾기</string>
+    <string name="ocr_join_lines">줄 합치기</string>
+    <string name="ocr_keep_breaks">줄바꿈 유지</string>
+    <string name="ocr_copy">텍스트 복사</string>
+    <string name="ocr_copied_short">복사됨</string>
+    <string name="ocr_save_txt">.txt로 저장</string>
+    <string name="ocr_saved">텍스트 파일을 저장했습니다.</string>
+    <string name="ocr_save_failed">파일을 저장하지 못했습니다.</string>
+    <string name="ocr_read_again">다시 읽기</string>
+    <string name="ocr_page_blank">이 페이지에는 텍스트가 없습니다.</string>
+    <string name="ocr_none_title">텍스트를 찾지 못했어요</string>
+    <string name="ocr_none_body">이 페이지에서 단어를 읽지 못했습니다. 더 선명하게 스캔하면 대부분 해결돼요.</string>
+    <string name="ocr_tip_light_title">밝은 곳에서</string>
+    <string name="ocr_tip_light_body">종이에 그림자나 빛 반사가 없도록 하세요.</string>
+    <string name="ocr_tip_flat_title">페이지를 평평하게</string>
+    <string name="ocr_tip_flat_body">화면을 가득 채우고 휴대폰을 흔들리지 않게 잡으세요.</string>
+    <string name="ocr_tip_script_title">라틴 문자 텍스트</string>
+    <string name="ocr_tip_script_body">영어, 베트남어, 스페인어, 프랑스어 등을 지원합니다. 한글 등 다른 문자는 아직 지원하지 않아요.</string>
+    <string name="ocr_scan_again">다시 스캔</string>
+    <string name="ocr_back_to_doc">문서로 돌아가기</string>
+    <string name="ocr_try_again">다시 시도</string>
+    <string name="ocr_locked_title">스캔한 모든 단어를 복사하세요</string>
+    <string name="ocr_locked_1">모든 페이지에서 텍스트 추출</string>
+    <string name="ocr_locked_2">찾기, 복사, 공유, .txt로 저장</string>
+    <string name="ocr_locked_3">무제한 내보내기, 문서당 %1$d페이지</string>
+    <string name="ocr_see_plans">Pro 요금제 보기</string>
+    <string name="ocr_not_now">나중에</string>
+    <string name="error_delete">문서를 삭제하지 못했습니다. 다시 시도해 주세요.</string>
+    <string name="plan_off">%1$d%% 할인</string>
+    <string name="plan_regular_price">정가 %1$s</string>
+    <plurals name="ocr_matches">
+        <item quantity="other">%1$d개 일치</item>
+    </plurals>
+    <plurals name="ocr_words">
+        <item quantity="other">%1$d단어</item>
+    </plurals>
+    <plurals name="ocr_chars">
+        <item quantity="other">%1$d자</item>
+    </plurals>
 </resources>

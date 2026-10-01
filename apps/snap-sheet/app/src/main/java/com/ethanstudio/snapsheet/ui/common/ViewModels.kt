@@ -9,13 +9,15 @@ import com.ethanstudio.snapsheet.SnapSheetApp
 import com.ethanstudio.snapsheet.ui.auth.AuthViewModel
 import com.ethanstudio.snapsheet.ui.doc.DocViewModel
 import com.ethanstudio.snapsheet.ui.main.MainViewModel
+import com.ethanstudio.snapsheet.ui.ocr.OcrViewModel
 
 /** Tạo ViewModel kèm các đối tượng dùng chung lấy từ Application. */
 object AppViewModels {
     val Factory: ViewModelProvider.Factory = viewModelFactory {
         initializer { MainViewModel(app().docs, app().proStore, app().billing) }
         initializer { AuthViewModel(app().auth, app().session) }
-        initializer { DocViewModel(app(), app().docs, app().proStore, createSavedStateHandle()) }
+        initializer { DocViewModel(app().docs, app().proStore, createSavedStateHandle()) }
+        initializer { OcrViewModel(app(), app().docs, app().proStore, createSavedStateHandle()) }
     }
 
     private fun CreationExtras.app(): SnapSheetApp =

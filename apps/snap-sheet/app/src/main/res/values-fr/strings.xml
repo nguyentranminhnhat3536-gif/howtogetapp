@@ -224,4 +224,55 @@
     <string name="account_language">Langue</string>
     <string name="language_title">Langue de l’app</string>
     <string name="language_system">Langue du système</string>
+    <string name="ocr_pick_sub">Transformez un scan en texte à copier et modifier</string>
+    <string name="ocr_scan_new">Scanner une nouvelle page</string>
+    <string name="ocr_pick_doc">OU CHOISISSEZ UN DOCUMENT</string>
+    <string name="ocr_no_docs">Aucun document pour l’instant.</string>
+    <string name="ocr_on_device">Fonctionne sur votre téléphone. Rien n’est envoyé.</string>
+    <string name="ocr_reading">Lecture de votre page</string>
+    <string name="ocr_page_of">Page %1$d sur %2$d</string>
+    <string name="ocr_result_title">Texte extrait</string>
+    <string name="ocr_all_pages">Toutes les pages</string>
+    <string name="ocr_find_hint">Rechercher dans le texte</string>
+    <string name="ocr_join_lines">Joindre les lignes</string>
+    <string name="ocr_keep_breaks">Garder les retours à la ligne</string>
+    <string name="ocr_copy">Copier le texte</string>
+    <string name="ocr_copied_short">Copié</string>
+    <string name="ocr_save_txt">Enregistrer en .txt</string>
+    <string name="ocr_saved">Fichier texte enregistré.</string>
+    <string name="ocr_save_failed">Impossible d’enregistrer le fichier.</string>
+    <string name="ocr_read_again">Relire</string>
+    <string name="ocr_page_blank">Aucun texte sur cette page.</string>
+    <string name="ocr_none_title">Aucun texte trouvé</string>
+    <string name="ocr_none_body">Nous n’avons pu lire aucun mot sur cette page. Un scan plus net règle généralement le problème.</string>
+    <string name="ocr_tip_light_title">Un bon éclairage</string>
+    <string name="ocr_tip_light_body">Évitez les ombres et les reflets sur le papier.</string>
+    <string name="ocr_tip_flat_title">Gardez la page à plat</string>
+    <string name="ocr_tip_flat_body">Remplissez le cadre et tenez le téléphone bien stable.</string>
+    <string name="ocr_tip_script_title">Texte en alphabet latin</string>
+    <string name="ocr_tip_script_body">Fonctionne avec l’anglais, le vietnamien, l’espagnol, le français et plus. Les autres écritures ne sont pas encore prises en charge.</string>
+    <string name="ocr_scan_again">Scanner à nouveau</string>
+    <string name="ocr_back_to_doc">Retour au document</string>
+    <string name="ocr_try_again">Réessayer</string>
+    <string name="ocr_locked_title">Copiez chaque mot de vos scans</string>
+    <string name="ocr_locked_1">Extrayez le texte de toutes les pages</string>
+    <string name="ocr_locked_2">Recherchez, copiez, partagez ou enregistrez en .txt</string>
+    <string name="ocr_locked_3">Exports illimités, %1$d pages par document</string>
+    <string name="ocr_see_plans">Voir les offres Pro</string>
+    <string name="ocr_not_now">Plus tard</string>
+    <string name="error_delete">Impossible de supprimer ce document. Réessayez.</string>
+    <string name="plan_off">-%1$d %%</string>
+    <string name="plan_regular_price">Prix normal %1$s</string>
+    <plurals name="ocr_matches">
+        <item quantity="one">%1$d résultat</item>
+        <item quantity="other">%1$d résultats</item>
+    </plurals>
+    <plurals name="ocr_words">
+        <item quantity="one">%1$d mot</item>
+        <item quantity="other">%1$d mots</item>
+    </plurals>
+    <plurals name="ocr_chars">
+        <item quantity="one">%1$d caractère</item>
+        <item quantity="other">%1$d caractères</item>
+    </plurals>
 </resources>

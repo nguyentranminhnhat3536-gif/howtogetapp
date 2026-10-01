@@ -224,4 +224,55 @@
     <string name="account_language">Sprache</string>
     <string name="language_title">App-Sprache</string>
     <string name="language_system">Systemstandard</string>
+    <string name="ocr_pick_sub">Mach aus einem Scan Text zum Kopieren und Bearbeiten</string>
+    <string name="ocr_scan_new">Neue Seite scannen</string>
+    <string name="ocr_pick_doc">ODER DOKUMENT WÄHLEN</string>
+    <string name="ocr_no_docs">Noch keine Dokumente.</string>
+    <string name="ocr_on_device">Läuft auf deinem Handy. Nichts wird hochgeladen.</string>
+    <string name="ocr_reading">Seite wird gelesen</string>
+    <string name="ocr_page_of">Seite %1$d von %2$d</string>
+    <string name="ocr_result_title">Erkannter Text</string>
+    <string name="ocr_all_pages">Alle Seiten</string>
+    <string name="ocr_find_hint">Im Text suchen</string>
+    <string name="ocr_join_lines">Zeilen verbinden</string>
+    <string name="ocr_keep_breaks">Zeilenumbrüche behalten</string>
+    <string name="ocr_copy">Text kopieren</string>
+    <string name="ocr_copied_short">Kopiert</string>
+    <string name="ocr_save_txt">Als .txt speichern</string>
+    <string name="ocr_saved">Textdatei gespeichert.</string>
+    <string name="ocr_save_failed">Datei konnte nicht gespeichert werden.</string>
+    <string name="ocr_read_again">Erneut lesen</string>
+    <string name="ocr_page_blank">Kein Text auf dieser Seite.</string>
+    <string name="ocr_none_title">Kein Text gefunden</string>
+    <string name="ocr_none_body">Auf dieser Seite konnten wir keine Wörter lesen. Ein schärferer Scan hilft meistens.</string>
+    <string name="ocr_tip_light_title">Für gutes Licht sorgen</string>
+    <string name="ocr_tip_light_body">Vermeide Schatten und Spiegelungen auf dem Papier.</string>
+    <string name="ocr_tip_flat_title">Seite flach halten</string>
+    <string name="ocr_tip_flat_body">Fülle den Rahmen aus und halte das Handy ruhig.</string>
+    <string name="ocr_tip_script_title">Lateinische Schrift</string>
+    <string name="ocr_tip_script_body">Funktioniert mit Englisch, Vietnamesisch, Spanisch, Französisch und mehr. Andere Schriften werden noch nicht unterstützt.</string>
+    <string name="ocr_scan_again">Erneut scannen</string>
+    <string name="ocr_back_to_doc">Zurück zum Dokument</string>
+    <string name="ocr_try_again">Erneut versuchen</string>
+    <string name="ocr_locked_title">Jedes Wort aus deinen Scans kopieren</string>
+    <string name="ocr_locked_1">Text aus jeder Seite erkennen</string>
+    <string name="ocr_locked_2">Suchen, kopieren, teilen oder als .txt speichern</string>
+    <string name="ocr_locked_3">Unbegrenzte Exporte, %1$d Seiten pro Dokument</string>
+    <string name="ocr_see_plans">Pro-Pakete ansehen</string>
+    <string name="ocr_not_now">Jetzt nicht</string>
+    <string name="error_delete">Dokument konnte nicht gelöscht werden. Bitte versuche es erneut.</string>
+    <string name="plan_off">-%1$d %%</string>
+    <string name="plan_regular_price">Normalpreis %1$s</string>
+    <plurals name="ocr_matches">
+        <item quantity="one">%1$d Treffer</item>
+        <item quantity="other">%1$d Treffer</item>
+    </plurals>
+    <plurals name="ocr_words">
+        <item quantity="one">%1$d Wort</item>
+        <item quantity="other">%1$d Wörter</item>
+    </plurals>
+    <plurals name="ocr_chars">
+        <item quantity="one">%1$d Zeichen</item>
+        <item quantity="other">%1$d Zeichen</item>
+    </plurals>
 </resources>

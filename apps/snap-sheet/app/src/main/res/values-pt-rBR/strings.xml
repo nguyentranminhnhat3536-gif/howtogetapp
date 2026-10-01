@@ -224,4 +224,55 @@
     <string name="account_language">Idioma</string>
     <string name="language_title">Idioma do app</string>
     <string name="language_system">Padrão do sistema</string>
+    <string name="ocr_pick_sub">Transforme um escaneamento em texto para copiar e editar</string>
+    <string name="ocr_scan_new">Digitalizar nova página</string>
+    <string name="ocr_pick_doc">OU ESCOLHA UM DOCUMENTO</string>
+    <string name="ocr_no_docs">Nenhum documento ainda.</string>
+    <string name="ocr_on_device">Funciona no seu celular. Nada é enviado.</string>
+    <string name="ocr_reading">Lendo sua página</string>
+    <string name="ocr_page_of">Página %1$d de %2$d</string>
+    <string name="ocr_result_title">Texto extraído</string>
+    <string name="ocr_all_pages">Todas as páginas</string>
+    <string name="ocr_find_hint">Buscar no texto</string>
+    <string name="ocr_join_lines">Juntar linhas</string>
+    <string name="ocr_keep_breaks">Manter quebras de linha</string>
+    <string name="ocr_copy">Copiar texto</string>
+    <string name="ocr_copied_short">Copiado</string>
+    <string name="ocr_save_txt">Salvar como .txt</string>
+    <string name="ocr_saved">Arquivo de texto salvo.</string>
+    <string name="ocr_save_failed">Não foi possível salvar o arquivo.</string>
+    <string name="ocr_read_again">Ler novamente</string>
+    <string name="ocr_page_blank">Nenhum texto nesta página.</string>
+    <string name="ocr_none_title">Nenhum texto encontrado</string>
+    <string name="ocr_none_body">Não conseguimos ler nenhuma palavra nesta página. Uma digitalização mais nítida costuma resolver.</string>
+    <string name="ocr_tip_light_title">Use boa iluminação</string>
+    <string name="ocr_tip_light_body">Evite sombras e reflexos no papel.</string>
+    <string name="ocr_tip_flat_title">Mantenha a página plana</string>
+    <string name="ocr_tip_flat_body">Preencha o quadro e segure o celular firme.</string>
+    <string name="ocr_tip_script_title">Texto em alfabeto latino</string>
+    <string name="ocr_tip_script_body">Funciona com inglês, vietnamita, espanhol, francês e mais. Outros alfabetos ainda não são compatíveis.</string>
+    <string name="ocr_scan_again">Digitalizar de novo</string>
+    <string name="ocr_back_to_doc">Voltar ao documento</string>
+    <string name="ocr_try_again">Tentar de novo</string>
+    <string name="ocr_locked_title">Copie cada palavra dos seus documentos</string>
+    <string name="ocr_locked_1">Extraia texto de todas as páginas</string>
+    <string name="ocr_locked_2">Busque, copie, compartilhe ou salve como .txt</string>
+    <string name="ocr_locked_3">Exportações ilimitadas, %1$d páginas por documento</string>
+    <string name="ocr_see_plans">Ver planos Pro</string>
+    <string name="ocr_not_now">Agora não</string>
+    <string name="error_delete">Não foi possível excluir este documento. Tente novamente.</string>
+    <string name="plan_off">%1$d%% OFF</string>
+    <string name="plan_regular_price">Preço normal %1$s</string>
+    <plurals name="ocr_matches">
+        <item quantity="one">%1$d resultado</item>
+        <item quantity="other">%1$d resultados</item>
+    </plurals>
+    <plurals name="ocr_words">
+        <item quantity="one">%1$d palavra</item>
+        <item quantity="other">%1$d palavras</item>
+    </plurals>
+    <plurals name="ocr_chars">
+        <item quantity="one">%1$d caractere</item>
+        <item quantity="other">%1$d caracteres</item>
+    </plurals>
 </resources>
