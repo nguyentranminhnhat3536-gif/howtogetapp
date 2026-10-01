@@ -3,14 +3,14 @@ package com.ethanstudio.snapsheet.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // Giá trị lấy từ Scan Design System (tokens.json). Đổi token thì đổi ở đây.
-val Primary = Color(0xFF3880F8)
+val Primary = Color(0xFF2A6FE8)
 val OnPrimary = Color(0xFFFFFFFF)
 val PrimaryStrong = Color(0xFF235FDC)
-val PrimaryTint = Color(0xFFE5EFF9)
-val Canvas = Color(0xFFF7F8FA)
+val PrimaryTint = Color(0xFFE6EFFF)
+val Canvas = Color(0xFFFFFFFF)
 val Surface = Color(0xFFFFFFFF)
-val Fill = Color(0xFFEEEEF1)
-val Hairline = Color(0xFFEBECF1)
+val Fill = Color(0xFFEEF3FC)
+val Hairline = Color(0xFFE3E9F4)
 val Ink = Color(0xFF131313)
 val Muted = Color(0xFF8D8C91)
 val MutedAa = Color(0xFF6B6A70)

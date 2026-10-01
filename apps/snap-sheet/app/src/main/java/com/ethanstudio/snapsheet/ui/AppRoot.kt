@@ -81,6 +81,7 @@ import com.ethanstudio.snapsheet.ui.home.HomeScreen
 import com.ethanstudio.snapsheet.ui.main.MainEvent
 import com.ethanstudio.snapsheet.ui.main.MainViewModel
 import com.ethanstudio.snapsheet.ui.paywall.PaywallScreen
+import com.ethanstudio.snapsheet.ui.theme.Gradients
 import com.ethanstudio.snapsheet.ui.tools.ToolsScreen
 import com.ethanstudio.snapsheet.util.findActivity
 import com.ethanstudio.snapsheet.util.openEmailApp
@@ -305,10 +306,10 @@ private fun SnapBottomBar(selected: Int, onSelect: (Int) -> Unit, onScan: () -> 
             contentAlignment = Alignment.Center,
         ) {
             Box(
-                Modifier.size(56.dp).clip(CircleShape).background(colors.primary).clickable(role = Role.Button, onClick = onScan),
+                Modifier.size(56.dp).clip(CircleShape).background(Gradients.Primary).clickable(role = Role.Button, onClick = onScan),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(painterResource(R.drawable.ic_plus), stringResource(R.string.nav_scan), Modifier.size(28.dp), tint = colors.onPrimary)
+                Icon(painterResource(R.drawable.ic_plus), stringResource(R.string.nav_scan), Modifier.size(28.dp), tint = Color.White)
             }
         }
     }

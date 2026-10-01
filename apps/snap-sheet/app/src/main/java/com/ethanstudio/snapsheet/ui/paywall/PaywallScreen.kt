@@ -45,6 +45,10 @@ import com.ethanstudio.snapsheet.billing.Plan
 import com.ethanstudio.snapsheet.billing.PlanOffer
 import com.ethanstudio.snapsheet.billing.yearlySavingPercent
 import com.ethanstudio.snapsheet.data.FreeLimits
+import com.ethanstudio.snapsheet.ui.common.GradientButton
+import com.ethanstudio.snapsheet.ui.theme.Gradients
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 
 /** Màn mua Pro với ba gói: tháng, năm, vĩnh viễn. Giá lấy từ Google Play, không gõ cứng. */
 @Composable
@@ -60,7 +64,8 @@ fun PaywallScreen(
     val yearly = offers[Plan.YEARLY]
     val saving = if (monthly != null && yearly != null) yearlySavingPercent(monthly.priceMicros, yearly.priceMicros) else null
 
-    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        Box(Modifier.fillMaxWidth().height(320.dp).background(Gradients.header()))
         Column(
             Modifier.systemBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -102,16 +107,14 @@ fun PaywallScreen(
             PlanCard(Plan.MONTHLY, stringResource(R.string.plan_monthly), monthly, saving = null, selected == Plan.MONTHLY) { selected = Plan.MONTHLY }
             PlanCard(Plan.YEARLY, stringResource(R.string.plan_yearly), yearly, saving, selected == Plan.YEARLY) { selected = Plan.YEARLY }
             PlanCard(Plan.LIFETIME, stringResource(R.string.plan_lifetime), offers[Plan.LIFETIME], saving = null, selected == Plan.LIFETIME) { selected = Plan.LIFETIME }
-            Button(
+            GradientButton(
+                text = stringResource(R.string.paywall_continue),
                 onClick = { onBuy(selected) },
                 enabled = offers[selected] != null,
-                modifier = Modifier.fillMaxWidth().heightIn(min = 62.dp),
-                shape = MaterialTheme.shapes.large,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-            ) { Text(stringResource(R.string.paywall_continue), fontSize = 19.sp, fontWeight = FontWeight.Bold) }
+                modifier = Modifier.fillMaxWidth(),
+                minHeight = 60.dp,
+                fontSize = 19.sp,
+            )
             Text(
                 stringResource(R.string.paywall_legal),
                 Modifier.fillMaxWidth(),
@@ -140,7 +143,7 @@ private fun PlanCard(plan: Plan, name: String, offer: PlanOffer?, saving: Int?, 
         modifier = Modifier.fillMaxWidth().selectable(selected = isSelected, enabled = offer != null, role = Role.RadioButton, onClick = onSelect),
         shape = MaterialTheme.shapes.medium,
         color = if (isSelected) color.primaryContainer else color.surface,
-        border = BorderStroke(if (isSelected) 1.5.dp else 1.dp, if (isSelected) color.primary else color.outlineVariant),
+        border = if (isSelected) BorderStroke(2.dp, Gradients.Primary) else BorderStroke(1.dp, color.outlineVariant),
     ) {
         Row(
             Modifier.heightIn(min = 60.dp).padding(horizontal = 16.dp, vertical = 10.dp),

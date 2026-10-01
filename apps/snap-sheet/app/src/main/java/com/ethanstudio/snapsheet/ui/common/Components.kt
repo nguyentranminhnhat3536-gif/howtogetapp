@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ethanstudio.snapsheet.R
 import com.ethanstudio.snapsheet.data.Doc
+import com.ethanstudio.snapsheet.ui.theme.Gradients
 import com.ethanstudio.snapsheet.util.decodeSampledCached
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -74,7 +76,7 @@ fun ProBadge(modifier: Modifier = Modifier) {
 /** Hàng tiêu đề của một tab: tên ở giữa, huy hiệu PRO bên trái nếu đã mua. */
 @Composable
 fun TabHeader(title: String, isPro: Boolean) {
-    Surface(color = MaterialTheme.colorScheme.surface) {
+    Box(Modifier.background(Gradients.header())) {
         Box(Modifier.fillMaxWidth().statusBarsPadding().heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 8.dp)) {
             if (isPro) ProBadge(Modifier.align(Alignment.CenterStart))
             Text(
@@ -107,15 +109,8 @@ fun QuickAction(@DrawableRes icon: Int, label: String, onClick: () -> Unit, modi
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.surface,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            modifier = Modifier.size(50.dp),
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(painterResource(icon), null, Modifier.size(28.dp), tint = MaterialTheme.colorScheme.primary)
-            }
+        Box(Modifier.size(56.dp).background(Gradients.soft(), CircleShape), contentAlignment = Alignment.Center) {
+            Icon(painterResource(icon), null, Modifier.size(28.dp), tint = MaterialTheme.colorScheme.secondary)
         }
         Text(
             label,
@@ -144,7 +139,9 @@ fun ToolCard(@DrawableRes icon: Int, title: String, subtitle: String, onClick: (
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Icon(painterResource(icon), null, Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
+            Box(Modifier.size(64.dp).background(Gradients.soft(), RoundedCornerShape(18.dp)), contentAlignment = Alignment.Center) {
+                Icon(painterResource(icon), null, Modifier.size(34.dp), tint = MaterialTheme.colorScheme.secondary)
+            }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(title, fontSize = 20.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f))
                 Text(subtitle, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)

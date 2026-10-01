@@ -49,7 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ethanstudio.snapsheet.R
 import com.ethanstudio.snapsheet.data.FreeLimits
+import com.ethanstudio.snapsheet.ui.common.GradientButton
 import com.ethanstudio.snapsheet.ui.common.PageThumbnail
+import androidx.compose.ui.unit.sp
 import com.ethanstudio.snapsheet.util.shareFiles
 import com.ethanstudio.snapsheet.util.shareText
 import com.ethanstudio.snapsheet.util.viewPdf
@@ -125,8 +127,8 @@ fun DocScreen(
                 item {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button({ viewModel.export(ExportKind.OPEN_PDF) }, Modifier.weight(1f)) { Text(stringResource(R.string.doc_open)) }
-                            Button({ viewModel.export(ExportKind.SHARE_PDF) }, Modifier.weight(1f)) { Text(stringResource(R.string.doc_share_pdf)) }
+                            GradientButton(stringResource(R.string.doc_open), { viewModel.export(ExportKind.OPEN_PDF) }, Modifier.weight(1f), minHeight = 48.dp, fontSize = 15.sp)
+                            GradientButton(stringResource(R.string.doc_share_pdf), { viewModel.export(ExportKind.SHARE_PDF) }, Modifier.weight(1f), minHeight = 48.dp, fontSize = 15.sp)
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             FilledTonalButton({ viewModel.export(ExportKind.SHARE_IMAGES) }, Modifier.weight(1f)) { Text(stringResource(R.string.doc_share_images)) }

@@ -60,6 +60,11 @@ android {
         compose = true
     }
 
+    // Android 13+: người dùng chọn ngôn ngữ riêng cho app trong Cài đặt › Ứng dụng › Ngôn ngữ.
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     lint {
         // Báo cáo dạng chữ để CI đọc và gom lỗi; lint không chặn build debug.
         textReport = true

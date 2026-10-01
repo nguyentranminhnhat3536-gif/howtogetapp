@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -63,22 +64,24 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ethanstudio.snapsheet.R
 import com.ethanstudio.snapsheet.auth.AuthError
 import com.ethanstudio.snapsheet.auth.AuthValidation
+import com.ethanstudio.snapsheet.ui.common.GradientButton
+import com.ethanstudio.snapsheet.ui.theme.Gradients
 import com.ethanstudio.snapsheet.util.findActivity
 
-/** Màu của nhóm màn đăng nhập (nền tối, thẻ kính mờ) lấy từ theme tối của Scan Design System. */
+/** Màu của nhóm màn đăng nhập: nền trắng, khối xanh nhạt nhòe phía sau, thẻ trắng mờ, nút gradient xanh. */
 private object AuthColors {
-    val Ground = Color(0xFF0F1114)
-    val Ink = Color(0xFFF4F5F7)
-    val InkSoft = Color(0xD1F4F5F7)
-    val Primary = Color(0xFF5B96FA)
-    val OnPrimary = Color(0xFF07142B)
-    val Link = Color(0xFF8DB4FF)
-    val Error = Color(0xFFFF8A80)
-    val Blob1 = Color(0xFF3880F8)
-    val Blob2 = Color(0xFF235FDC)
-    val Glass = Color(0x990F1114)
-    val Border = Color(0x3DF4F5F7)
-    val FieldBorder = Color(0x99F4F5F7)
+    val Ground = Color(0xFFFFFFFF)
+    val Ink = Color(0xFF131313)
+    val InkSoft = Color(0xFF5A5F6B)
+    val Primary = Color(0xFF2A6FE8)
+    val OnPrimary = Color(0xFFFFFFFF)
+    val Link = Color(0xFF235FDC)
+    val Error = Color(0xFFC62828)
+    val Blob1 = Color(0xFF8FBCFF)
+    val Blob2 = Color(0xFFB9D4FF)
+    val Glass = Color(0xEBFFFFFF)
+    val Border = Color(0xFFE3E9F4)
+    val FieldBorder = Color(0xFF7F8AA0)
 }
 
 @StringRes
@@ -103,7 +106,7 @@ fun AuthError.messageRes(): Int = when (this) {
 /** Nền tối với các khối màu nhòe, thẻ kính mờ ở giữa. Cuộn được và né bàn phím. */
 @Composable
 private fun AuthBackground(content: @Composable ColumnScope.() -> Unit) {
-    Box(Modifier.fillMaxSize().background(AuthColors.Ground)) {
+    Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFFD6E6FF), AuthColors.Ground)))) {
         Box(Modifier.offset(x = (-70).dp, y = 80.dp).size(250.dp).blur(48.dp, BlurredEdgeTreatment.Unbounded).background(AuthColors.Blob1, CircleShape))
         Box(Modifier.align(Alignment.BottomEnd).offset(x = 60.dp, y = (-90).dp).size(230.dp).blur(48.dp, BlurredEdgeTreatment.Unbounded).background(AuthColors.Blob2, RoundedCornerShape(40.dp)))
         Column(
@@ -151,24 +154,7 @@ private fun ErrorText(error: AuthError?, code: String? = null) {
 
 @Composable
 private fun PrimaryButton(text: String, busy: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        enabled = !busy,
-        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
-        shape = CircleShape,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = AuthColors.Primary,
-            contentColor = AuthColors.OnPrimary,
-            disabledContainerColor = AuthColors.Primary.copy(alpha = 0.5f),
-            disabledContentColor = AuthColors.OnPrimary,
-        ),
-    ) {
-        if (busy) {
-            CircularProgressIndicator(Modifier.size(22.dp), color = AuthColors.OnPrimary, strokeWidth = 2.5.dp)
-        } else {
-            Text(text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-        }
-    }
+    GradientButton(text = text, onClick = onClick, modifier = Modifier.fillMaxWidth(), busy = busy, minHeight = 54.dp, fontSize = 17.sp)
 }
 
 @Composable
@@ -199,8 +185,8 @@ private fun fieldColors() = OutlinedTextFieldDefaults.colors(
     focusedLabelColor = AuthColors.Link,
     unfocusedLabelColor = AuthColors.InkSoft,
     cursorColor = AuthColors.Link,
-    focusedContainerColor = Color(0x0FF4F5F7),
-    unfocusedContainerColor = Color(0x0FF4F5F7),
+    focusedContainerColor = Color(0xFFFFFFFF),
+    unfocusedContainerColor = Color(0xFFFFFFFF),
 )
 
 @Composable

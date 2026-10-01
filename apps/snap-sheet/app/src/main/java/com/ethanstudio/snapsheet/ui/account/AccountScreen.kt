@@ -55,15 +55,16 @@ import com.ethanstudio.snapsheet.auth.AuthUser
 import com.ethanstudio.snapsheet.billing.ProKind
 import com.ethanstudio.snapsheet.data.FreeLimits
 import com.ethanstudio.snapsheet.ui.auth.messageRes
+import com.ethanstudio.snapsheet.ui.common.GradientButton
+import com.ethanstudio.snapsheet.ui.theme.Gradients
 import com.ethanstudio.snapsheet.ui.main.MainUiState
 
 /** Màu nền nhạt của đầu trang và thẻ Pro (tím lavender sang xanh), có bản cho chế độ tối. */
 private object ProfileColors {
-    @Composable fun headerTop() = if (isSystemInDarkTheme()) Color(0xFF221F3A) else Color(0xFFE6E1FF)
-    @Composable fun headerMid() = if (isSystemInDarkTheme()) Color(0xFF16284A) else Color(0xFFDDEBFF)
-    @Composable fun cardStart() = if (isSystemInDarkTheme()) Color(0xFF2A2547) else Color(0xFFEAE6FF)
-    @Composable fun cardEnd() = if (isSystemInDarkTheme()) Color(0xFF1A2E52) else Color(0xFFD9E7FF)
-    val Avatar = Color(0xFF6F55C8)
+    @Composable fun headerTop() = if (isSystemInDarkTheme()) Color(0xFF13233F) else Color(0xFFCFE2FF)
+    @Composable fun headerMid() = if (isSystemInDarkTheme()) Color(0xFF111A2B) else Color(0xFFEAF2FF)
+    @Composable fun cardStart() = if (isSystemInDarkTheme()) Color(0xFF1A2E52) else Color(0xFFDDEAFF)
+    @Composable fun cardEnd() = if (isSystemInDarkTheme()) Color(0xFF151C2A) else Color(0xFFF4F8FF)
 }
 
 @Composable
@@ -142,7 +143,7 @@ fun AccountScreen(
 private fun ProfileHeader(user: AuthUser?, isPro: Boolean, onSignIn: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-        Box(Modifier.size(84.dp).background(ProfileColors.Avatar, CircleShape), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(84.dp).background(Gradients.Primary, CircleShape), contentAlignment = Alignment.Center) {
             if (user != null) {
                 Text(user.shownName.take(1).uppercase(), fontSize = 38.sp, fontWeight = FontWeight.Medium, color = Color.White)
             } else {
@@ -206,13 +207,12 @@ private fun ProCard(state: MainUiState, onGetPro: () -> Unit) {
                 }
                 Text(stringResource(planText), fontSize = 14.sp, color = colors.onSurfaceVariant)
             }
-            Button(
+            GradientButton(
+                text = stringResource(if (pro.isPro) R.string.account_details else R.string.account_upgrade),
                 onClick = onGetPro,
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(containerColor = colors.onSurface, contentColor = colors.surface),
-            ) {
-                Text(stringResource(if (pro.isPro) R.string.account_details else R.string.account_upgrade), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-            }
+                minHeight = 48.dp,
+                fontSize = 16.sp,
+            )
         }
         Row(Modifier.fillMaxWidth()) {
             Stat(state.allDocs.size.toString(), stringResource(R.string.stat_docs), Modifier.weight(1f))
