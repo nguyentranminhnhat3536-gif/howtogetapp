@@ -11,7 +11,7 @@
 | Link Google Play | (chưa có) |
 
 ## Trạng thái
-Bước 3 · Nhóm A đợt 1 xong (chọn nhiều, gộp PDF cho Pro, sắp/xóa trang, thêm trang, in, thư mục, nén PDF): CI #39 xanh (build + 95 unit test + lint), /ship CHOT 2026-10-01. Dữ liệu lên schema v2 bằng migration, tài liệu cũ giữ nguyên. Chờ Ethan thử bản APK (DUYỆT-2), nhớ cài đè lên bản cũ để thử nâng cấp dữ liệu. Thanh toán, giảm giá và OCR Pro chỉ thử được sau khi tạo sản phẩm trong Play Console.
+Bước 3 · Tab Công cụ có 11 ô. Nhóm A đợt 2 xong (nhập file PDF, quét mã QR/mã vạch miễn phí; ký tên và chèn chữ mờ cho Pro, luôn tạo bản sao, bản gốc giữ nguyên): CI #44 xanh (build + unit test + lint), /ship CHOT 2026-10-01 sau 1 vòng sửa. Nhóm A đợt 1 xong trước đó (CI #39). Chờ Ethan thử bản APK (DUYỆT-2). Ký tên và chữ mờ chỉ thử được khi máy có Pro; Pro, giảm giá và OCR chỉ mua được sau khi tạo sản phẩm trong Play Console.
 
 ## Việc tiếp theo
 - [ ] Ethan duyệt kế hoạch bản iOS: `PLAN-ios.md` (DUYỆT-$)
@@ -23,7 +23,9 @@ Bước 3 · Nhóm A đợt 1 xong (chọn nhiều, gộp PDF cho Pro, sắp/xó
 - [x] Làm lại giao diện theo thiết kế đã duyệt, thêm Account › Language (CI #32 xanh, /ship CHOT 2026-10-01)
 - [ ] Ethan thử APK trên điện thoại và góp ý (DUYỆT-2)
 - [x] Nhóm A đợt 1: chọn nhiều, gộp PDF (Pro), sắp/xóa trang, thêm trang, in, thư mục, nén (CI #39 xanh, /ship CHOT 2026-10-01)
-- [ ] Nhóm A đợt 2: ký tên (Pro), chèn chữ mờ (Pro), nhập file PDF có sẵn, quét mã QR/mã vạch (đã code qua /ship 2026-10-01; đánh dấu xong khi CI xanh)
+- [x] Nhóm A đợt 2: ký tên (Pro), chèn chữ mờ (Pro), nhập file PDF có sẵn, quét mã QR/mã vạch (CI #44 xanh, /ship CHOT 2026-10-01)
+- [ ] Gia cố sau đợt 2 (góp ý không bắt buộc của reviewer): giữ kết quả quét mã khi xoay máy lúc màn quét đang mở (đưa qua MainViewModel/SavedStateHandle); khung ký bắt cả chạm chấm và đoạn nét đầu (`awaitFirstDown`); snackbar khi file chữ ký bị mất; tách logic màn Ký thành hàm thuần để unit test; chữ "Đang xóa…" riêng khi xóa chữ ký; cân nhắc `android:windowSoftInputMode="adjustResize"` cho MainActivity (và template) nếu bàn phím vẫn che ô nhập trên Android 8–10
+- [ ] Cân nhắc công tắc "giả lập Pro" chỉ có trong bản debug để Ethan thử các tính năng Pro trước khi tạo sản phẩm trên Play Console (không bao giờ có trong bản release)
 - [ ] Đợt sau: khóa PDF bằng mật khẩu (Pro)
 - [ ] Gia cố sau đợt 1 (góp ý không bắt buộc của reviewer): PagesViewModel chỉ trả `saving = false` khi lỗi (chặn bấm Lưu 2 lần); luồng in trong Print.kt bắt mọi `Exception`; FilesScreen tắt các hộp thoại khi thoát chế độ chọn; báo rõ khi thêm trang bị cắt vì giới hạn; chữ `limit_pages_free` không ghi cứng "5 trang"; `rename` dùng `UPDATE docs SET name`; dấu tích cho "No folder"; dọn tài liệu gộp dở khi app bị tắt giữa chừng; dùng chung `Mutex` cho `recoverPendingEdits` và `rewritePages`
 - [x] Xóa tài liệu lỗi thì báo bằng snackbar, không crash (DocViewModel.delete, /ship 2026-10-01)
