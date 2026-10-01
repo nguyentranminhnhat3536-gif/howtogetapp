@@ -10,10 +10,11 @@
 | Link Google Play | (chưa có) |
 
 ## Trạng thái
-Bước 2→3 · Code MVP xong, chờ CI xanh rồi gửi Ethan thử (DUYỆT-2). Chưa chạy được trên máy thật; build trên GitHub Actions.
+Bước 3 · Code MVP xong, CI xanh (build + unit test) ngày 2026-10-01. Chờ Ethan thử bản APK (DUYỆT-2). Chưa ai chạy trên máy thật; thanh toán chỉ thử được sau khi tạo sản phẩm trong Play Console.
 
 ## Việc tiếp theo
-- [ ] CI xanh, gửi link APK cho Ethan thử (DUYỆT-2)
+- [x] CI xanh
+- [ ] Ethan thử APK trên điện thoại và góp ý (DUYỆT-2)
 - [ ] Ethan tạo sản phẩm trong Play Console (xem mục Kiếm tiền) và chốt giá (DUYỆT-$)
 - [ ] Điền studio.md (tên nhà phát triển, email hỗ trợ); đổi `support_email` trong strings.xml
 - [ ] Ảnh store, icon 512, bước play-listing và play-policy-check
@@ -67,7 +68,7 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 ## Quyền (permissions) và lý do
 | Quyền | Lý do |
 |---|---|
-| (không có) | Quét dùng màn hình của Google Play services (không cần CAMERA), ảnh chọn bằng trình chọn ảnh hệ thống (không cần đọc thư viện). BILLING do thư viện Play Billing tự thêm. |
+| (không có) | Quét dùng màn hình của Google Play services (không cần CAMERA), ảnh chọn bằng trình chọn ảnh hệ thống (không cần đọc thư viện). BILLING, INTERNET, ACCESS_NETWORK_STATE do thư viện Play Billing và ML Kit tự thêm (app không tự gọi mạng). |
 
 ## Tài nguyên bên thứ ba và giấy phép
 | Tài nguyên (hình, font, âm thanh, dữ liệu…) | Nguồn | Giấy phép |
