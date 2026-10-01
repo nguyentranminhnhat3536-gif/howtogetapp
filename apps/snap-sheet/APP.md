@@ -13,6 +13,7 @@
 Bước 3 · Code MVP xong, CI xanh (build + unit test) ngày 2026-10-01. Chờ Ethan thử bản APK (DUYỆT-2). Chưa ai chạy trên máy thật; thanh toán chỉ thử được sau khi tạo sản phẩm trong Play Console.
 
 ## Việc tiếp theo
+- [ ] Ethan duyệt kế hoạch bản iOS: `PLAN-ios.md` (DUYỆT-$)
 - [ ] Ethan duyệt kế hoạch đăng ký tài khoản: `PLAN-account.md` (DUYỆT-$)
 - [x] CI xanh
 - [ ] Ethan thử APK trên điện thoại và góp ý (DUYỆT-2)
@@ -105,3 +106,4 @@ Giao diện theo Scan Design System (https://claude.ai/artifact/UzxZzBwaCYBTAcHr
 - 2026-10-01: Tạm bỏ ký tên và đóng dấu (có trong ảnh tham chiếu) vì cần trình sửa PDF riêng; đưa vào "Để sau".
 - 2026-10-01: Chưa có phiên bản ML Kit đã tra chính thức (trang Google bị chặn trong phiên). Dùng document-scanner 16.0.0 và text-recognition 16.0.1; nếu CI báo không tìm thấy thì tra lại.
 - 2026-10-01: Ethan muốn thêm đăng ký tài khoản. Đã thiết kế 4 màn (https://claude.ai/artifact/Nug9pRAZzY5ejELXK2TNZz) và viết kế hoạch kỹ thuật + chi phí trong `PLAN-account.md`. Chưa code, chờ duyệt. Tài khoản là tùy chọn, vẫn dùng được không cần đăng nhập.
+- 2026-10-01: Ethan hỏi bản iOS. Viết kế hoạch kỹ thuật và chi phí trong `PLAN-ios.md`: app riêng bằng Swift + SwiftUI (VisionKit, Vision, PDFKit, StoreKit 2), build trên GitHub Actions macOS, thử qua TestFlight. Chưa code, chờ duyệt.
