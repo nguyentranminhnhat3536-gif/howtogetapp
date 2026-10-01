@@ -150,12 +150,20 @@ class BillingManager(
             for (plan in listOf(Plan.MONTHLY, Plan.YEARLY)) {
                 val candidates = details.subscriptionOfferDetails.orEmpty()
                     .filter { it.basePlanId == plan.basePlanId }
-                val infos = candidates.map { o ->
-                    OfferInfo(
-                        o.offerId,
-                        o.offerToken,
-                        o.pricingPhases.pricingPhaseList.map { PhaseInfo(it.priceAmountMicros, it.formattedPrice, it.billingPeriod, it.priceCurrencyCode) },
-                    )
+                // Bỏ ưu đãi thiếu dữ liệu bắt buộc (token, giá) thay vì gửi chuỗi rỗng lên Google Play.
+                val infos = candidates.mapNotNull { o ->
+                    val token = o.offerToken ?: return@mapNotNull null
+                    val phaseList = o.pricingPhases.pricingPhaseList
+                    val phases = phaseList.mapNotNull { phase ->
+                        PhaseInfo(
+                            phase.priceAmountMicros ?: return@mapNotNull null,
+                            phase.formattedPrice ?: return@mapNotNull null,
+                            phase.billingPeriod ?: return@mapNotNull null,
+                            phase.priceCurrencyCode ?: return@mapNotNull null,
+                        )
+                    }
+                    if (phases.isEmpty() || phases.size != phaseList.size) return@mapNotNull null
+                    OfferInfo(o.offerId, token, phases)
                 }
                 val picked = pickOffer(infos) ?: continue
                 offers[plan] = PlanOffer(
@@ -169,10 +177,15 @@ class BillingManager(
             @Suppress("DEPRECATION")
             val raw = details.oneTimePurchaseOfferDetailsList?.takeIf { it.isNotEmpty() }
                 ?: listOfNotNull(details.oneTimePurchaseOfferDetails)
-            val infos = raw.filter { it.rentalDetails == null && it.preorderDetails == null }.map {
+            // Bỏ ưu đãi thiếu token, giá hoặc mã tiền tệ (Billing 9 có thể trả null) thay vì gửi chuỗi rỗng lên Play.
+            val infos = raw.filter { it.rentalDetails == null && it.preorderDetails == null }.mapNotNull {
                 OneTimeOfferInfo(
-                    it.offerToken, it.priceAmountMicros, it.formattedPrice, it.priceCurrencyCode,
-                    it.fullPriceMicros, it.discountDisplayInfo?.percentageDiscount,
+                    token = it.offerToken ?: return@mapNotNull null,
+                    priceMicros = it.priceAmountMicros ?: return@mapNotNull null,
+                    formattedPrice = it.formattedPrice ?: return@mapNotNull null,
+                    currencyCode = it.priceCurrencyCode ?: return@mapNotNull null,
+                    fullPriceMicros = it.fullPriceMicros,
+                    percentDiscount = it.discountDisplayInfo?.percentageDiscount,
                 )
             }
             pickOneTimeOffer(infos)?.let { o ->
